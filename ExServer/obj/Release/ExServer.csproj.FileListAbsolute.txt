@@ -1,0 +1,12 @@
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\ExServer.exe.config
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\ExServer.exe
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\ExServer.pdb
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\StiLib.dll
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\MediaFoundation.dll
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\zlib.net.dll
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\dnAnalytics.dll
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\StiLib.pdb
+E:\Programs\Stimulus\StiLib\ExServer\bin\Release\StiLib.xml
+E:\Programs\Stimulus\StiLib\ExServer\obj\Release\ResolveAssemblyReference.cache
+E:\Programs\Stimulus\StiLib\ExServer\obj\Release\ExServer.exe
+E:\Programs\Stimulus\StiLib\ExServer\obj\Release\ExServer.pdb

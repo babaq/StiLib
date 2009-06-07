@@ -1,0 +1,87 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[      2648,         78]
+NotebookOptionsPosition[      2354,         64]
+NotebookOutlinePosition[      2699,         79]
+CellTagsIndexPosition[      2656,         76]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ StyleBox[
+  RowBox[{"SLForm", ".", "nb"}], "Subsubtitle"], "\[IndentingNewLine]", 
+ StyleBox[
+  RowBox[{"StiLib", " ", "Basic", " ", "Mathematica", " ", "Scripting"}], 
+  "Subsubtitle"], "\[IndentingNewLine]", 
+ StyleBox[
+  RowBox[{"2009", "-", "04", "-", 
+   RowBox[{"06", " ", "Zhang", " ", "Li"}]}], "Subsubtitle"]}], "Input",
+ CellFrame->{{0, 0}, {0.5, 0}},
+ CellChangeTimes->{{3.4478281839170275`*^9, 3.447828241158481*^9}, 
+   3.4478284092541676`*^9, 3.447828446936326*^9}],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<NETLink`\>\"", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"InstallNET", "[", "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"LoadNETAssembly", "[", 
+  "\"\<E:\\\\Programs\\\\Stimulus\\\\StiLib\\\\Release\\\\StiLib.dll\>\"", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "LoadNETAssembly", "[", 
+   "\"\<E:\\\\Programs\\\\Stimulus\\\\StiLib\\\\Release\\\\Microsoft.Xna.\
+Framework.dll\>\"", "]"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "LoadNETType", "[", "\"\<System.Windows.Forms.Application\>\"", "]"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"MyExperiment", " ", "=", " ", 
+  RowBox[{
+  "NETNew", "[", "\"\<StiLib.Core.SLForm\>\"", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"MyExperiment", "@", "Text"}], " ", "=", " ", 
+  "\"\<Basic Mathematica Scripting\>\""}], "\[IndentingNewLine]", 
+ RowBox[{"System", ".", "Windows", ".", "Forms", ".", 
+  RowBox[{"Application`Run", "[", "MyExperiment", "]"}]}]}], "Input",
+ CellChangeTimes->{
+  3.4478283658458133`*^9, 3.4478284001131516`*^9, {3.4478285733647575`*^9, 
+   3.447828576621385*^9}, {3.4478315806976666`*^9, 3.447831595644952*^9}, 
+   3.4478317482806907`*^9, 3.4478317903307333`*^9}]
+},
+WindowSize->{768, 516},
+WindowMargins->{{Automatic, 91}, {Automatic, 54}},
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (November 10, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[545, 20, 495, 11, 91, "Input"],
+Cell[1043, 33, 1307, 29, 232, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)

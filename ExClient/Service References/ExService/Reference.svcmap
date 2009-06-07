@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="46d68cff-18d7-4262-bc18-9b24b3accefb" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="net.tcp://zhangli:8080/ExServer/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="3fb30a49-c7f2-4980-8dc0-de74b253f47a" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="3cd6c3a6-9657-4035-a064-4610f2252385" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="143d3c38-f319-4394-bdfe-6b1455257c01" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="d1029e65-e2d1-4911-8d44-8e6a29876d92" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

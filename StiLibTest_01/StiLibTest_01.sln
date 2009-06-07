@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StiLibTest_01", "StiLibTest_01.csproj", "{3C40B91A-5089-4716-BC7A-F49AB9A34176}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C40B91A-5089-4716-BC7A-F49AB9A34176}.Debug|x86.ActiveCfg = Debug|x86
+		{3C40B91A-5089-4716-BC7A-F49AB9A34176}.Debug|x86.Build.0 = Debug|x86
+		{3C40B91A-5089-4716-BC7A-F49AB9A34176}.Release|x86.ActiveCfg = Release|x86
+		{3C40B91A-5089-4716-BC7A-F49AB9A34176}.Release|x86.Build.0 = Release|x86
+		{6DEBD609-D314-4DB5-99C7-79052131AFB4}.Debug|x86.ActiveCfg = Debug|x86
+		{6DEBD609-D314-4DB5-99C7-79052131AFB4}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

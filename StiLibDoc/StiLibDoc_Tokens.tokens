@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<content xml:space="preserve" xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <item id=".NET"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>.NET</ddue:linkText>
+    <ddue:linkUri>http://www.microsoft.com/NET</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="BuildDate">{@BuildDate:March 29, 2009}</item>
+  <item id="F#"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>F#</ddue:linkText>
+    <ddue:linkUri>http://msdn.microsoft.com/fsharp</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="IronPython"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>IronPython</ddue:linkText>
+    <ddue:linkUri>http://www.codeplex.com/IronPython</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="Sandcastle"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>Sandcastle</ddue:linkText>
+    <ddue:linkUri>http://www.codeplex.com/Sandcastle</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="SandcastleStyles"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>Sandcastle Styles</ddue:linkText>
+    <ddue:linkUri>http://www.codeplex.com/SandcastleStyles</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="SandcastleVersion">May 2008</item>
+  <item id="SHFB"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>Sandcastle Help File Builder</ddue:linkText>
+    <ddue:linkUri>http://www.codeplex.com/SHFB</ddue:linkUri>
+    </ddue:externalLink></item>
+  <item id="StiLib"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>StiLib</ddue:linkText>
+    <ddue:linkUri>http://stilib.codeplex.com</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+  <item id="XNA"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
+    <ddue:linkText>XNA</ddue:linkText>
+    <ddue:linkUri>http://www.xna.com</ddue:linkUri>
+    <ddue:linkTarget>_blank</ddue:linkTarget>
+</ddue:externalLink></item>
+</content>
