@@ -1,9 +1,0 @@
-E:\Programs\Stimulus\StiLib\ExClient\bin\Release\ExClient.exe.config
-E:\Programs\Stimulus\StiLib\ExClient\bin\Release\ExClient.exe
-E:\Programs\Stimulus\StiLib\ExClient\bin\Release\ExClient.pdb
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ResolveAssemblyReference.cache
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ExClient.MainForm.resources
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ExClient.Properties.Resources.resources
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ExClient.csproj.GenerateResource.Cache
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ExClient.exe
-E:\Programs\Stimulus\StiLib\ExClient\obj\Release\ExClient.pdb

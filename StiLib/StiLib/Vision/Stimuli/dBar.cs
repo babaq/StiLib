@@ -25,7 +25,8 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Default SLForm Settings
         /// </summary>
-        public dBar() : base()
+        public dBar()
+            : base()
         {
         }
 
@@ -62,7 +63,7 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Initialize()
         {
-            text = new Text(GraphicsDevice, Services, "Content", "Arial");
+            text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
             // Init Experiment Parameter
             ex = new SLExperiment();
@@ -92,7 +93,7 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Set Flow to control experiment
         /// </summary>
-        protected override void  SetFlow()
+        protected override void SetFlow()
         {
             ex.Flow.SCount = 0;
             ex.Flow.TCount = 0;
@@ -106,57 +107,16 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Send crucial information in MarkerHeader 
         /// </summary>
-        protected override void  MarkHead()
+        protected override void MarkHead()
         {
-            // Single Condition
-            if (ex.Cond[0].VALUE.ValueN == 0) 
-            {
-                MarkHead_sdBar();
-            }
-            else // Multiple Conditions
-            {
-                MarkHead_mdBar();
-            }
-        }
+            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
 
-        void MarkHead_sdBar()
-        {
-            ex.Expara.stimuli[0] = 1;
-
-            // Experiment Type Encoding
-            ex.PPort.MarkerEncode(ex.Extype[0].Value);
-            // Condition Parameter Type Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].SKEY);
-            // Condition Number Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
-            // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
-            // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
-
-            // Keywords Group Seperator
-            ex.PPort.MarkerSeparatorEncode();
-
-            // Custom Parameters Encoding
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.width * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.BasePara.orientation));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.direction));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 10.0));
-
-            // End of Header Encoding
-            ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
-        }
-
-        void MarkHead_mdBar()
-        {
             ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN + 1;
-            ex.Rand.RandomizeSeed();
-            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            if (ex.Expara.stimuli[0] > 1)
+            {
+                ex.Rand.RandomizeSeed();
+                ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            }
 
             // Experiment Type Encoding
             ex.PPort.MarkerEncode(ex.Extype[0].Value);
@@ -173,12 +133,7 @@ namespace StiLib.Vision.Stimuli
             ex.PPort.MarkerSeparatorEncode();
 
             // Custom Parameters Encoding
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.width * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.BasePara.orientation));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 10.0));
+            Bar.Para.Encode(ex.PPort);
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
@@ -194,7 +149,7 @@ namespace StiLib.Vision.Stimuli
             if (GO_OVER)
             {
                 // Single Condition
-                if (ex.Cond[0].VALUE.ValueN == 0) 
+                if (ex.Cond[0].VALUE.ValueN == 0)
                 {
                     Update_sdBar();
                 }
@@ -233,7 +188,7 @@ namespace StiLib.Vision.Stimuli
                 ex.Flow.IsStiOn = false;
                 ex.PPort.timer.ReStart();
                 // Stimulus Onset Marker
-                ex.PPort.Trigger(); 
+                ex.PPort.Trigger();
             }
 
             ex.Flow.LastTime = ex.PPort.timer.ElapsedSeconds;
@@ -268,7 +223,7 @@ namespace StiLib.Vision.Stimuli
                 if (!ex.Flow.IsRested)
                 {
                     // Stimulus Offset Marker
-                    ex.PPort.Trigger(); 
+                    ex.PPort.Trigger();
 
                     ex.Flow.IsRested = true;
                     Bar.SetVisible(false);

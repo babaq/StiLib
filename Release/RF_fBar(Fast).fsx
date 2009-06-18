@@ -25,7 +25,7 @@ type ExRF_fBar_Fast() = class
         
         self.ex.AddExType(ExType.RF_fBar)
         self.ex.AddCondition(ExPara.Orientation, 0)
-        self.ex.Expara.trial <- 60
+        self.ex.Expara.trial <- 3
         self.ex.Expara.durT <- 0.030f
         self.ex.Expara.bgcolor <- Color.Gray
         

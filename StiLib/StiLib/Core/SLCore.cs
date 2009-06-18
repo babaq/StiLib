@@ -322,7 +322,7 @@ namespace StiLib.Core
         /// <param name="bSize">number of bytes to read</param>
         /// <returns>true -- succeed, false -- failed</returns>
         [DllImport("WinIo.dll")]
-        public static extern bool GetPortVal(Int16 wPortAddr, int[] pdwPortVal, Byte bSize);
+        public static extern bool GetPortVal(Int16 wPortAddr, out Int32 pdwPortVal, Byte bSize);
         /// <summary>
         /// Write 1, 2, 4 bytes to the specified I/O port
         /// </summary>
@@ -370,8 +370,7 @@ namespace StiLib.Core
             if (!isWINIOinitialized)
                 return false;
 
-            Int16 value = (Int16)0x10;
-            return SetPortVal(port, value, 1);
+            return SetPortVal(port, 0x10, 1);
         }
 
     }
@@ -406,13 +405,12 @@ namespace StiLib.Core
             if (!IsWinIOok)
                 return false;
 
-            Int16 value = (Int16)0x10;
-            SetPortVal(port, value, 1);
+            if (!SetPortVal(port, 0x10, 1))
+                return false;
 
             timer.Rest(time);
 
-            value = (Int16)0x00;
-            return SetPortVal(port, value, 1);
+            return SetPortVal(port, 0x00, 1);
         }
 
         /// <summary>
@@ -421,8 +419,7 @@ namespace StiLib.Core
         /// <returns></returns>
         public bool Trigger()
         {
-            Int16 nport = (Int16)0x378;
-            return Trigger(nport, 0.001);
+            return Trigger((Int16)0x378, 0.001);
         }
 
         /// <summary>
@@ -444,37 +441,55 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Encode number in two Markers based on 100 number system which can encode 100×100=10000 numbers
+        /// Encode number in four Markers based on 16 number system which can encode 16×16×16×16=65536 numbers
         /// </summary>
         /// <param name="N"></param>
         public void MarkerEncode(int N)
         {
-            Marker((int)Math.Floor(N / 100.0));
-            timer.Rest(0.004);
-            Marker((int)(N % 100));
-            timer.Rest(0.004);
+            // First Digit
+            Marker((int)Math.Floor(N / 4096.0));
+            int t = N % 4096;
+            timer.Rest(0.002);
+            // Second Digit
+            Marker((int)Math.Floor(t / 256.0));
+            t = t % 256;
+            timer.Rest(0.002);
+            // Third Digit
+            Marker((int)Math.Floor(t / 16.0));
+            timer.Rest(0.002);
+            // Fourth Digit
+            Marker((int)(t % 16));
+            timer.Rest(0.002);
         }
 
         /// <summary>
-        /// Encode(100, 0) seperate different groups of keywords
+        /// Encode(0, 0, 16, 0) seperate different groups of keywords
         /// </summary>
         public void MarkerSeparatorEncode()
         {
-            Marker(100);
-            timer.Rest(0.004);
             Marker(0);
-            timer.Rest(0.004);
+            timer.Rest(0.002);
+            Marker(0);
+            timer.Rest(0.002);
+            Marker(16);
+            timer.Rest(0.002);
+            Marker(0);
+            timer.Rest(0.002);
         }
 
         /// <summary>
-        /// Encode(0, 100) the end of MarkerEncode
+        /// Encode(0, 0, 0, 16) the end of MarkerEncode
         /// </summary>
         public void MarkerEndEncode()
         {
             Marker(0);
-            timer.Rest(0.004);
-            Marker(100);
-            timer.Rest(0.004);
+            timer.Rest(0.002);
+            Marker(0);
+            timer.Rest(0.002);
+            Marker(0);
+            timer.Rest(0.002);
+            Marker(16);
+            timer.Rest(0.002);
         }
 
     }
@@ -1163,7 +1178,11 @@ namespace StiLib.Core
         /// <summary>
         /// Size Condition
         /// </summary>
-        Size
+        Size,
+        /// <summary>
+        /// Location Condition
+        /// </summary>
+        Location
     }
 
     /// <summary>
@@ -1210,9 +1229,14 @@ namespace StiLib.Core
     public static class SLConstant
     {
         /// <summary>
-        /// Standard Help String
+        /// Standard Help Tip String
         /// </summary>
         public const string Help = "[Esc] - Quit\n[Space] - Run/Stop";
+
+        /// <summary>
+        /// Standard MarkHead Tip String
+        /// </summary>
+        public const string MarkHead = "Transfering Marker Header . . .";
 
         /// <summary>
         /// Assembly Settings Root Node Name

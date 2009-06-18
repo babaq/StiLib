@@ -48,6 +48,8 @@ type MyEx = class
         this.ex.Flow.IsPred <- false
         
     override this.MarkHead() = 
+        this.DrawTip(ref this.text, this.ex.Expara.bgcolor, SLConstant.MarkHead)
+        
         this.ex.Rand.RandomizeSeed()
         this.ex.Rand.RandomizeSequence(this.ex.Expara.stimuli.[0])
         
@@ -61,12 +63,7 @@ type MyEx = class
         
         this.ex.PPort.MarkerSeparatorEncode()
         
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.tf) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.sf) * 100.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.luminance) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.contrast) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.BasePara.center.X + 60.0f) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.grating.Para.BasePara.center.Y + 60.0f) * 10.0) ))
+        this.grating.Para.Encode(this.ex.PPort)
 
         this.ex.PPort.MarkerEndEncode()
         this.ex.Flow.IsStiOn <- true

@@ -66,7 +66,7 @@
               
               <step>
               <content>
-                <para><token>IronPython</token> (2.0.1)</para>
+                <para><token>IronPython</token> (2.6)</para>
               </content>
             </step>
           </steps>

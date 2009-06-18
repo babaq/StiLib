@@ -22,15 +22,16 @@ type MyEx = class
     val mutable ex: SLExperiment
     val mutable cgrating: Grating
     val mutable sgrating: Grating
+    val mutable cmask: Primitive
     
     new() as this = 
-        { inherit SLForm(800, 600, 0, true, true); cgrating = null; text = null; ex = null; sgrating = null }
+        { inherit SLForm(800, 600, 0, true, true); cgrating = null; text = null; ex = null; sgrating = null; cmask = null }
         then
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Thames")
         this.ex <- new SLExperiment()
         this.ex.AddExType(ExType.Context)
-        this.ex.AddCondition(ExPara.Orientation, 8)
-        this.ex.AddCondition(ExPara.Orientation, 4 + 1)
+        this.ex.AddCondition(ExPara.Orientation, 2)
+        this.ex.AddCondition(ExPara.Orientation, 2 + 1)
         this.ex.Expara.trial <- 15
         this.ex.Expara.srestT <- 0.5f
         this.ex.Expara.trestT <- 0.5f
@@ -44,6 +45,10 @@ type MyEx = class
         gpara.BasePara.diameter <- 6.0f
         gpara.BasePara.center <- new Vector3(4.0f, 0.0f, 0.0f)
         this.cgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
+        
+        this.cmask <- new Primitive(this.GraphicsDevice, PrimitivePara.Circle(gpara.BasePara.diameter, this.ex.Expara.bgcolor, gpara.BasePara.center, 100, true))
+        this.cmask.SetVisible(false)
+        
         gpara.BasePara.diameter <- 12.0f
         this.sgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
@@ -54,7 +59,9 @@ type MyEx = class
         this.ex.Flow.IsRested <- false
         
     override this.MarkHead() = 
-        this.ex.Expara.stimuli.[0] <- this.ex.Cond.[0].VALUE.ValueN * this.ex.Cond.[1].VALUE.ValueN + 1
+        this.DrawTip(ref this.text, this.ex.Expara.bgcolor, SLConstant.MarkHead)
+        
+        this.ex.Expara.stimuli.[0] <- (this.ex.Cond.[0].VALUE.ValueN + 1) * this.ex.Cond.[1].VALUE.ValueN
         this.ex.Rand.RandomizeSeed()
         this.ex.Rand.RandomizeSequence(this.ex.Expara.stimuli.[0])
         
@@ -68,14 +75,8 @@ type MyEx = class
         
         this.ex.PPort.MarkerSeparatorEncode()
         
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.tf) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.sf) * 100.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.luminance) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.contrast) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.BasePara.center.X + 60.0f) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float(this.cgrating.Para.BasePara.center.Y + 60.0f) * 10.0) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float this.cgrating.Para.BasePara.diameter) ))
-        this.ex.PPort.MarkerEncode(int( Math.Floor(float this.sgrating.Para.BasePara.diameter) ))
+        this.cgrating.Para.Encode(this.ex.PPort)
+        this.sgrating.Para.Encode(this.ex.PPort)
 
         this.ex.PPort.MarkerEndEncode()
         this.ex.Flow.IsStiOn <- true
@@ -87,6 +88,7 @@ type MyEx = class
         this.GraphicsDevice.Clear(this.ex.Expara.bgcolor)
         if this.GO_OVER = true then
             this.sgrating.Draw(this.GraphicsDevice)
+            this.cmask.IndexDraw(this.GraphicsDevice, PrimitiveType.TriangleFan)
             this.cgrating.Draw(this.GraphicsDevice)
             this.ex.Flow.Info <- this.ex.Flow.TCount.ToString() + " / " + this.ex.Expara.trial.ToString() + " Trials\n" + 
                                         this.ex.Flow.SCount.ToString() + " / " + this.ex.Expara.stimuli.[0].ToString() + " Stimuli"
@@ -102,25 +104,33 @@ type MyEx = class
             if this.ex.Flow.IsPred = false then
                 this.ex.Flow.IsPred <- true
                 
-                let s = this.ex.Rand.RSequence.[this.ex.Flow.SCount] - 1
-                if s < 0 then
-                    this.cgrating.SetVisible(false)
-                    this.sgrating.SetVisible(false)
-                else
-                    this.ex.Flow.RCount <- int( Math.Floor( float(s / this.ex.Cond.[1].VALUE.ValueN) ) )
-                    this.ex.Flow.CCount <- s % this.ex.Cond.[1].VALUE.ValueN
-                    
-                    let crad = float32 this.ex.Flow.RCount * float32 Math.PI / float32 this.ex.Cond.[0].VALUE.ValueN
+                this.ex.Flow.RCount <- int( Math.Floor( float(this.ex.Rand.RSequence.[this.ex.Flow.SCount] / this.ex.Cond.[1].VALUE.ValueN) ) )
+                this.ex.Flow.CCount <- this.ex.Rand.RSequence.[this.ex.Flow.SCount] % this.ex.Cond.[1].VALUE.ValueN
+                
+                let mutable crad = 0.0f // cgrating orientation
+                // Single condition of cgrating
+                if this.ex.Cond.[0].VALUE.ValueN = 0 then
+                    crad <- this.cgrating.Para.direction * float32 SLConstant.RadpDeg
                     this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad) * Matrix.CreateTranslation(this.cgrating.Para.BasePara.center)
                     this.cgrating.SetWorld(this.ex.Flow.Translate)
                     this.cgrating.SetVisible(true)
-                    
-                    if this.ex.Flow.CCount = 0 then
-                        this.sgrating.SetVisible(false)
+                else // Multiple condition of cgrating
+                    if this.ex.Flow.RCount = 0 then // Blank
+                        this.cgrating.SetVisible(false)
+                        this.cmask.SetVisible(true)
                     else
-                        this.sgrating.SetVisible(true)
-                        this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad + float32(this.ex.Flow.CCount - 1) * float32 Math.PI / float32( this.ex.Cond.[1].VALUE.ValueN - 1 )) * Matrix.CreateTranslation(this.sgrating.Para.BasePara.center)
-                        this.sgrating.SetWorld(this.ex.Flow.Translate)
+                        crad <- float32 (this.ex.Flow.RCount - 1) * float32 Math.PI / float32 this.ex.Cond.[0].VALUE.ValueN
+                        this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad) * Matrix.CreateTranslation(this.cgrating.Para.BasePara.center)
+                        this.cgrating.SetWorld(this.ex.Flow.Translate)
+                        this.cgrating.SetVisible(true)
+                
+                if this.ex.Flow.CCount = 0 then // Blank
+                    this.sgrating.SetVisible(false)
+                else
+                    this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad + float32(this.ex.Flow.CCount - 1) * float32 Math.PI / float32( this.ex.Cond.[1].VALUE.ValueN - 1 )) * Matrix.CreateTranslation(this.sgrating.Para.BasePara.center)
+                    this.sgrating.SetWorld(this.ex.Flow.Translate)
+                    this.sgrating.SetVisible(true)
+                    
             this.cgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
             this.sgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
         else
@@ -129,6 +139,7 @@ type MyEx = class
                 this.ex.Flow.IsRested <- true
                 this.cgrating.SetVisible(false)
                 this.sgrating.SetVisible(false)
+                this.cmask.SetVisible(false)
             if this.ex.Flow.SCount - this.ex.Expara.stimuli.[0] < -1 then
                 if this.ex.PPort.timer.ElapsedSeconds > float this.ex.Expara.durT + float this.ex.Expara.srestT then
                     this.ex.Flow.IsStiOn <- true

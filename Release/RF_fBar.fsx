@@ -20,7 +20,7 @@ type ExRF_fBar() = class
     inherit RF_fBar(800, 600, 0, true, true)
     
     override self.Initialize() =
-        self.text <- new Text(self.GraphicsDevice, self.Services, "E:\Programs\Stimulus\StiLib\Release\Content", "Arial")
+        self.text <- new Text(self.GraphicsDevice, self.Services, self.SLConfig.["content"], "Arial")
         self.ex <- new SLExperiment()
         
         self.ex.AddExType(ExType.RF_fBar)

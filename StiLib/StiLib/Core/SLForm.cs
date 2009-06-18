@@ -17,6 +17,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using StiLib.Vision;
+using Microsoft.Xna.Framework;
 #endregion
 
 namespace StiLib.Core
@@ -220,7 +222,7 @@ namespace StiLib.Core
             Initialize();
         }
 
-        
+
         /// <summary>
         /// Check if Device is ready
         /// </summary>
@@ -232,24 +234,24 @@ namespace StiLib.Core
                 return false;
             }
 
-             switch (gd.GraphicsDeviceStatus)
-             {
-                 case GraphicsDeviceStatus.Lost:
-                     return false;
-                 case GraphicsDeviceStatus.NotReset:
-                     try
-                     {
-                         gd.Reset(pp);
-                         return true;
-                     }
-                     catch(Exception e)
-                     {
-                         MessageBox.Show(e.Message, "Error !");
-                         return false;
-                     }
-                 default:
-                     return true;
-             }
+            switch (gd.GraphicsDeviceStatus)
+            {
+                case GraphicsDeviceStatus.Lost:
+                    return false;
+                case GraphicsDeviceStatus.NotReset:
+                    try
+                    {
+                        gd.Reset(pp);
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Error !");
+                        return false;
+                    }
+                default:
+                    return true;
+            }
         }
 
         /// <summary>
@@ -291,6 +293,32 @@ namespace StiLib.Core
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Immediate Draw Tip String
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="bgcolor"></param>
+        /// <param name="position"></param>
+        /// <param name="tip"></param>
+        /// <param name="tipcolor"></param>
+        public void DrawTip(ref Text text, Color bgcolor, Vector2 position, string tip, Color tipcolor)
+        {
+            gd.Clear(bgcolor);
+            text.Draw(position, tip, tipcolor);
+            gd.Present();
+        }
+
+        /// <summary>
+        /// Immediate Draw Tip String
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="bgcolor"></param>
+        /// <param name="tip"></param>
+        public void DrawTip(ref Text text, Color bgcolor, string tip)
+        {
+            DrawTip(ref text, bgcolor, new Vector2(5, 5), tip, Color.Red);
         }
 
 

@@ -25,7 +25,8 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Default SLForm Settings
         /// </summary>
-        public Two_dGrating() : base()
+        public Two_dGrating()
+            : base()
         {
         }
 
@@ -66,7 +67,7 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Initialize()
         {
-            text = new Text(GraphicsDevice, Services, "Content", "Arial");
+            text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
             // Init Experiment Parameter
             ex = new SLExperiment();
@@ -93,7 +94,7 @@ namespace StiLib.Vision.Stimuli
             gpara.BasePara.center = new Vector3(-5.0f, 0.0f, 0.0f);
             gpara.lhcolor = Color.RosyBrown;
             gpara.rlcolor = Color.Blue;
-            Grating[0] = new Grating(GraphicsDevice, Services, "Content", gpara);
+            Grating[0] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
 
             gpara.sf = 1.0f;
             gpara.tf = 2.0f;
@@ -102,7 +103,7 @@ namespace StiLib.Vision.Stimuli
             gpara.BasePara.center = new Vector3(5.0f, 0.0f, 0.0f);
             gpara.lhcolor = Color.Red;
             gpara.rlcolor = Color.GreenYellow;
-            Grating[1] = new Grating(GraphicsDevice, Services, "Content", gpara);
+            Grating[1] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
 
             gratingangle = 90.0f;
         }
@@ -126,59 +127,14 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void MarkHead()
         {
-            // Single Condition
-            if (ex.Cond[0].VALUE.ValueN == 0) 
-            {
-                MarkHead_sdGrating();
-            }
-            else // Multiple Conditions
-            {
-                MarkHead_mdGrating();
-            }
-        }
+            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
 
-        void MarkHead_sdGrating()
-        {
-            ex.Expara.stimuli[0] = 1;
-
-            // Experiment Type Encoding
-            ex.PPort.MarkerEncode(ex.Extype[0].Value);
-            // Condition Parameter Type Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].SKEY);
-            // Condition Number Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
-            // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
-            // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
-
-            // Keywords Group Seperator
-            ex.PPort.MarkerSeparatorEncode();
-
-            // Custom Parameters Encoding
-            for (int i = 0; i < Grating.Length; i++)
-            {
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.tf * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.sf * 100.0));
-                ex.PPort.MarkerEncode((int)Math.Floor((double)Grating[i].Para.direction));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.luminance * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.contrast * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor((Grating[i].Para.BasePara.center.X + 60.0f) * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor((Grating[i].Para.BasePara.center.Y + 60.0f) * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.BasePara.diameter));
-            }
-
-            // End of Header Encoding
-            ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
-        }
-
-        void MarkHead_mdGrating()
-        {
             ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN + 1;
-            ex.Rand.RandomizeSeed();
-            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            if (ex.Expara.stimuli[0] > 1)
+            {
+                ex.Rand.RandomizeSeed();
+                ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            }
 
             // Experiment Type Encoding
             ex.PPort.MarkerEncode(ex.Extype[0].Value);
@@ -197,16 +153,14 @@ namespace StiLib.Vision.Stimuli
             // Custom Parameters Encoding
             for (int i = 0; i < Grating.Length; i++)
             {
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.tf * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.sf * 100.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.luminance * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.contrast * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor((Grating[i].Para.BasePara.center.X + 60.0f) * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor((Grating[i].Para.BasePara.center.Y + 60.0f) * 10.0));
-                ex.PPort.MarkerEncode((int)Math.Floor(Grating[i].Para.BasePara.diameter));
+                Grating[i].Para.Encode(ex.PPort);
             }
-            // Angle Between Direations of Two Drifting Gratings
-            ex.PPort.MarkerEncode((int)Math.Floor((double)gratingangle));
+
+            if (ex.Expara.stimuli[0] > 1)
+            {
+                // Angle Between Direations of Two Drifting Gratings
+                ex.PPort.MarkerEncode((int)Math.Floor((double)gratingangle));
+            }
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
@@ -222,7 +176,7 @@ namespace StiLib.Vision.Stimuli
             if (GO_OVER)
             {
                 // Single Condition
-                if (ex.Cond[0].VALUE.ValueN == 0) 
+                if (ex.Cond[0].VALUE.ValueN == 0)
                 {
                     Update_sdGrating();
                 }

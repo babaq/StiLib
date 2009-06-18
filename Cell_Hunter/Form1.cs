@@ -97,10 +97,10 @@ namespace Cell_Hunter
                 case VSType.Grating:
                     Grating.Draw(GraphicsDevice);
 
-                    Tip = "Diameter: " + Grating.Para.BasePara.diameter.ToString("F1") +
+                    Tip = "Diameter: " + Grating.Para.BasePara.diameter.ToString("F2") +
                     "\nDirection: " + Grating.Para.direction.ToString() +
-                    "\nLocation: [" + Grating.Para.BasePara.center.X.ToString("F1") + ", " + Grating.Para.BasePara.center.Y.ToString("F1") + "]" +
-                    "\nSF: " + Grating.Para.sf.ToString("F1") + " TF: " + Grating.Para.tf.ToString("F1");
+                    "\nLocation: [" + Grating.Para.BasePara.center.X.ToString("F2") + ", " + Grating.Para.BasePara.center.Y.ToString("F2") + "]" +
+                    "\nSF: " + Grating.Para.sf.ToString("F2") + " TF: " + Grating.Para.tf.ToString("F2");
                     Help = "Diameter(W/S) Type(Space)\nSF(D/F) TF(Z/X) Shape(E)\nMask(M) MaskSigma(T/Y)" +
                                 "\nLHColor(R/G/B + Up/Down)\nRLColor(R/G/B + Left/Right)\nAlpha(A + Up/Down)";
 
@@ -108,9 +108,9 @@ namespace Cell_Hunter
                 default:
                     Bar.Draw(GraphicsDevice);
 
-                    Tip = "Width: " + Bar.Para.width.ToString("F1") + " Height: " + Bar.Para.height.ToString("F1") +
+                    Tip = "Width: " + Bar.Para.width.ToString("F2") + " Height: " + Bar.Para.height.ToString("F2") +
                     "\nOrientation: " + Bar.Para.BasePara.orientation.ToString() +
-                    "\nLocation: [" + Bar.Para.BasePara.center.X.ToString("F1") + ", " + Bar.Para.BasePara.center.Y.ToString("F1") + "]";
+                    "\nLocation: [" + Bar.Para.BasePara.center.X.ToString("F2") + ", " + Bar.Para.BasePara.center.Y.ToString("F2") + "]";
                     Help = "Width(A/D) Height(W/S)\nColor(Z/X) BgColor(C/V)\n  ReverseColor(Space)";
 
                     break;

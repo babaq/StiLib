@@ -800,6 +800,21 @@ namespace StiLib.Vision
             get { return new BarPara(BasePara.Default, 3.0f, 1.0f, 0.0f, 10.0f); }
         }
 
+        /// <summary>
+        /// Encode common Bar Parameters in MarkerHeader
+        /// </summary>
+        /// <param name="PPort"></param>
+        public void Encode(ParallelPort PPort)
+        {
+            PPort.MarkerEncode((int)Math.Floor(height * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(width * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((double)BasePara.orientation));
+            PPort.MarkerEncode((int)Math.Floor((double)direction));
+            PPort.MarkerEncode((int)Math.Floor((double)speed * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
+        }
+
 
         /// <summary>
         /// Basic Parameters
@@ -873,6 +888,24 @@ namespace StiLib.Vision
             {
                 return new GratingPara(BasePara.Default, MaskPara.Default, Shape.Circle, GratingType.Sinusoidal, MoveType.Drifting, 0.0f, 2.0f, 0.5f, 0.0f, 0.5f, 1.0f, Color.White, Color.Black, 100);
             }
+        }
+
+        /// <summary>
+        /// Encode common Grating Parameters in MarkerHeader
+        /// </summary>
+        /// <param name="PPort"></param>
+        public void Encode(ParallelPort PPort)
+        {
+            PPort.MarkerEncode((int)Math.Floor(tf * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(sf * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(sphase * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((double)BasePara.orientation));
+            PPort.MarkerEncode((int)Math.Floor((double)direction));
+            PPort.MarkerEncode((int)Math.Floor(luminance * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(contrast * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.diameter * 100.0));
         }
 
 

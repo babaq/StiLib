@@ -71,7 +71,7 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Initialize()
         {
-            text = new Text(GraphicsDevice, Services, "Content", "Arial");
+            text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
             // Init Experiment Parameter
             ex = new SLExperiment();
@@ -131,20 +131,17 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void MarkHead()
         {
+            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
+
             // Single Condition
-            if (ex.Cond[0].VALUE.ValueN == 0)
+            if (ex.Expara.stimuli[0] < 1)
             {
-                MarkHead_sdBar();
+                ex.Expara.stimuli[0] = Rows;
             }
             else // Multiple Conditions
             {
-                MarkHead_mdBar();
+                ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN * Rows;
             }
-        }
-
-        void MarkHead_sdBar()
-        {
-            ex.Expara.stimuli[0] = Rows;
             ex.Rand.RandomizeSeed();
             ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
 
@@ -164,48 +161,13 @@ namespace StiLib.Vision.Stimuli
 
             // Custom Parameters Encoding
             ex.PPort.MarkerEncode(Rows);
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 10.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.direction));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_h_deg));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_w_deg));
-
-            // End of Header Encoding
-            ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
-        }
-
-        void MarkHead_mdBar()
-        {
-            ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN * Rows;
-            ex.Rand.RandomizeSeed();
-            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
-
-            // Experiment Type Encoding
-            ex.PPort.MarkerEncode(ex.Extype[0].Value);
-            // Condition Parameter Type Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].SKEY);
-            // Condition Number Encoding
-            ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
-            // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
-            // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
-
-            // Keywords Group Seperator
-            ex.PPort.MarkerSeparatorEncode();
-
-            // Custom Parameters Encoding
-            ex.PPort.MarkerEncode(Rows);
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_h_deg));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_w_deg));
+            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_h_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_w_deg * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();

@@ -71,7 +71,7 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Initialize()
         {
-            text = new Text(GraphicsDevice, Services, "Content", "Arial");
+            text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
             // Init Experiment Parameter
             ex = new SLExperiment();
@@ -127,6 +127,8 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void MarkHead()
         {
+            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
+
             ex.Expara.stimuli[0] = Rows * Columns * 2;
             ex.Rand.RandomizeSeed();
             ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
@@ -146,15 +148,15 @@ namespace StiLib.Vision.Stimuli
             ex.PPort.MarkerSeparatorEncode();
 
             // Custom Parameters Encoding
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.height * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.width * 10.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.height * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.width * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].Para.BasePara.orientation));
             ex.PPort.MarkerEncode(Rows);
             ex.PPort.MarkerEncode(Columns);
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.X + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.Y + 60.0f) * 10.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_h_deg));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_w_deg));
+            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.X + 60.0f) * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.Y + 60.0f) * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_h_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_w_deg * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
