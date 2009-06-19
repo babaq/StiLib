@@ -156,11 +156,8 @@ namespace StiLib.Vision.Stimuli
                 Grating[i].Para.Encode(ex.PPort);
             }
 
-            if (ex.Expara.stimuli[0] > 1)
-            {
-                // Angle Between Direations of Two Drifting Gratings
-                ex.PPort.MarkerEncode((int)Math.Floor((double)gratingangle));
-            }
+            // Angle Between Direations of Two Drifting Gratings
+            ex.PPort.MarkerEncode((int)Math.Floor(gratingangle * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();

@@ -15,10 +15,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- These tasks are specific to the build process defined in this file, and are not considered general-purpose build tasks. -->
-  <UsingTask TaskName="BuildContent"      AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
-  <UsingTask TaskName="BuildXact"         AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
-  <UsingTask TaskName="CleanContent"      AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
-  <UsingTask TaskName="GetLastOutputs"    AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
+  <UsingTask TaskName="BuildContent"      AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
+  <UsingTask TaskName="BuildXact"         AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
+  <UsingTask TaskName="CleanContent"      AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
+  <UsingTask TaskName="GetLastOutputs"    AssemblyName="Microsoft.Xna.Framework.Content.Pipeline, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d"/>
 
   <!-- These help detect whether a project has customized the build rules in a potentially unsafe way. -->
   <PropertyGroup>

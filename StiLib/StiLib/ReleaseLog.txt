@@ -8,6 +8,7 @@ Version 1.0.7.0----2010_12_15
         Visual Looming
         Visual Disparity
     Change:
+        Upgrade to XNA 3.1
     Fix:
 ---------------------------------------------------------------------
 Version 1.0.6.0----2009_04_30

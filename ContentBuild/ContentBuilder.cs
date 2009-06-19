@@ -20,7 +20,7 @@ namespace ContentBuild
         #region Fields
 
         // What importers or processors should we load?
-        const string xnaVersion = ", Version=3.0.0.0, PublicKeyToken=6d5c3888ef60e27d";
+        const string xnaVersion = ", Version=3.1.0.0, PublicKeyToken=6d5c3888ef60e27d";
 
         static string[] pipelineAssemblies =
         {
@@ -29,6 +29,7 @@ namespace ContentBuild
             "Microsoft.Xna.Framework.Content.Pipeline.XImporter" + xnaVersion,
             "Microsoft.Xna.Framework.Content.Pipeline.TextureImporter" + xnaVersion,
             "Microsoft.Xna.Framework.Content.Pipeline.EffectImporter" + xnaVersion,
+            "Microsoft.Xna.Framework.Content.Pipeline.VideoImporters" + xnaVersion,
         };
 
         // MSBuild objects used to dynamically build content.
@@ -128,7 +129,7 @@ namespace ContentBuild
             msBuildProject.FullFileName = projectPath;
 
             msBuildProject.SetProperty("XnaPlatform", "Windows");
-            msBuildProject.SetProperty("XnaFrameworkVersion", "v3.0");
+            msBuildProject.SetProperty("XnaFrameworkVersion", "v3.1");
             msBuildProject.SetProperty("Configuration", "Release");
             msBuildProject.SetProperty("OutputPath", outputPath);
 
@@ -140,7 +141,7 @@ namespace ContentBuild
 
             // Include the standard targets file that defines
             // how to build XNA Framework content.
-            //msBuildProject.AddNewImport("$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.0" +
+            //msBuildProject.AddNewImport("$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.1" +
             //                                                  "\\Microsoft.Xna.GameStudio.ContentPipeline.targets", null);
             msBuildProject.AddNewImport(Directory.GetCurrentDirectory() +
                                                          "\\Microsoft.Xna.GameStudio.ContentPipeline.targets", null);
@@ -238,7 +239,13 @@ namespace ContentBuild
         /// </summary>
         void DeleteTempDirectory()
         {
-            Directory.Delete(buildDirectory, true);
+            try
+            {
+                Directory.Delete(buildDirectory, true);
+            }
+            catch
+            {
+            }
 
             // If there are no other instances of ContentBuilder still using their
             // own temp directories, we can delete the process directory as well.

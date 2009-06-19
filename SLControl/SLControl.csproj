@@ -14,6 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>
     </ApplicationIcon>
+    <XnaFrameworkVersion>v3.1</XnaFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,7 +38,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Release\MediaFoundation.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="StiLib, Version=1.0.5.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\StiLib\StiLib\bin\x86\Release\StiLib.dll</HintPath>

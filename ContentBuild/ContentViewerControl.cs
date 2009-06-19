@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using StiLib.Core;
 
 namespace ContentBuild
@@ -16,6 +17,8 @@ namespace ContentBuild
     {
         Model model;
         Texture2D texture;
+        Video video;
+        VideoPlayer vplayer;
         SpriteFont spritefont;
         SoundEffect soundeffect;
         string FontShow = "This is how the currently builded SpriteFont looks like !";
@@ -86,7 +89,23 @@ namespace ContentBuild
                 soundeffect = value;
                 if (soundeffect != null)
                 {
-                    soundeffect.Play(1.0f, 0.0f, 0.0f, true);
+                    soundeffect.Play(1.0f, 0.0f, 0.0f);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Current Video
+        /// </summary>
+        public Video Video
+        {
+            get { return video; }
+            set
+            {
+                video = value;
+                if (video != null)
+                {
+                    MeasureVideo();
                 }
             }
         }
@@ -98,6 +117,7 @@ namespace ContentBuild
         protected override void Initialize()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            vplayer = new VideoPlayer();
             timer = Stopwatch.StartNew();
 
             // Hook the idle event to constantly redraw our animation.
@@ -161,6 +181,26 @@ namespace ContentBuild
                 spriteBatch.DrawString(spritefont, FontShow, textureposition, Color.Pink);
                 spriteBatch.End();
             }
+
+            if (video != null)
+            {
+                if (vplayer.State == Microsoft.Xna.Framework.Media.MediaState.Stopped)
+                {
+                    vplayer.IsLooped = true;
+                    vplayer.Play(video);
+                }
+                else
+                {
+                    texture = vplayer.GetTexture();
+                }
+
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, textureposition, Color.White);
+                    spriteBatch.End();
+                }
+            }
         }
 
         /// <summary>
@@ -172,6 +212,7 @@ namespace ContentBuild
             texture = null;
             spritefont = null;
             soundeffect = null;
+            video = null;
         }
 
 
@@ -228,6 +269,14 @@ namespace ContentBuild
         {
             Vector2 FontShowSize = spritefont.MeasureString(FontShow);
             textureposition = new Vector2(ClientSize.Width / 2 - FontShowSize.X / 2, ClientSize.Height / 2 - FontShowSize.Y / 2);
+        }
+
+        /// <summary>
+        /// Examine Video's size and get the texture position.
+        /// </summary>
+        void MeasureVideo()
+        {
+            textureposition = new Vector2(ClientSize.Width / 2 - video.Width / 2, ClientSize.Height / 2 - video.Height / 2);
         }
 
     }

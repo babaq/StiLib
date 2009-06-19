@@ -54,8 +54,8 @@ type ExRF_fBar_Fast() = class
     member self.Deterministic_Loop() = 
         self.ex.PPort.timer.ReStart()
         // Our Custom Loop
-        for i = 1 to self.ex.Expara.trial do
-            for j = 1 to self.ex.Expara.stimuli.[0] do
+        for i = 0 to self.ex.Expara.trial - 1 do
+            for j = 0 to self.ex.Expara.stimuli.[0] - 1 do
                 // Stimulus Onset
                 self.ex.PPort.Trigger()
                 

@@ -116,7 +116,8 @@ namespace StiLib.Vision
         /// Init to default settings -- distance2display:570mm, displayratio:1.333, displaysize:20inch, 
         /// fullscreen_w_p:800, fullscreen_h_p:600, camera:default, unit:Deg
         /// </summary>
-        public VisionStimulus() : this(570, 1.333f, 20, 800, 600, new SLCamera(), Unit.Deg)
+        public VisionStimulus()
+            : this(570, 1.333f, 20, 800, 600, new SLCamera(), Unit.Deg)
         {
         }
 
@@ -125,7 +126,8 @@ namespace StiLib.Vision
         /// and current GraphicsDevice fullscreen resolution and viewport
         /// </summary>
         /// <param name="gd"></param>
-        public VisionStimulus(GraphicsDevice gd) : this(570, 1.333f, 20, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), Unit.Deg)
+        public VisionStimulus(GraphicsDevice gd)
+            : this(570, 1.333f, 20, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), Unit.Deg)
         {
         }
 
@@ -137,7 +139,8 @@ namespace StiLib.Vision
         /// <param name="size"></param>
         /// <param name="gd"></param>
         /// <param name="u"></param>
-        public VisionStimulus(float distance, float ratio, float size, GraphicsDevice gd, Unit u) : this(distance, ratio, size, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), u)
+        public VisionStimulus(float distance, float ratio, float size, GraphicsDevice gd, Unit u)
+            : this(distance, ratio, size, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), u)
         {
         }
 
@@ -224,7 +227,7 @@ namespace StiLib.Vision
         /// <param name="u">Global Unit</param>
         public void InitVS(float distance, float ratio, float size, int fullscreen_w_p, int fullscreen_h_p, SLCamera cam, Unit u)
         {
-            if ((view_w_pixel!=fullscreen_w_p)||(view_h_pixel!=fullscreen_h_p)||(distance2display!=distance)||(displayratio!=ratio)||(displaysize!=size)||(!gcamera.Equals(cam))||(unit!=u))
+            if ((view_w_pixel != fullscreen_w_p) || (view_h_pixel != fullscreen_h_p) || (distance2display != distance) || (displayratio != ratio) || (displaysize != size) || (!gcamera.Equals(cam)) || (unit != u))
             {
                 SetConfigPara(distance, ratio, size, fullscreen_w_p, fullscreen_h_p, cam, u);
                 Config();
@@ -362,7 +365,7 @@ namespace StiLib.Vision
         /// </summary>
         public static BasePara Default
         {
-            get 
+            get
             {
                 return new BasePara(Vector3.Zero, 10.0f, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, Color.White, true);
             }
@@ -808,9 +811,9 @@ namespace StiLib.Vision
         {
             PPort.MarkerEncode((int)Math.Floor(height * 100.0));
             PPort.MarkerEncode((int)Math.Floor(width * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((double)BasePara.orientation));
-            PPort.MarkerEncode((int)Math.Floor((double)direction));
-            PPort.MarkerEncode((int)Math.Floor((double)speed * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(direction * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(speed * 100.0));
             PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
             PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
         }
@@ -899,8 +902,8 @@ namespace StiLib.Vision
             PPort.MarkerEncode((int)Math.Floor(tf * 100.0));
             PPort.MarkerEncode((int)Math.Floor(sf * 100.0));
             PPort.MarkerEncode((int)Math.Floor(sphase * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((double)BasePara.orientation));
-            PPort.MarkerEncode((int)Math.Floor((double)direction));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(direction * 100.0));
             PPort.MarkerEncode((int)Math.Floor(luminance * 100.0));
             PPort.MarkerEncode((int)Math.Floor(contrast * 100.0));
             PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));

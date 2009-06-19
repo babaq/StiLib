@@ -134,7 +134,7 @@ namespace StiLib.Vision.Stimuli
             DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
 
             // Single Condition
-            if (ex.Expara.stimuli[0] < 1)
+            if (ex.Cond[0].VALUE.ValueN == 0)
             {
                 ex.Expara.stimuli[0] = Rows;
             }
@@ -162,12 +162,12 @@ namespace StiLib.Vision.Stimuli
             // Custom Parameters Encoding
             ex.PPort.MarkerEncode(Rows);
             ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.direction));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.Para.speed * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.direction * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.speed * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_h_deg * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar.view_w_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar.view_h_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar.view_w_deg * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();

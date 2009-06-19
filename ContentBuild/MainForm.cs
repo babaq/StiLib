@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace ContentBuild
 {
@@ -51,6 +52,7 @@ namespace ContentBuild
                                 "Font Files (*.spritefont)|*.spritefont|" +
                                 "Effect Files (*.fx)|*.fx|" +
                                 "Sound Files (*.mp3;*.wav;*.wma)|*.mp3;*.wav;*.wma)|" +
+                                "Video Files (*.wmv)|*.wmv|" +
                                 "All Files (*.*)|*.*";
 
             if (openfileDialog.ShowDialog() == DialogResult.OK)
@@ -130,6 +132,9 @@ namespace ContentBuild
                 case "wma":
                     contentBuilder.Add(fileName, contentName, null, "SoundEffectProcessor");
                     break;
+                case "wmv":
+                    contentBuilder.Add(fileName, contentName, null, "VideoProcessor");
+                    break;
                 default:
                     MessageBox.Show("Content Type Not Supported !", "Error");
                     Cursor = Cursors.Arrow;
@@ -172,6 +177,9 @@ namespace ContentBuild
                     case "wav":
                     case "wma":
                         contentViewerControl.SoundEffect = contentManager.Load<SoundEffect>(contentName);
+                        break;
+                    case "wmv":
+                        contentViewerControl.Video = contentManager.Load<Video>(contentName);
                         break;
                 }
             }

@@ -14,7 +14,8 @@ namespace Cell_Hunter
 {
     public partial class Form1 : SLForm
     {
-        public Form1() : base(1024, 768, 120, true, false)
+        public Form1()
+            : base(1024, 768, 120, true, false)
         {
         }
 
@@ -40,8 +41,8 @@ namespace Cell_Hunter
             Input = new SLInput();
 
             BarPara bpara = BarPara.Default;
-            bpara.width = 5.0f;
-            bpara.height = 1.0f;
+            bpara.width = 4.5f;
+            bpara.height = 0.9f;
             bpara.BasePara.orientation = 90.0f;
             Bar = new Bar(GraphicsDevice, bpara);
 
@@ -98,7 +99,7 @@ namespace Cell_Hunter
                     Grating.Draw(GraphicsDevice);
 
                     Tip = "Diameter: " + Grating.Para.BasePara.diameter.ToString("F2") +
-                    "\nDirection: " + Grating.Para.direction.ToString() +
+                    "\nDirection: " + Grating.Para.direction.ToString("F1") +
                     "\nLocation: [" + Grating.Para.BasePara.center.X.ToString("F2") + ", " + Grating.Para.BasePara.center.Y.ToString("F2") + "]" +
                     "\nSF: " + Grating.Para.sf.ToString("F2") + " TF: " + Grating.Para.tf.ToString("F2");
                     Help = "Diameter(W/S) Type(Space)\nSF(D/F) TF(Z/X) Shape(E)\nMask(M) MaskSigma(T/Y)" +
@@ -109,7 +110,7 @@ namespace Cell_Hunter
                     Bar.Draw(GraphicsDevice);
 
                     Tip = "Width: " + Bar.Para.width.ToString("F2") + " Height: " + Bar.Para.height.ToString("F2") +
-                    "\nOrientation: " + Bar.Para.BasePara.orientation.ToString() +
+                    "\nOrientation: " + Bar.Para.BasePara.orientation.ToString("F1") +
                     "\nLocation: [" + Bar.Para.BasePara.center.X.ToString("F2") + ", " + Bar.Para.BasePara.center.Y.ToString("F2") + "]";
                     Help = "Width(A/D) Height(W/S)\nColor(Z/X) BgColor(C/V)\n  ReverseColor(Space)";
 

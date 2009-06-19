@@ -31,6 +31,7 @@ namespace StiLibTest
         public SLLogger logger;
         public FrameInfo frameinfo;
         public SLAudio audio;
+        public SLVideo video;
 
         public Bar bar;
         public Grating grating;
@@ -54,7 +55,7 @@ namespace StiLibTest
             timer.Start();
             logger = new SLLogger();
             frameinfo = new FrameInfo();
-            audio = new SLAudio("Content\\StiLib", "Content\\SLMWB", "Content\\SLSWB", "Content\\SLSB");
+            audio = new SLAudio(SLConfig["content"] + "StiLib", SLConfig["content"] + "SLMWB", SLConfig["content"] + "SLSWB", SLConfig["content"] + "SLSB");
             audio.Update();
             audio.StartBgMusic("BgMusic");
 
@@ -84,6 +85,7 @@ namespace StiLibTest
             image = new Image(GraphicsDevice, Services, "Content", "Turtle");
             quad = new SLQuad(GraphicsDevice, Services, "Content", "StiLib_Logo");
             model = new SLModel(GraphicsDevice, Services, "Content", "earth");
+            video = new SLVideo(GraphicsDevice, Services, "Content", "Butterfly");
 
             points = new Primitive(GraphicsDevice, PrimitivePara.Default);
             circle = new Primitive(GraphicsDevice, PrimitivePara.Circle(5f, Color.Gray, Vector3.Zero, 100, false));
@@ -107,9 +109,15 @@ namespace StiLibTest
 
             if (GO_OVER)
             {
+                audio.PauseAll();
+                video.Play();
+                video.Draw();
             }
             else
             {
+                audio.Resume();
+                video.Stop();
+
                 bar.Draw(GraphicsDevice);
 
                 grating.SetTime((float)timer.ElapsedSeconds);

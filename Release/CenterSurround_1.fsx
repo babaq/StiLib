@@ -105,9 +105,10 @@ type MyEx = class
                 if this.ex.Flow.CCount = 0 then
                     this.sgrating.SetVisible(false)
                 else
-                    this.sgrating.SetVisible(true)
                     this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad + float32(this.ex.Flow.CCount - 1) * float32 Math.PI / float32( this.ex.Cond.[1].VALUE.ValueN - 1 )) * Matrix.CreateTranslation(this.sgrating.Para.BasePara.center)
                     this.sgrating.SetWorld(this.ex.Flow.Translate)
+                    this.sgrating.SetVisible(true)
+                    
             this.cgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
             this.sgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
         else

@@ -34,9 +34,9 @@ type MyEx = class
         then
         this.timer.Start()
         this.audio <- new SLAudio(this.SLConfig.["content"] + "StiLib", 
-                                                this.SLConfig.["content"] + "SLMWB", 
-                                                this.SLConfig.["content"] + "SLSWB", 
-                                                this.SLConfig.["content"] + "SLSB")
+                                               this.SLConfig.["content"] + "SLMWB", 
+                                               this.SLConfig.["content"] + "SLSWB", 
+                                               this.SLConfig.["content"] + "SLSB")
         this.audio.Update()
         this.audio.StartBgMusic("BgMusic")
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "ArialLarge")

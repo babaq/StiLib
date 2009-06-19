@@ -42,6 +42,7 @@ namespace SLControl
             }
         }
 
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -52,7 +53,10 @@ namespace SLControl
                     break;
 
                 case WM_SIZE:
-                    MFPlayer.ResizeVideo((short)(m.LParam.ToInt32() & 65535), (short)(m.LParam.ToInt32() >> 16));
+                    if (MFPlayer != null)
+                    {
+                        MFPlayer.ResizeVideo((short)(m.LParam.ToInt32() & 65535), (short)(m.LParam.ToInt32() >> 16));
+                    }
                     break;
 
                 case WM_CHAR:

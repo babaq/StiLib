@@ -148,11 +148,8 @@ namespace StiLib.Vision.Stimuli
                 Bar[i].Para.Encode(ex.PPort);
             }
 
-            if (ex.Expara.stimuli[0] > 1)
-            {
-                // Angle Between Direations of Two Drifting Bars
-                ex.PPort.MarkerEncode((int)Math.Floor((double)barangle));
-            }
+            // Angle Between Direations of Two Drifting Bars
+            ex.PPort.MarkerEncode((int)Math.Floor(barangle * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();

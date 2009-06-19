@@ -150,13 +150,13 @@ namespace StiLib.Vision.Stimuli
             // Custom Parameters Encoding
             ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.height * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.width * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].Para.BasePara.orientation));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.BasePara.orientation * 100.0));
             ex.PPort.MarkerEncode(Rows);
             ex.PPort.MarkerEncode(Columns);
             ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.X + 60.0f) * 100.0));
             ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.Y + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_h_deg * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((double)Bar[0].view_w_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].view_h_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].view_w_deg * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();

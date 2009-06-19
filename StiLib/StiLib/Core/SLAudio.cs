@@ -250,6 +250,7 @@ namespace StiLib.Core
             {
                 bgMusic = soundBank.GetCue(bgMusic.Name);
                 bgMusic.Play();
+                activeCues.Add(bgMusic);
             }
 
             // Remove cues from the activeCues list which have stopped.
@@ -297,7 +298,7 @@ namespace StiLib.Core
             }
         }
 
-        
+
         /// <summary>
         /// Sets the value of a global variable.
         /// </summary>
@@ -366,7 +367,7 @@ namespace StiLib.Core
             }
         }
 
-        
+
         /// <summary>
         /// Plays a cue
         /// </summary>
@@ -485,6 +486,7 @@ namespace StiLib.Core
             }
             bgMusic = soundBank.GetCue(bgmusic_cue);
             bgMusic.Play();
+            activeCues.Add(bgMusic);
         }
 
         /// <summary>

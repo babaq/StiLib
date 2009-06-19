@@ -37,8 +37,8 @@
     <IndentHtml>True</IndentHtml>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>Class Library Reference</RootNamespaceTitle>
-    <HelpFileVersion>1.0.6.0</HelpFileVersion>
-    <CopyrightHref>http://www.codeplex.com/StiLib</CopyrightHref>
+    <HelpFileVersion>1.0.6.5</HelpFileVersion>
+    <CopyrightHref>http://stilib.codeplex.com</CopyrightHref>
     <ComponentConfigurations>
       <ComponentConfig id="Cached MSDN URL References" enabled="True" xmlns="">
         <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">

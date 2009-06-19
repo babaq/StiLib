@@ -129,7 +129,8 @@ namespace StiLib.Core
         /// <summary>
         /// Init to default random sequence length: 2000
         /// </summary>
-        public SLRandom() : this(2000)
+        public SLRandom()
+            : this(2000)
         {
         }
 
@@ -193,7 +194,7 @@ namespace StiLib.Core
                     break;
                 case RandomMethod.None:
                     method = RandomMethod.None;
-                    MessageBox.Show("Randomize Seed First !","Warning !");
+                    MessageBox.Show("Randomize Seed First !", "Warning !");
                     break;
             }
         }
@@ -335,7 +336,7 @@ namespace StiLib.Core
 
         #endregion
 
-        
+
         /// <summary>
         /// Init WinIo Library
         /// </summary>
@@ -348,7 +349,7 @@ namespace StiLib.Core
             catch (Exception e)
             {
                 MessageBox.Show(e.Message.ToString(), "WinIO Initialization Failed !");
-            } 
+            }
         }
 
         /// <summary>
@@ -492,6 +493,62 @@ namespace StiLib.Core
             timer.Rest(0.002);
         }
 
+        /// <summary>
+        /// Transfer a Binary Stream
+        /// </summary>
+        /// <param name="bins"></param>
+        public void BinaryEncode(string bins)
+        {
+            // Start Flag(<5ms Pulse Interval)
+            Trigger();
+            timer.Rest(0.001);
+            Trigger();
+            timer.Rest(0.004);
+            // Binary Stream
+            for (int i = 0; i < bins.Length; i++)
+            {
+                if (bins[i] == '1')
+                {
+                    Trigger();
+                    timer.Rest(0.004);
+                }
+                else
+                {
+                    timer.Rest(0.005);
+                }
+            }
+            // End Flag(<5ms Pulse Interval)
+            Trigger();
+            timer.Rest(0.001);
+            Trigger();
+            timer.Rest(0.004);
+        }
+
+        /// <summary>
+        /// Decode a Pulse Train to Binary Stream
+        /// </summary>
+        /// <param name="plusetime"></param>
+        /// <returns></returns>
+        public string BinaryDecode(double[] plusetime)
+        {
+            string bins = "";
+            int begin = 0;
+            bool end = true;
+            for (int i = 0; i < plusetime.Length - 1; i++)
+            {
+                var digit = (int)Math.Floor((plusetime[i + 1] - plusetime[i]) / 0.005);
+                if (digit == 0)
+                {
+                    begin = i;
+                    end = !end;
+                }
+                if (i > begin && !end)
+                {
+                    bins += "1".PadLeft(digit, '0');
+                }
+            }
+            return bins;
+        }
     }
 
     /// <summary>

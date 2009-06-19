@@ -66,7 +66,7 @@
               
               <step>
               <content>
-                <para><token>IronPython</token> (2.6)</para>
+                <para><token>IronPython</token> (2.6 beta)</para>
               </content>
             </step>
           </steps>
@@ -76,7 +76,7 @@
         <para><legacyBold>StiLib is just a standard .NET assembly in a Dynamic Link Library (DLL), 
         you can donwload the release package, which has some other dependent DLLs and resources, and use it directly.</legacyBold>
         </para>
-        <para><legacyItalic>To build StiLib from source, you need Visual Studio 2008 or Visual C# 2008 Express and <token>XNA</token> Game Studio 3.0.</legacyItalic>
+        <para><legacyItalic>To build StiLib from source, you need Visual Studio 2008 or Visual C# 2008 Express and <token>XNA</token> Game Studio 3.1.</legacyItalic>
         </para>
     <!-- Optional next steps info
     <nextSteps>
