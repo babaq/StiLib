@@ -20,7 +20,6 @@ namespace Cell_Hunter
         }
 
         Text SLText;
-        Matrix World;
         SLTimer Timer;
         SLInput Input;
         Bar Bar;
@@ -35,24 +34,29 @@ namespace Cell_Hunter
 
         protected override void Initialize()
         {
-            SLText = new Text(GraphicsDevice, Services, "Content", "Arial");
+            SLText = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
             Timer = new SLTimer();
             Timer.Start();
             Input = new SLInput();
 
             BarPara bpara = BarPara.Default;
-            bpara.width = 4.5f;
-            bpara.height = 0.9f;
+            bpara.width = 3.5f;
+            bpara.height = 0.7f;
             bpara.BasePara.orientation = 90.0f;
             Bar = new Bar(GraphicsDevice, bpara);
 
-            Grating = new Grating(GraphicsDevice, Services, "Content", GratingPara.Default);
+            GratingPara gpara = GratingPara.Default;
+            gpara.BasePara.diameter = 2.0f;
+            gpara.sf = 0.8f;
+            gpara.tf = 3.0f;
+            Grating = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
             GratingType = Grating.Para.gratingtype;
             GratingShape = Grating.Para.shape;
-            GratingMask = Grating.Para.maskpara.MaskType;
+            GratingMask = Grating.Para.maskpara.masktype;
+
             Cross = new Primitive(GraphicsDevice, PrimitivePara.Cross(1.0f, Color.Black, Vector3.Zero));
 
-            Bgcolor = Color.Black;
+            Bgcolor = Color.DimGray;
             CurrentSti = VSType.Bar;
             HelpText = 0;
         }
@@ -62,16 +66,21 @@ namespace Cell_Hunter
             Input.Update();
 
             // Show Help Text
-            if (Input.IsKeyPressed(Keys.Tab))
+            if (Input.IsKeyPressed(Keys.F1))
             {
                 HelpText += 1;
                 if (HelpText > 2) HelpText = 0;
+            }
+            // Toggle Full Screen
+            if (Input.IsKeyPressed(Keys.F2))
+            {
+                ToggleFullScreen();
             }
             // Change Stimulus
             if (Input.IsKeyPressed(Keys.Q))
             {
                 CurrentSti += 1;
-                if ((int)CurrentSti > 1) CurrentSti = 0;
+                if ((int)CurrentSti > 2) CurrentSti = VSType.Bar;
             }
 
             Refresh_Location();
@@ -99,7 +108,7 @@ namespace Cell_Hunter
                     Grating.Draw(GraphicsDevice);
 
                     Tip = "Diameter: " + Grating.Para.BasePara.diameter.ToString("F2") +
-                    "\nDirection: " + Grating.Para.direction.ToString("F1") +
+                    "\nDirection: " + Grating.Para.BasePara.direction.ToString("F1") +
                     "\nLocation: [" + Grating.Para.BasePara.center.X.ToString("F2") + ", " + Grating.Para.BasePara.center.Y.ToString("F2") + "]" +
                     "\nSF: " + Grating.Para.sf.ToString("F2") + " TF: " + Grating.Para.tf.ToString("F2");
                     Help = "Diameter(W/S) Type(Space)\nSF(D/F) TF(Z/X) Shape(E)\nMask(M) MaskSigma(T/Y)" +
@@ -117,12 +126,12 @@ namespace Cell_Hunter
                     break;
             }
 
-            Cross.IndexDraw(GraphicsDevice, PrimitiveType.LineList);
+            Cross.Draw(GraphicsDevice);
 
             if (HelpText < 2)
             {
                 SLText.Draw(Tip);
-                SLText.Draw(new Vector2(5, GraphicsDevice.Viewport.Height - 25), "Help(Tab) / Stimulus(Q)", Color.SkyBlue);
+                SLText.Draw(new Vector2(5, GraphicsDevice.Viewport.Height - 25), "Help(F1) / ToggleFullScreen(F2) / Stimulus(Q)", Color.SkyBlue);
 
                 if (HelpText > 0)
                 {
@@ -180,9 +189,8 @@ namespace Cell_Hunter
             {
                 Bar.Para.BasePara.orientation = (Bar.Para.BasePara.orientation - 1.0f) % 180;
             }
-            World = Matrix.CreateRotationZ((float)(Bar.Para.BasePara.orientation * Math.PI / 180.0)) *
-                        Matrix.CreateTranslation(Bar.Para.BasePara.center);
-            Bar.SetWorld(World);
+            Bar.Ori3DMatrix = Matrix.CreateRotationZ((float)(Bar.Para.BasePara.orientation * Math.PI / 180.0));
+            Bar.WorldMatrix = Matrix.CreateTranslation(Bar.Para.BasePara.center);
         }
 
         void Bar_Scale()
@@ -221,7 +229,7 @@ namespace Cell_Hunter
             }
             if (Input.IsKeyPressed(Keys.Space))
             {
-                Color c = Bar.barvertex[0].Color;
+                Color c = Bar.VertexArray[0].Color;
                 Bar.SetColor(Bgcolor);
                 Bgcolor = c;
             }
@@ -241,16 +249,14 @@ namespace Cell_Hunter
         {
             if (Input.IsMouseLeftButtonDown())
             {
-                Grating.Para.direction = (Grating.Para.direction + 1.0f) % 360;
+                Grating.Para.BasePara.direction = (Grating.Para.BasePara.direction + 1.0f) % 360;
             }
             if (Input.IsMouseRightButtonDown())
             {
-                Grating.Para.direction = (Grating.Para.direction - 1.0f) % 360;
+                Grating.Para.BasePara.direction = (Grating.Para.BasePara.direction - 1.0f) % 360;
             }
-
-            World = Matrix.CreateRotationZ((float)(Grating.Para.direction * Math.PI / 180.0)) *
-                         Matrix.CreateTranslation(Grating.Para.BasePara.center);
-            Grating.SetWorld(World);
+            Grating.Ori3DMatrix = Matrix.CreateRotationZ((float)(Grating.Para.BasePara.direction * Math.PI / 180.0));
+            Grating.WorldMatrix = Matrix.CreateTranslation(Grating.Para.BasePara.center);
             Grating.SetTime((float)Timer.ElapsedSeconds);
         }
 
@@ -296,7 +302,7 @@ namespace Cell_Hunter
             }
             if (Input.IsKeyPressed(Keys.E))
             {
-                if ((int)GratingShape == 6)
+                if (GratingShape == Shape.Quadrate )
                 {
                     GratingShape = Shape.Circle;
                 }
@@ -314,11 +320,11 @@ namespace Cell_Hunter
             }
             if (Input.IsKeyDown(Keys.T))
             {
-                Grating.SetSigma(Grating.Para.maskpara.BasePara.diameter * 1.01f);
+                Grating.SetGaussianSigma(Grating.Para.maskpara.BasePara.diameter * 1.01f);
             }
             if (Input.IsKeyDown(Keys.Y))
             {
-                Grating.SetSigma(Grating.Para.maskpara.BasePara.diameter * 0.99f);
+                Grating.SetGaussianSigma(Grating.Para.maskpara.BasePara.diameter * 0.99f);
             }
         }
 

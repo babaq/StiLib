@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // Primitive.cs
 //
-// StiLib Visual Primitive
+// StiLib Visual Primitive Stimulus
 // Copyright (c) Zhang Li. 2009-01-14.
 //-----------------------------------------------------------------------------
 #endregion
@@ -12,50 +12,86 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using StiLib.Core;
 #endregion
 
 namespace StiLib.Vision
 {
     /// <summary>
-    /// Visual Primitive Class using VertexPositionColor
+    /// StiLib Visual Primitive Using VertexPositionColor
     /// </summary>
     public class Primitive : VisionStimulus
     {
         #region Fields
 
-        PrimitivePara Para;
-        VertexDeclaration pvdec;
-        VertexBuffer vbuffer;
-        IndexBuffer ibuffer;
-        BasicEffect basiceffect;
+        /// <summary>
+        /// Primitive Parameters
+        /// </summary>
+        public PrimitivePara Para;
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Primitive Parameters
+        /// Primitive Basic Parameters
         /// </summary>
-        public PrimitivePara PPara
+        public override vsBasePara BasePara
         {
-            get { return Para; }
-            set { Para = value; }
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
         }
 
         /// <summary>
-        /// Primitive Basic Effect
+        /// Center
         /// </summary>
-        public BasicEffect Effect
+        public override Vector3 Center
         {
-            get { return basiceffect; }
-            set { basiceffect = value; }
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
+        }
+
+        /// <summary>
+        /// Primitive Vertex Array
+        /// </summary>
+        public override VertexPositionColor[] VertexArray
+        {
+            get { return Para.vertices; }
+            set { Para.vertices = value; }
+        }
+
+        /// <summary>
+        /// Primitive Index Array
+        /// </summary>
+        public override int[] IndexArray
+        {
+            get { return Para.indices; }
+            set { Para.indices = value; }
         }
 
         #endregion
 
 
         /// <summary>
-        /// Set primitive parameters to default before Init()
+        /// Sets default PrimitivePara, need Init()
         /// </summary>
         public Primitive()
         {
@@ -63,22 +99,56 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Init to default
+        /// Init with Default PrimitivePara
         /// </summary>
         /// <param name="gd"></param>
-        public Primitive(GraphicsDevice gd) : this()
+        public Primitive(GraphicsDevice gd)
+            : base(gd)
         {
+            Para = PrimitivePara.Default;
             Init(gd);
         }
 
         /// <summary>
-        /// Init to custom settings
+        /// Init with Custom PrimitivePara
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="Ppara"></param>
-        public Primitive(GraphicsDevice gd, PrimitivePara Ppara) : base(gd)
+        /// <param name="primitivepara"></param>
+        public Primitive(GraphicsDevice gd, PrimitivePara primitivepara)
+            : base(gd)
         {
-            Init(gd, Ppara);
+            Para = primitivepara;
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom PrimitivePara and Configuration
+        /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        /// <param name="gd"></param>
+        /// <param name="primitivepara"></param>
+        public Primitive(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, PrimitivePara primitivepara)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = primitivepara;
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom PrimitivePara and StiLib Configuration File
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="primitivepara"></param>
+        public Primitive(GraphicsDevice gd, AssemblySettings slconfig, PrimitivePara primitivepara)
+            : base(gd, slconfig)
+        {
+            Para = primitivepara;
+            Init(gd);
         }
 
 
@@ -88,173 +158,121 @@ namespace StiLib.Vision
         /// <param name="gd"></param>
         public override void Init(GraphicsDevice gd)
         {
-            // Give default constuctor a chance to correct fullscreen resolution and visual configuration
             InitVS(gd);
 
-            // Get buffer data ready
-            pvdec = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
-            vbuffer = new VertexBuffer(gd, VertexPositionColor.SizeInBytes * Para.vertices.Length, BufferUsage.None);
-            vbuffer.SetData<VertexPositionColor>(Para.vertices);
-            ibuffer = new IndexBuffer(gd, sizeof(int) * Para.indices.Length, BufferUsage.None, IndexElementSize.ThirtyTwoBits);
-            ibuffer.SetData<int>(Para.indices);
+            vertexDeclaration = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
+            SetVertexBuffer(gd);
+            SetIndexBuffer(gd);
 
-            // Get BasicEffect ready
-            basiceffect = new BasicEffect(gd, null);
-            basiceffect.VertexColorEnabled = true;
+            // Get BasicEffect Ready
+            basicEffect = new BasicEffect(gd, null);
+            basicEffect.VertexColorEnabled = true;
 
-            basiceffect.World = Matrix.CreateFromYawPitchRoll(Para.BasePara.orientation3d.Y,
-                                                                                        Para.BasePara.orientation3d.X,
-                                                                                        Para.BasePara.orientation3d.Z) * Matrix.CreateTranslation(Para.BasePara.center);
-            basiceffect.View = GlobalView();
-            basiceffect.Projection = GlobalProj();
+            ori3DMatrix = GetOri3DMatrix(Para.BasePara.orientation3D);
+            worldMatrix = Matrix.CreateTranslation(Para.BasePara.center);
+            ViewMatrix = ViewMatrix;
+            ProjectionMatrix = ProjectionMatrix;
         }
 
         /// <summary>
         /// Init according to custom primitive parameters
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="para"></param>
-        public void Init(GraphicsDevice gd, PrimitivePara para)
+        /// <param name="primitivepara"></param>
+        public void Init(GraphicsDevice gd, PrimitivePara primitivepara)
         {
-            Para = para;
+            primitivepara.BasePara.contentname = Para.BasePara.contentname;
+            Para = primitivepara;
             Init(gd);
         }
 
         /// <summary>
-        /// Draw Primitive's all vertices according to vertexbuffer
+        /// Draw Total Primitive according to indexbuffer and internal primitive type
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="ptype"></param>
-        public void VertexDraw(GraphicsDevice gd, PrimitiveType ptype)
+        public override void Draw(GraphicsDevice gd)
         {
-            Draw(gd, false, ptype, 0, Para.vertices.Length);
+            IndexDraw(gd, Para.BasePara.primitivetype);
         }
 
         /// <summary>
-        /// Draw Primitive's all vertices according to indexbuffer
+        /// Draw Total Primitive using vertexbuffer
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="ptype"></param>
-        public void IndexDraw(GraphicsDevice gd, PrimitiveType ptype)
+        /// <param name="primitivetype"></param>
+        public void VertexDraw(GraphicsDevice gd, PrimitiveType primitivetype)
         {
-            Draw(gd, true, ptype, 0, Para.indices.Length);
+            VertexDraw(gd, primitivetype, 0, CheckPrimitiveCount(primitivetype, Para.vertices.Length, Para.vertices.Length));
         }
 
         /// <summary>
-        /// Draw Primitive
+        /// Draw Primitive Using Vertex
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="isindexdraw"></param>
-        /// <param name="ptype"></param>
-        /// <param name="start"></param>
-        /// <param name="pcount"></param>
-        public void Draw(GraphicsDevice gd, bool isindexdraw, PrimitiveType ptype, int start, int pcount)
+        /// <param name="primitivetype"></param>
+        /// <param name="startvertex"></param>
+        /// <param name="primitivecount"></param>
+        public void VertexDraw(GraphicsDevice gd, PrimitiveType primitivetype, int startvertex, int primitivecount)
         {
             if (Para.BasePara.visible)
             {
-                gd.VertexDeclaration = pvdec;
-                gd.Vertices[0].SetSource(vbuffer, 0, VertexPositionColor.SizeInBytes);
-                gd.Indices = ibuffer;
-
-                int temp;
-                int vex_n;
-                if (isindexdraw)
-                {
-                    vex_n = Para.indices.Length;
-                }
-                else
-                {
-                    vex_n = Para.vertices.Length;
-                }
-                switch (ptype)
-                {
-                    case PrimitiveType.PointList:
-                        break;
-                    case PrimitiveType.LineList:
-                        temp = vex_n / 2;
-                        if (pcount > temp)
-                        {
-                            pcount = temp;
-                        }
-                        break;
-                    case PrimitiveType.LineStrip:
-                        temp = vex_n - 1;
-                        if (pcount > temp)
-                        {
-                            pcount = temp;
-                        }
-                        break;
-                    case PrimitiveType.TriangleList:
-                        gd.RenderState.CullMode = CullMode.None;
-                        temp = vex_n / 3;
-                        if (pcount > temp)
-                        {
-                            pcount = temp;
-                        }
-                        break;
-                    case PrimitiveType.TriangleStrip:
-                        gd.RenderState.CullMode = CullMode.None;
-                        temp = vex_n - 2;
-                        if (pcount > temp)
-                        {
-                            pcount = temp;
-                        }
-                        break;
-                    case PrimitiveType.TriangleFan:
-                        gd.RenderState.CullMode = CullMode.None;
-                        temp = vex_n - 2;
-                        if (pcount > temp)
-                        {
-                            pcount = temp;
-                        }
-                        break;
-                }
+                gd.VertexDeclaration = vertexDeclaration;
+                gd.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionColor.SizeInBytes);
+                gd.RenderState.CullMode = CullMode.None;
+                basicEffect.World = ori3DMatrix * worldMatrix;
 
                 // Begin Draw
-                basiceffect.Begin();
-                basiceffect.CurrentTechnique.Passes[0].Begin();
-                if (isindexdraw)
-                {
-                    gd.DrawIndexedPrimitives(ptype, 0, 0, vex_n, start, pcount);
-                }
-                else
-                {
-                    gd.DrawPrimitives(ptype, start, pcount);
-                }
-                basiceffect.CurrentTechnique.Passes[0].End();
-                basiceffect.End();
-            }
-        }
+                basicEffect.Begin();
+                basicEffect.CurrentTechnique.Passes[0].Begin();
 
+                gd.DrawPrimitives(primitivetype, startvertex, primitivecount);
 
-        /// <summary>
-        /// Reset Vertex Buffer from Primitive Parameter's vertices
-        /// </summary>
-        /// <param name="gd"></param>
-        public void ReSetVB(GraphicsDevice gd)
-        {
-            gd.Vertices[0].SetSource(null, 0, VertexPositionColor.SizeInBytes);
-            int temp = Para.vertices.Length * VertexPositionColor.SizeInBytes;
-            if (temp > vbuffer.SizeInBytes)
-            {
-                vbuffer = new VertexBuffer(gd, temp, BufferUsage.None);
+                basicEffect.CurrentTechnique.Passes[0].End();
+                basicEffect.End();
             }
-            vbuffer.SetData<VertexPositionColor>(Para.vertices);
         }
 
         /// <summary>
-        /// Reset Index Buffer from Primitive Parameter's indices
+        /// Draw Total Primitive using indexbuffer
         /// </summary>
         /// <param name="gd"></param>
-        public void ReSetIB(GraphicsDevice gd)
+        /// <param name="primitivetype"></param>
+        public void IndexDraw(GraphicsDevice gd, PrimitiveType primitivetype)
         {
-            int temp = Para.indices.Length * sizeof(int);
-            if (temp > ibuffer.SizeInBytes)
-            {
-                ibuffer = new IndexBuffer(gd, temp, BufferUsage.None, IndexElementSize.ThirtyTwoBits);
-            }
-            ibuffer.SetData<int>(Para.indices);
+            IndexDraw(gd, primitivetype, 0, 0, Para.vertices.Length, 0, CheckPrimitiveCount(primitivetype, Para.indices.Length, Para.indices.Length));
         }
+
+        /// <summary>
+        /// Draw Primitive Using Index
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="primitivetype"></param>
+        /// <param name="basevertex"></param>
+        /// <param name="minvertexindex"></param>
+        /// <param name="numvertices"></param>
+        /// <param name="startindex"></param>
+        /// <param name="primitivecount"></param>
+        public void IndexDraw(GraphicsDevice gd, PrimitiveType primitivetype, int basevertex, int minvertexindex, int numvertices, int startindex, int primitivecount)
+        {
+            if (Para.BasePara.visible)
+            {
+                gd.VertexDeclaration = vertexDeclaration;
+                gd.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionColor.SizeInBytes);
+                gd.Indices = indexBuffer;
+                gd.RenderState.CullMode = CullMode.None;
+                basicEffect.World = ori3DMatrix * worldMatrix;
+
+                // Begin Draw
+                basicEffect.Begin();
+                basicEffect.CurrentTechnique.Passes[0].Begin();
+
+                gd.DrawIndexedPrimitives(primitivetype, basevertex, minvertexindex, numvertices, startindex, primitivecount);
+
+                basicEffect.CurrentTechnique.Passes[0].End();
+                basicEffect.End();
+            }
+        }
+
 
         /// <summary>
         /// Change Primitive to a uniform color
@@ -267,43 +285,24 @@ namespace StiLib.Vision
             {
                 Para.vertices[i].Color = color;
             }
-            ReSetVB(gd);
+            SetVertexBuffer(gd);
         }
 
         /// <summary>
-        /// Set effect world matrix
+        /// Creates a new object that is a copy of the current instance
         /// </summary>
-        /// <param name="world"></param>
-        public override void SetWorld(Matrix world)
+        /// <returns></returns>
+        public override object Clone()
         {
-            basiceffect.World = world;
-        }
-
-        /// <summary>
-        /// Set effect view matrix
-        /// </summary>
-        /// <param name="view"></param>
-        public override void SetView(Matrix view)
-        {
-            basiceffect.View = view;
-        }
-
-        /// <summary>
-        /// Set effect projection matrix
-        /// </summary>
-        /// <param name="proj"></param>
-        public override void SetProjection(Matrix proj)
-        {
-            basiceffect.Projection = proj;
-        }
-
-        /// <summary>
-        /// Set Primitive Visible State
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            Para.BasePara.visible = isvisible;
+            if (gdRef != null)
+            {
+                return new Primitive(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, Para);
+            }
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
+            }
         }
 
     }

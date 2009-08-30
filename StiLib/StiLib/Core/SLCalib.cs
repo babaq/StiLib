@@ -25,35 +25,36 @@ namespace StiLib.Core
     /// </summary>
     public class CRSCalDevice
     {
-        CalDevice deviceType;
-        int deviceHandle;
+        CalDevice devicetype;
+        int devicehandle;
 
         /// <summary>
-        /// calibration device type
+        /// Gets/Sets Current CRS Calibration Device Type
         /// </summary>
         public CalDevice DeviceType
         {
-            get { return deviceType; }
+            get { return devicetype; }
+            set { devicetype = value; }
         }
-
         /// <summary>
-        /// calibration device handle -- 0:OK, 1:FAIL
+        /// Gets Current CRS Calibration Device Handle -- 0: OK, 1: FAIL
         /// </summary>
         public int DeviceHandle
         {
-            get { return deviceHandle; }
+            get { return devicehandle; }
         }
 
 
         /// <summary>
-        /// Create a CRS calibration device
+        /// Create a CRS Calibration Device, need Init()
         /// </summary>
         /// <param name="devicetype"></param>
         public CRSCalDevice(CalDevice devicetype)
         {
-            deviceType = devicetype;
-            deviceHandle = 1;
+            this.devicetype = devicetype;
+            devicehandle = 1;
         }
+
 
         /// <summary>
         /// Init and calibrate current device. 
@@ -62,31 +63,38 @@ namespace StiLib.Core
         /// <returns></returns>
         public int Init()
         {
-            deviceHandle = calInitialise((int)deviceType);
-            return deviceHandle;
+            // Close Previous First
+            if (devicehandle == 0)
+            {
+                Close();
+            }
+            if (devicehandle == 1)
+            {
+                devicehandle = calInitialise((int)devicetype);
+            }
+            return devicehandle;
         }
 
         /// <summary>
         /// Close communication with the device. 
-        /// Call this procedure before closing your program
+        /// Call this method before closing your program
         /// </summary>
         public int Close()
         {
             int hresult = calCloseDevice();
             if (hresult == 0)
             {
-                deviceHandle = 1;
+                devicehandle = 1;
             }
             else
             {
-                deviceHandle = 0;
+                devicehandle = 0;
             }
             return hresult;
         }
 
-
         /// <summary>
-        /// Read a luminance value in cd/m2 from device
+        /// Read a luminance value in cd/m2 from device.
         /// To convert this to fL, divide by 3.426259101
         /// </summary>
         public double ReadLuminance
@@ -134,7 +142,7 @@ namespace StiLib.Core
         #region Cambridge Research System (CRS) Device Functions
 
         /// <summary>
-        /// Initialise the ColorCAL. This function must be called before any of the others.
+        /// Initialise Device. This function must be called before any of the others.
         /// The returned value is a handle to the device.  Use this when processing multiple devices
         /// </summary>
         /// <param name="Device"></param>
@@ -143,7 +151,7 @@ namespace StiLib.Core
         public static extern int calInitialise(int Device);
 
         /// <summary>
-        /// Read a luminance value in cd/m2 from device
+        /// Read a luminance value in cd/m2 from device.
         /// To convert this to fL, divide by 3.426259101
         /// </summary>
         /// <param name="Luminance"></param>
@@ -162,7 +170,7 @@ namespace StiLib.Core
 
         /// <summary>
         /// Read a colour in CIE x,y,l from the device.
-        /// Returns CALIB_NOTSUPPORTED(4) and (0,0,luminance) if colour feature is not supported by the device
+        /// Returns CALIB_NOTSUPPORTED(4) and (0,0,luminance) if colour feature is not supported by the device.
         /// </summary>
         /// <param name="CieX"></param>
         /// <param name="CieY"></param>
@@ -173,7 +181,7 @@ namespace StiLib.Core
 
         /// <summary>
         /// Close communication with the device.
-        /// Call this procedure before closing your program.
+        /// Call this function before closing your program.
         /// </summary>
         /// <returns></returns>
         [DllImport("Calibrator.dll", EntryPoint = "calCloseDevice")]
@@ -225,4 +233,5 @@ namespace StiLib.Core
         /// </summary>
         ColorCal_USB,
     }
+
 }

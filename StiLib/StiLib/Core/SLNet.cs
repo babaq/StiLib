@@ -20,28 +20,28 @@ using System.Reflection;
 namespace StiLib.Core
 {
     /// <summary>
-    /// Experiment Service Contract
+    /// StiLib Experiment Service Contract
     /// </summary>
     [ServiceContract]
     public interface IExService
     {
         /// <summary>
-        /// Run an Experiment
+        /// Invoke an Experiment
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
         [OperationContract]
-        string Run(string ex);
+        string Invoke(string ex);
         /// <summary>
-        /// Run an Experiment Script 
+        /// Invoke an Experiment Script 
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="script"></param>
         /// <returns></returns>
         [OperationContract]
-        string RunScript(string ex, string script);
+        string InvokeScript(string ex, string script);
         /// <summary>
-        /// Get Experiment Names
+        /// Get All Avalible Experiment Names
         /// </summary>
         /// <returns></returns>
         [OperationContract]
@@ -49,11 +49,12 @@ namespace StiLib.Core
     }
 
     /// <summary>
-    /// Experiment Service
+    /// StiLib Experiment Service
     /// </summary>
     public class ExService : IExService
     {
         AssemblySettings config;
+
 
         /// <summary>
         /// Init Experiment Service
@@ -65,11 +66,11 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Run Experiment
+        /// Invoke an Experiment
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
-        public string Run(string ex)
+        public string Invoke(string ex)
         {
             string ext = ex.Substring(ex.LastIndexOf(".") + 1);
 
@@ -97,22 +98,22 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Run Experiment Script
+        /// Invoke an Experiment Script
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public string RunScript(string ex, string script)
+        public string InvokeScript(string ex, string script)
         {
             StreamWriter writer = new StreamWriter(config["stilib"] + ex);
             writer.Write(script);
             writer.Flush();
             writer.Close();
-            return Run(ex);
+            return Invoke(ex);
         }
 
         /// <summary>
-        /// Get Experiment List
+        /// Get Experiment Names List
         /// </summary>
         /// <returns></returns>
         public string[] GetEx()

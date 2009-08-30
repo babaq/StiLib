@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\SLAudio.cs" />
+    <Compile Include="Core\SLCOM.cs" />
     <Compile Include="Core\SLCore.cs" />
     <Compile Include="Core\SLDictionary.cs" />
     <Compile Include="Core\SLExperiment.cs" />
@@ -123,16 +124,16 @@
     <Compile Include="Vision\Primitive.cs" />
     <Compile Include="Vision\SLQuad.cs" />
     <Compile Include="Vision\SLVideo.cs" />
-    <Compile Include="Vision\Stimuli\RF_dBar.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Vision\Stimuli\RF_fBar.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Vision\Stimuli\dBar.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vision\Stimuli\dGrating.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vision\Stimuli\RF_dBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vision\Stimuli\RF_fBar.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vision\Stimuli\Two_dBar.cs">
@@ -143,6 +144,7 @@
     </Compile>
     <Compile Include="Vision\Text.cs" />
     <Compile Include="Vision\VisionStimulus.cs" />
+    <Compile Include="Vision\VSCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">

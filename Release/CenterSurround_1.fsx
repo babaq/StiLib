@@ -24,16 +24,16 @@ type MyEx = class
     val mutable sgrating: Grating
     
     new() as this = 
-        { inherit SLForm(800, 600, 0, true, true); cgrating = null; text = null; ex = null; sgrating = null }
+        { inherit SLForm(null); cgrating = null; text = null; ex = null; sgrating = null }
         then
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Thames")
         this.ex <- new SLExperiment()
         this.ex.AddExType(ExType.Context)
         this.ex.AddCondition(ExPara.Orientation, 2)
-        this.ex.AddCondition(ExPara.Orientation, 2 + 1)
-        this.ex.Expara.trial <- 15
-        this.ex.Expara.durT <- 0.5f
-        this.ex.Expara.bgcolor <- Color.Gray
+        this.ex.AddCondition(ExPara.Orientation, 2)
+        this.ex.Exdesign.trial <- 2
+        this.ex.Exdesign.durT <- 0.5f
+        this.ex.Exdesign.bgcolor <- Color.Gray
         
         let mutable gpara = GratingPara.Default
         gpara.tf <- 0.0f
@@ -46,24 +46,23 @@ type MyEx = class
         this.sgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
     override this.SetFlow() = 
-        this.ex.Flow.TCount <- 0
-        this.ex.Flow.SCount <- 0
+        this.ex.Flow.TrialCount <- 0
+        this.ex.Flow.StiCount <- 0
         this.ex.Flow.IsPred <- false
         
     override this.MarkHead() = 
-        this.DrawTip(ref this.text, this.ex.Expara.bgcolor, SLConstant.MarkHead)
+        this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, SLConstant.MarkHead)
         
-        this.ex.Expara.stimuli.[0] <- this.ex.Cond.[0].VALUE.ValueN * this.ex.Cond.[1].VALUE.ValueN
-        this.ex.Rand.RandomizeSeed()
-        this.ex.Rand.RandomizeSequence(this.ex.Expara.stimuli.[0])
+        this.ex.Exdesign.stimuli.[0] <- this.ex.Cond.[0].VALUE.ValueN * (this.ex.Cond.[1].VALUE.ValueN + 1)
+        this.ex.Rand.RandomizeSequence(this.ex.Exdesign.stimuli.[0])
         
         this.ex.PPort.MarkerEncode(this.ex.Extype.[0].Value)
         this.ex.PPort.MarkerEncode(this.ex.Cond.[0].SKEY)
         this.ex.PPort.MarkerEncode(this.ex.Cond.[0].VALUE.ValueN)
         this.ex.PPort.MarkerEncode(this.ex.Cond.[1].SKEY)
         this.ex.PPort.MarkerEncode(this.ex.Cond.[1].VALUE.ValueN)
-        this.ex.PPort.MarkerEncode(this.ex.Rand.RSeed)
-        this.ex.PPort.MarkerEncode(this.ex.Expara.trial)
+        this.ex.PPort.MarkerEncode(this.ex.Rand.Seed)
+        this.ex.PPort.MarkerEncode(this.ex.Exdesign.trial)
         
         this.ex.PPort.MarkerSeparatorEncode()
         
@@ -71,60 +70,63 @@ type MyEx = class
         this.sgrating.Para.Encode(this.ex.PPort)
 
         this.ex.PPort.MarkerEndEncode()
-        this.ex.Flow.IsStiOn <- true
+        this.ex.PPort.Timer.Reset()
         
     override this.Update() = 
         if this.GO_OVER = true then
-            this.Update_fGrating()
+            this.Update_Grating()
     override this.Draw() = 
-        this.GraphicsDevice.Clear(this.ex.Expara.bgcolor)
+        this.GraphicsDevice.Clear(this.ex.Exdesign.bgcolor)
         if this.GO_OVER = true then
             this.sgrating.Draw(this.GraphicsDevice)
             this.cgrating.Draw(this.GraphicsDevice)
-            this.ex.Flow.Info <- this.ex.Flow.TCount.ToString() + " / " + this.ex.Expara.trial.ToString() + " Trials\n" + 
-                                        this.ex.Flow.SCount.ToString() + " / " + this.ex.Expara.stimuli.[0].ToString() + " Stimuli"
+            this.ex.Flow.Info <- this.ex.Flow.TrialCount.ToString() + " / " + this.ex.Exdesign.trial.ToString() + " Trials\n" + 
+                                        this.ex.Flow.StiCount.ToString() + " / " + this.ex.Exdesign.stimuli.[0].ToString() + " Stimuli"
             this.text.Draw(this.ex.Flow.Info)
         else
             this.text.Draw()
-    member this.Update_fGrating() = 
+    member this.Update_Grating() = 
         if this.ex.Flow.IsStiOn = true then
+            this.ex.PPort.Timer.Start()
+            this.ex.PPort.Trigger()
             this.ex.Flow.IsStiOn <- false
-            this.ex.PPort.timer.ReStart()
-            do this.ex.PPort.Trigger()
-        if this.ex.PPort.timer.ElapsedSeconds < float this.ex.Expara.durT + 0.001 then
+        if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT + 0.001 then
             if this.ex.Flow.IsPred = false then
                 this.ex.Flow.IsPred <- true
                 
-                this.ex.Flow.RCount <- int( Math.Floor( float(this.ex.Rand.RSequence.[this.ex.Flow.SCount] / this.ex.Cond.[1].VALUE.ValueN) ) )
-                this.ex.Flow.CCount <- this.ex.Rand.RSequence.[this.ex.Flow.SCount] % this.ex.Cond.[1].VALUE.ValueN
+                this.ex.Flow.RowCount <- int( Math.Floor( float(this.ex.Rand.Sequence.[this.ex.Flow.StiCount] / this.ex.Cond.[1].VALUE.ValueN) ) )
+                this.ex.Flow.ColumnCount <- this.ex.Rand.Sequence.[this.ex.Flow.StiCount] % this.ex.Cond.[1].VALUE.ValueN
                 
-                let crad = float32 this.ex.Flow.RCount * float32 Math.PI / float32 this.ex.Cond.[0].VALUE.ValueN
-                this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad) * Matrix.CreateTranslation(this.cgrating.Para.BasePara.center)
-                this.cgrating.SetWorld(this.ex.Flow.Translate)
+                let crad = float32 this.ex.Flow.RowCount * float32 Math.PI / float32 this.ex.Cond.[0].VALUE.ValueN
+                this.cgrating.Ori3DMatrix <- Matrix.CreateRotationZ(crad)
+                this.cgrating.WorldMatrix <- Matrix.CreateTranslation(this.cgrating.Para.BasePara.center)
                 
-                if this.ex.Flow.CCount = 0 then
-                    this.sgrating.SetVisible(false)
+                if this.ex.Flow.ColumnCount = 0 then
+                    this.sgrating.Visible <- false
                 else
-                    this.ex.Flow.Translate <- Matrix.CreateRotationZ(crad + float32(this.ex.Flow.CCount - 1) * float32 Math.PI / float32( this.ex.Cond.[1].VALUE.ValueN - 1 )) * Matrix.CreateTranslation(this.sgrating.Para.BasePara.center)
-                    this.sgrating.SetWorld(this.ex.Flow.Translate)
-                    this.sgrating.SetVisible(true)
-                    
-            this.cgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
-            this.sgrating.SetTime(float32 this.ex.PPort.timer.ElapsedSeconds)
-        else
-            if this.ex.Flow.SCount - this.ex.Expara.stimuli.[0] < -1 then
+                    this.sgrating.Ori3DMatrix <- Matrix.CreateRotationZ(crad + float32(this.ex.Flow.ColumnCount - 1) * float32 Math.PI / float32( this.ex.Cond.[1].VALUE.ValueN - 1 ))
+                    this.sgrating.WorldMatrix <- Matrix.CreateTranslation(this.sgrating.Para.BasePara.center)
+                    this.sgrating.Visible <- true
+                
                 this.ex.Flow.IsStiOn <- true
+                    
+            this.cgrating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
+            this.sgrating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
+        else
+            if this.ex.Flow.StiCount - this.ex.Exdesign.stimuli.[0] < -1 then
                 this.ex.Flow.IsPred <- false
-                this.ex.Flow.SCount <- this.ex.Flow.SCount + 1
+                this.ex.Flow.StiCount <- this.ex.Flow.StiCount + 1
+                this.ex.PPort.Timer.Reset()
             else
-                if this.ex.Flow.TCount - this.ex.Expara.trial < -1 then
-                    this.ex.Rand.RandomizeSequence(this.ex.Expara.stimuli.[0])
-                    this.ex.Flow.IsStiOn <- true
+                if this.ex.Flow.TrialCount - this.ex.Exdesign.trial < -1 then
+                    this.ex.Rand.RandomizeSequence(this.ex.Exdesign.stimuli.[0])
                     this.ex.Flow.IsPred <- false
-                    this.ex.Flow.TCount <- this.ex.Flow.TCount + 1
-                    this.ex.Flow.SCount <- 0
+                    this.ex.Flow.TrialCount <- this.ex.Flow.TrialCount + 1
+                    this.ex.Flow.StiCount <- 0
+                    this.ex.PPort.Timer.Reset()
                 else
                     this.GO_OVER <- false
+                    ()
             this.Update()
         
 end

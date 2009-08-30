@@ -24,7 +24,7 @@ using Microsoft.Xna.Framework;
 namespace StiLib.Core
 {
     /// <summary>
-    /// StiLib base form class to Host a XNA render window
+    /// StiLib Base Form Class to Host a XNA Render Window
     /// </summary>
     public class SLForm : Form, IGraphicsDeviceService
     {
@@ -32,7 +32,7 @@ namespace StiLib.Core
 
         GraphicsDevice gd;
         ServiceContainer services;
-        ContentManager content;
+        ContentManager cm;
         PresentationParameters pp;
         AssemblySettings config;
         bool Go_Over;
@@ -78,15 +78,23 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Gets the content manager
+        /// Gets the SLForm content manager
         /// </summary>
         public ContentManager Content
         {
-            get { return content; }
+            get { return cm; }
         }
 
         /// <summary>
-        /// Get StiLib Configuration
+        /// Gets the Internal GraphicsDevice Presentation Parameters
+        /// </summary>
+        public PresentationParameters PresentPara
+        {
+            get { return pp; }
+        }
+
+        /// <summary>
+        /// Gets current StiLib Configurations
         /// </summary>
         public AssemblySettings SLConfig
         {
@@ -104,21 +112,42 @@ namespace StiLib.Core
 
         #endregion
 
-        #region External Win32API Functions
-
-        [DllImport("user32")]
-        extern static bool ShowCursor(bool bShow);
-
-        #endregion
-
 
         /// <summary>
-        /// Init to Default -- width:800, height:600, refreshrate:0, Vsync:true, showcursor:true
+        /// Init to Default -- buffercount: 1, width: 800, height: 600, refreshrate: 0, vsync: false, showcursor: true, border: true, sizable: false, gamma: (1.0, 1.0, 1.0)
         /// </summary>
-        public SLForm() : this(800, 600, 0, true, true) { }
+        public SLForm()
+            : this(1, 800, 600, 0, false, true, true, false, Vector3.One)
+        {
+        }
 
         /// <summary>
-        /// Initializes the SLForm hosting XNA GraphicsDevice
+        /// Init Using StiLib Configuration File
+        /// </summary>
+        /// <param name="configfile">"" to load default StiLib.dll.config file, otherwise indicate full file path</param>
+        public SLForm(string configfile)
+        {
+            if (string.IsNullOrEmpty(configfile))
+            {
+                config = new AssemblySettings(Assembly.GetAssembly(typeof(AssemblySettings)));
+            }
+            else
+            {
+                config = new AssemblySettings(configfile);
+            }
+
+            SetGraphicsDevice(Convert.ToInt32(config["buffercount"]), Convert.ToInt32(config["width"]), Convert.ToInt32(config["height"]), Convert.ToInt32(config["refreshrate"]), Convert.ToBoolean(config["isvsync"]));
+            SetGamma(new Vector3(Convert.ToSingle(config["gammaR"]), Convert.ToSingle(config["gammaG"]), Convert.ToSingle(config["gammaB"])));
+            SetSLForm(Convert.ToBoolean(config["isshowcursor"]), Convert.ToBoolean(config["isborder"]), Convert.ToBoolean(config["issizable"]));
+
+            // Give derived classes a chance to load content.
+            LoadContent();
+            // Give derived classes a chance to initialize themselves.
+            Initialize();
+        }
+
+        /// <summary>
+        /// Initializes the SLForm hosting XNA GraphicsDevice with default -- buffercount: 1, border: true, sizable: false, gamma: (1.0, 1.0, 1.0)
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -126,19 +155,59 @@ namespace StiLib.Core
         /// <param name="isvsync"></param>
         /// <param name="isshowcursor"></param>
         public SLForm(int width, int height, int refreshrate, bool isvsync, bool isshowcursor)
+            : this(1, width, height, refreshrate, isvsync, isshowcursor, true, false, Vector3.One)
         {
-            #region Init GraphicsDevice
+        }
+
+        /// <summary>
+        /// Initializes the SLForm hosting XNA GraphicsDevice
+        /// </summary>
+        /// <param name="buffercount">0-3</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="refreshrate">windowed mode(0), fullscreen mode(>0)</param>
+        /// <param name="isvsync"></param>
+        /// <param name="isshowcursor"></param>
+        /// <param name="isborder"></param>
+        /// <param name="issizable"></param>
+        /// <param name="gamma">current R, G, B gamma value</param>
+        public SLForm(int buffercount, int width, int height, int refreshrate, bool isvsync, bool isshowcursor, bool isborder, bool issizable, Vector3 gamma)
+        {
+            SetGraphicsDevice(buffercount, width, height, refreshrate, isvsync);
+            SetGamma(gamma);
+            SetSLForm(isshowcursor, isborder, issizable);
+
+            // Give derived classes a chance to load content.
+            LoadContent();
+            // Give derived classes a chance to initialize themselves.
+            Initialize();
+        }
+
+
+        /// <summary>
+        /// Set Default Hardware Adapter Targeting Current SLForm with Custom Settings
+        /// </summary>
+        /// <param name="buffercount">0-3</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="refreshrate">windowed mode(0), fullscreen mode(>0)</param>
+        /// <param name="isvsync"></param>
+        public void SetGraphicsDevice(int buffercount, int width, int height, int refreshrate, bool isvsync)
+        {
+            if (pp != null)
+            {
+                pp.Dispose();
+            }
+            pp = new PresentationParameters();
 
             // Check Shader Model 2.0 Support
             GraphicsDeviceCapabilities gdcap = GraphicsAdapter.DefaultAdapter.GetCapabilities(DeviceType.Hardware);
             if (gdcap.MaxPixelShaderProfile < ShaderProfile.PS_2_0 || gdcap.MaxVertexShaderProfile < ShaderProfile.VS_2_0)
             {
-                System.Diagnostics.Debug.WriteLine("This Adapter does not support Shader Model 2.0.");
-                MessageBox.Show("This Adapter does not support Shader Model 2.0.", "Warning !");
+                MessageBox.Show("This Adapter Does Not Support Shader Model 2.0.", "Warning !");
             }
 
-            // Check MultiSampling Support
-            pp = new PresentationParameters();
+            // Check Full Screen MultiSampling Support
             int quality;
             if (GraphicsAdapter.DefaultAdapter.CheckDeviceMultiSampleType(DeviceType.Hardware, SurfaceFormat.Color, false, MultiSampleType.NonMaskable, out quality))
             {
@@ -174,57 +243,155 @@ namespace StiLib.Core
             pp.FullScreenRefreshRateInHz = refreshrate;
 
             // Set Buffer
-            pp.BackBufferCount = 3;
-            pp.BackBufferWidth = width;
-            pp.BackBufferHeight = height;
+            if (buffercount > 3)
+            {
+                buffercount = 3;
+            }
+            pp.BackBufferCount = buffercount;
+            pp.BackBufferWidth = Math.Max(1, width);
+            pp.BackBufferHeight = Math.Max(1, height);
             pp.BackBufferFormat = SurfaceFormat.Color;
             pp.EnableAutoDepthStencil = true;
             pp.AutoDepthStencilFormat = DepthFormat.Depth24Stencil8;
 
-            try
-            {
-                gd = new GraphicsDevice(GraphicsAdapter.DefaultAdapter, DeviceType.Hardware, Handle, pp);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message.ToString(), "GraphicsDevice Initialization Failed !");
-            }
-
-            #endregion
-
-            #region Init SLForm
-
-            services = new ServiceContainer();
-            // Register the service, so components like ContentManager can find it.
-            services.AddService<IGraphicsDeviceService>(this);
-            content = new ContentManager(services, "Content");
-
-            // Cursor State
-            ShowCursor(isshowcursor);
-
-            // Hook the idle event to constantly redraw, getting a game style loop as default.
-            Application.Idle += delegate { Invalidate(); };
-
-            this.KeyDown += new KeyEventHandler(SLForm_KeyDown);
-            this.MouseMove += new MouseEventHandler(SLForm_MouseMove);
-            this.MouseDown += new MouseEventHandler(SLForm_MouseDown);
-            this.Resize += new EventHandler(SLForm_Resize);
-
-            // Get StiLib Configuration
-            config = new AssemblySettings(Assembly.GetAssembly(typeof(AssemblySettings)));
-
-            #endregion
-
-            // Give derived classes a chance to load content.
-            LoadContent();
-
-            // Give derived classes a chance to initialize themselves.
-            Initialize();
+            SetGraphicsDevice(pp);
         }
 
+        /// <summary>
+        /// Set Default Hardware Adapter Targeting Current SLForm with Custom Presentation Parameters
+        /// </summary>
+        /// <param name="pp"></param>
+        public void SetGraphicsDevice(PresentationParameters pp)
+        {
+            if (gd == null)
+            {
+                try
+                {
+                    gd = new GraphicsDevice(GraphicsAdapter.DefaultAdapter, DeviceType.Hardware, Handle, pp);
+
+                    if (DeviceCreated != null)
+                        DeviceCreated(this, EventArgs.Empty);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message.ToString(), "GraphicsDevice Initialization Failed !");
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (DeviceResetting != null)
+                        DeviceResetting(this, EventArgs.Empty);
+
+                    gd.Reset(pp);
+
+                    if (DeviceReset != null)
+                        DeviceReset(this, EventArgs.Empty);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message.ToString(), "GraphicsDevice Reset Failed !");
+                }
+            }
+        }
 
         /// <summary>
-        /// Check if Device is ready
+        /// Linearize Gamma According to Current Gamma Value Using GraphicsDevice GammaRamp
+        /// </summary>
+        /// <param name="gamma">current R, G, B gamma value</param>
+        public void SetGamma(Vector3 gamma)
+        {
+            bool isfullscreengamma;
+            GraphicsDeviceCapabilities gdcap = gd.GraphicsDeviceCapabilities;
+            if (gdcap.DriverCapabilities.SupportsFullScreenGamma)
+            {
+                isfullscreengamma = true;
+            }
+            else
+            {
+                isfullscreengamma = false;
+                SLConstant.ShowMessage("This GraphicsDevice Does Not Support Full Screen Gamma Correction !");
+            }
+            if (isfullscreengamma && gd.PresentationParameters.IsFullScreen && (gamma.X != 1.0f || gamma.Y != 1.0f || gamma.Z != 1.0f))
+            {
+                gd.SetGammaRamp(false, SLAlgorithm.GetGamma(gamma));
+            }
+        }
+
+        /// <summary>
+        /// Set SLForm State
+        /// </summary>
+        /// <param name="isshowcursor"></param>
+        /// <param name="isborder"></param>
+        /// <param name="issizable"></param>
+        public void SetSLForm(bool isshowcursor, bool isborder, bool issizable)
+        {
+            if (config == null)
+            {
+                config = new AssemblySettings(Assembly.GetAssembly(typeof(AssemblySettings)));
+            }
+            if (services == null)
+            {
+                services = new ServiceContainer();
+                // Register the service, so components like ContentManager can find it.
+                services.AddService<IGraphicsDeviceService>(this);
+                cm = new ContentManager(services, config["content"]);
+                // Hook the idle event to constantly redraw, getting a game style loop as default.
+                Application.Idle += delegate { Invalidate(); };
+                this.KeyDown += new KeyEventHandler(SLForm_KeyDown);
+                this.MouseDown += new MouseEventHandler(SLForm_MouseDown);
+                this.MouseMove += new MouseEventHandler(SLForm_MouseMove);
+                this.MouseWheel += new MouseEventHandler(SLForm_MouseWheel);
+            }
+            // Cursor State
+            if (!isshowcursor)
+            {
+                Cursor.Hide();
+            }
+            // Border and Sizable States
+            if (isborder)
+            {
+                if (issizable)
+                {
+                    this.Resize += new EventHandler(SLForm_Resize);
+                }
+                else
+                {
+                    this.MaximizeBox = false;
+                    this.FormBorderStyle = FormBorderStyle.FixedSingle;
+                }
+            }
+            else
+            {
+                this.FormBorderStyle = FormBorderStyle.None;
+            }
+        }
+
+        /// <summary>
+        /// Toggles between full screen and windowed mode
+        /// </summary>
+        public void ToggleFullScreen()
+        {
+            pp.IsFullScreen = !pp.IsFullScreen;
+            if (pp.IsFullScreen)
+            {
+                pp.FullScreenRefreshRateInHz = gd.DisplayMode.RefreshRate;
+                pp.BackBufferWidth = gd.DisplayMode.Width;
+                pp.BackBufferHeight = gd.DisplayMode.Height;
+            }
+            else
+            {
+                pp.FullScreenRefreshRateInHz = 0;
+                pp.BackBufferWidth = 800;
+                pp.BackBufferHeight = 600;
+                this.ClientSize = new System.Drawing.Size(800, 600);
+            }
+            SetGraphicsDevice(pp);
+        }
+
+        /// <summary>
+        /// Check if GraphicsDevice is ready
         /// </summary>
         /// <returns></returns>
         bool CheckDevice()
@@ -233,7 +400,6 @@ namespace StiLib.Core
             {
                 return false;
             }
-
             switch (gd.GraphicsDeviceStatus)
             {
                 case GraphicsDeviceStatus.Lost:
@@ -282,21 +448,22 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Disposes the SLForm, unloading the ContentManager.
+        /// Disposes the SLForm, unload all contents.
         /// </summary>
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                if (DeviceDisposing != null)
+                    DeviceDisposing(this, EventArgs.Empty);
                 UnloadContent();
             }
-
             base.Dispose(disposing);
         }
 
         /// <summary>
-        /// Immediate Draw Tip String
+        /// Immediately Draw Tip String
         /// </summary>
         /// <param name="text"></param>
         /// <param name="bgcolor"></param>
@@ -311,7 +478,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Immediate Draw Tip String
+        /// Immediately Draw Tip String with Red color at position: (5, 5) in Screen Coordinate
         /// </summary>
         /// <param name="text"></param>
         /// <param name="bgcolor"></param>
@@ -325,7 +492,7 @@ namespace StiLib.Core
         #region Custom Virtual Functions
 
         /// <summary>
-        ///  Registered the SLForm Resize handler
+        ///  Registered the SLForm Resize event handler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -340,25 +507,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Registered the SLForm MouseDown handler
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected virtual void SLForm_MouseDown(object sender, MouseEventArgs e)
-        {
-        }
-
-        /// <summary>
-        /// Registered the SLForm MouseMove handler
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected virtual void SLForm_MouseMove(object sender, MouseEventArgs e)
-        {
-        }
-
-        /// <summary>
-        /// Registered the SLForm key handler
+        /// Registered the SLForm KeyDown event handler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -380,6 +529,33 @@ namespace StiLib.Core
             }
         }
 
+        /// <summary>
+        /// Registered the SLForm MouseDown event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void SLForm_MouseDown(object sender, MouseEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// Registered the SLForm MouseMove event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void SLForm_MouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// Registered the SLForm MouseWheel event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void SLForm_MouseWheel(object sender, MouseEventArgs e)
+        {
+        }
+
 
         /// <summary>
         /// Derived classes override this to initialize their drawing code.
@@ -389,23 +565,22 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// LoadContent will be called before Initialize() and is the place to load
-        /// all of your content.
+        /// LoadContent() will be called before Initialize() and is the place to load all SLForm contents.
         /// </summary>
         protected virtual void LoadContent()
         {
         }
 
         /// <summary>
-        /// UnloadContent will be called once SLForm is to disposed and is the place to unload
-        /// all content.
+        /// UnloadContent() will be called once SLForm is to disposed, 
+        /// and is the place to unload all SLForm non ContentManager contents.
         /// </summary>
         protected virtual void UnloadContent()
         {
         }
 
         /// <summary>
-        /// Custom Content Update
+        /// Custom SLForm Contents Update
         /// </summary>
         protected new virtual void Update()
         {
@@ -420,7 +595,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Set Flow Control to begin a new Experiment
+        /// Set Flow Control Ready to begin Experiment
         /// </summary>
         protected virtual void SetFlow()
         {

@@ -17,17 +17,17 @@
       <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="IExService_Run_InputMessage">
-    <wsdl:part name="parameters" element="tns:Run" />
+  <wsdl:message name="IExService_Invoke_InputMessage">
+    <wsdl:part name="parameters" element="tns:Invoke" />
   </wsdl:message>
-  <wsdl:message name="IExService_Run_OutputMessage">
-    <wsdl:part name="parameters" element="tns:RunResponse" />
+  <wsdl:message name="IExService_Invoke_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InvokeResponse" />
   </wsdl:message>
-  <wsdl:message name="IExService_RunScript_InputMessage">
-    <wsdl:part name="parameters" element="tns:RunScript" />
+  <wsdl:message name="IExService_InvokeScript_InputMessage">
+    <wsdl:part name="parameters" element="tns:InvokeScript" />
   </wsdl:message>
-  <wsdl:message name="IExService_RunScript_OutputMessage">
-    <wsdl:part name="parameters" element="tns:RunScriptResponse" />
+  <wsdl:message name="IExService_InvokeScript_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InvokeScriptResponse" />
   </wsdl:message>
   <wsdl:message name="IExService_GetEx_InputMessage">
     <wsdl:part name="parameters" element="tns:GetEx" />
@@ -36,13 +36,13 @@
     <wsdl:part name="parameters" element="tns:GetExResponse" />
   </wsdl:message>
   <wsdl:portType name="IExService">
-    <wsdl:operation name="Run">
-      <wsdl:input wsaw:Action="http://tempuri.org/IExService/Run" message="tns:IExService_Run_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IExService/RunResponse" message="tns:IExService_Run_OutputMessage" />
+    <wsdl:operation name="Invoke">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/Invoke" message="tns:IExService_Invoke_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/InvokeResponse" message="tns:IExService_Invoke_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="RunScript">
-      <wsdl:input wsaw:Action="http://tempuri.org/IExService/RunScript" message="tns:IExService_RunScript_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IExService/RunScriptResponse" message="tns:IExService_RunScript_OutputMessage" />
+    <wsdl:operation name="InvokeScript">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/InvokeScript" message="tns:IExService_InvokeScript_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/InvokeScriptResponse" message="tns:IExService_InvokeScript_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetEx">
       <wsdl:input wsaw:Action="http://tempuri.org/IExService/GetEx" message="tns:IExService_GetEx_InputMessage" />
@@ -53,8 +53,8 @@
     <wsp:PolicyReference URI="#NetTcpBinding_IExService_policy">
     </wsp:PolicyReference>
     <soap12:binding transport="http://schemas.microsoft.com/soap/tcp" />
-    <wsdl:operation name="Run">
-      <soap12:operation soapAction="http://tempuri.org/IExService/Run" style="document" />
+    <wsdl:operation name="Invoke">
+      <soap12:operation soapAction="http://tempuri.org/IExService/Invoke" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -62,8 +62,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="RunScript">
-      <soap12:operation soapAction="http://tempuri.org/IExService/RunScript" style="document" />
+    <wsdl:operation name="InvokeScript">
+      <soap12:operation soapAction="http://tempuri.org/IExService/InvokeScript" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

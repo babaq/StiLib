@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // Two_dGrating.cs
 //
-// StiLib Two Drifting Grating Stimulus
+// StiLib Two Drifting Gratings Stimulus
 // Copyright (c) Zhang Li. 2008-09-21.
 //-----------------------------------------------------------------------------
 #endregion
@@ -18,12 +18,12 @@ using StiLib.Core;
 namespace StiLib.Vision.Stimuli
 {
     /// <summary>
-    /// Two Drifting Grating
+    /// Two Drifting Gratings
     /// </summary>
     public class Two_dGrating : SLForm
     {
         /// <summary>
-        /// Default SLForm Settings
+        /// Init to Default SLForm Settings
         /// </summary>
         public Two_dGrating()
             : base()
@@ -31,7 +31,16 @@ namespace StiLib.Vision.Stimuli
         }
 
         /// <summary>
-        /// Custom SLForm Settings
+        /// Init to configurations
+        /// </summary>
+        /// <param name="configfile"></param>
+        public Two_dGrating(string configfile)
+            : base(configfile)
+        {
+        }
+
+        /// <summary>
+        /// Init to Custom SLForm Settings
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -55,7 +64,7 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Two Drifting Gratings
         /// </summary>
-        public Grating[] Grating = new Grating[2];
+        public Grating[] gratings = new Grating[2];
         /// <summary>
         /// Angle between directions of two drifting gratings
         /// </summary>
@@ -69,19 +78,19 @@ namespace StiLib.Vision.Stimuli
         {
             text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
-            // Init Experiment Parameter
+            // Init Experiment Parameters
             ex = new SLExperiment();
             ex.AddExType(ExType.Two_dGrating);
             ex.AddCondition(ExPara.Direction, 4);
-            ex.Expara.trial = 3;
-            ex.Expara.trestT = 1.0f;
-            ex.Expara.srestT = 0.5f;
-            ex.Expara.preT = 0.25f;
-            ex.Expara.durT = 1.0f;
-            ex.Expara.posT = 0.25f;
-            ex.Expara.bgcolor = Color.Gray;
+            ex.Exdesign.trial = 3;
+            ex.Exdesign.trestT = 1.0f;
+            ex.Exdesign.srestT = 0.5f;
+            ex.Exdesign.preT = 0.25f;
+            ex.Exdesign.durT = 1.0f;
+            ex.Exdesign.posT = 0.25f;
+            ex.Exdesign.bgcolor = Color.Gray;
 
-            // Init Two Gratings Parameter
+            // Init Two Gratings Parameters
             GratingPara gpara = GratingPara.Default;
             gpara.gratingtype = GratingType.Sinusoidal;
             gpara.shape = Shape.Circle;
@@ -94,16 +103,16 @@ namespace StiLib.Vision.Stimuli
             gpara.BasePara.center = new Vector3(-5.0f, 0.0f, 0.0f);
             gpara.lhcolor = Color.RosyBrown;
             gpara.rlcolor = Color.Blue;
-            Grating[0] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
+            gratings[0] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
 
             gpara.sf = 1.0f;
             gpara.tf = 2.0f;
-            gpara.direction = 90.0f;
+            gpara.BasePara.direction = 90.0f;
             gpara.BasePara.diameter = 4.0f;
             gpara.BasePara.center = new Vector3(5.0f, 0.0f, 0.0f);
             gpara.lhcolor = Color.Red;
             gpara.rlcolor = Color.GreenYellow;
-            Grating[1] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
+            gratings[1] = new Grating(GraphicsDevice, Services, SLConfig["content"], gpara);
 
             gratingangle = 90.0f;
         }
@@ -113,27 +122,27 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void SetFlow()
         {
-            ex.Flow.SCount = 0;
-            ex.Flow.TCount = 0;
+            ex.Flow.StiCount = 0;
+            ex.Flow.TrialCount = 0;
             ex.Flow.IsPred = false;
             ex.Flow.IsRested = false;
             ex.Flow.IsBlanked = false;
-            ex.Flow.PreDurTime = ex.Expara.preT + ex.Expara.durT;
-            ex.Flow.StiTime = ex.Flow.PreDurTime + ex.Expara.posT;
+            ex.Flow.PreDurTime = ex.Exdesign.preT + ex.Exdesign.durT;
+            ex.Flow.StiTime = ex.Flow.PreDurTime + ex.Exdesign.posT;
         }
 
         /// <summary>
-        /// Send crucial information in MarkerHeader 
+        /// Send information in MarkerHeader 
         /// </summary>
         protected override void MarkHead()
         {
-            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
+            DrawTip(ref text, ex.Exdesign.bgcolor, SLConstant.MarkHead);
 
-            ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN + 1;
-            if (ex.Expara.stimuli[0] > 1)
+            ex.Exdesign.stimuli[0] = ex.Cond[0].VALUE.ValueN + 1;
+            if (ex.Exdesign.stimuli[0] > 1)
             {
-                ex.Rand.RandomizeSeed();
-                ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+                ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
+                ex.Flow.CondStep = new float[] { (float)(2 * Math.PI / ex.Cond[0].VALUE.ValueN) };
             }
 
             // Experiment Type Encoding
@@ -143,17 +152,17 @@ namespace StiLib.Vision.Stimuli
             // Condition Number Encoding
             ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
             // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
+            ex.PPort.MarkerEncode(ex.Rand.Seed);
             // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
+            ex.PPort.MarkerEncode(ex.Exdesign.trial);
 
             // Keywords Group Seperator
             ex.PPort.MarkerSeparatorEncode();
 
             // Custom Parameters Encoding
-            for (int i = 0; i < Grating.Length; i++)
+            for (int i = 0; i < gratings.Length; i++)
             {
-                Grating[i].Para.Encode(ex.PPort);
+                gratings[i].Para.Encode(ex.PPort);
             }
 
             // Angle Between Direations of Two Drifting Gratings
@@ -161,8 +170,8 @@ namespace StiLib.Vision.Stimuli
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
+            // Set Timer to begin
+            ex.PPort.Timer.Reset();
         }
 
         /// <summary>
@@ -189,15 +198,15 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Draw()
         {
-            GraphicsDevice.Clear(ex.Expara.bgcolor);
+            GraphicsDevice.Clear(ex.Exdesign.bgcolor);
 
             if (GO_OVER)
             {
-                Grating[0].Draw(GraphicsDevice);
-                Grating[1].Draw(GraphicsDevice);
+                gratings[0].Draw(GraphicsDevice);
+                gratings[1].Draw(GraphicsDevice);
 
-                ex.Flow.Info = ex.Flow.TCount.ToString() + " / " + ex.Expara.trial.ToString() + " Trials\n" +
-                                     ex.Flow.SCount.ToString() + " / " + ex.Expara.stimuli[0].ToString() + " Stimuli";
+                ex.Flow.Info = ex.Flow.TrialCount.ToString() + " / " + ex.Exdesign.trial.ToString() + " Trials\n" +
+                                     ex.Flow.StiCount.ToString() + " / " + ex.Exdesign.stimuli[0].ToString() + " Stimuli";
                 text.Draw(ex.Flow.Info);
             }
             else
@@ -210,35 +219,47 @@ namespace StiLib.Vision.Stimuli
         {
             if (ex.Flow.IsStiOn)
             {
-                ex.Flow.IsStiOn = false;
-                ex.PPort.timer.ReStart();
+                ex.PPort.Timer.Start();
                 // Stimulus Onset Marker
                 ex.PPort.Trigger();
+                ex.Flow.IsStiOn = false;
             }
 
-            ex.Flow.LastTime = ex.PPort.timer.ElapsedSeconds;
+            if (ex.Flow.IsStiOff)
+            {
+                // Stimulus Offset Marker
+                ex.PPort.Trigger();
+                ex.Flow.IsStiOff = false;
+                if (ex.Flow.TrialCount == ex.Exdesign.trial - 1)
+                {
+                    GO_OVER = false;
+                    return;
+                }
+            }
+
+            ex.Flow.LastingTime = ex.PPort.Timer.ElapsedSeconds;
 
             // In Presentation
-            if (ex.Flow.LastTime < ex.Flow.StiTime)
+            if (ex.Flow.LastingTime < ex.Flow.StiTime)
             {
                 if (!ex.Flow.IsPred)
                 {
                     ex.Flow.IsPred = true;
 
-                    for (int i = 0; i < Grating.Length; i++)
+                    for (int i = 0; i < gratings.Length; i++)
                     {
-                        ex.Flow.Translate = Matrix.CreateRotationZ((float)(Grating[i].Para.direction * Math.PI / 180.0)) *
-                                                     Matrix.CreateTranslation(Grating[i].Para.BasePara.center);
-                        Grating[i].SetWorld(ex.Flow.Translate);
-                        Grating[i].SetVisible(true);
+                        gratings[i].Ori3DMatrix = Matrix.CreateRotationZ(gratings[i].Para.BasePara.direction * (float)SLConstant.Rad_p_Deg);
+                        gratings[i].WorldMatrix = Matrix.CreateTranslation(gratings[i].Para.BasePara.center);
+                        gratings[i].Visible = true;
                     }
+                    ex.Flow.IsStiOn = true;
                 }
 
-                if (ex.Flow.LastTime > ex.Expara.preT && ex.Flow.LastTime < ex.Flow.PreDurTime)
+                if (ex.Flow.LastingTime > ex.Exdesign.preT && ex.Flow.LastingTime < ex.Flow.PreDurTime)
                 {
-                    for (int i = 0; i < Grating.Length; i++)
+                    for (int i = 0; i < gratings.Length; i++)
                     {
-                        Grating[i].SetTime((float)ex.Flow.LastTime - ex.Expara.preT);
+                        gratings[i].SetTime((float)ex.Flow.LastingTime - ex.Exdesign.preT);
                     }
                 }
             }
@@ -246,36 +267,29 @@ namespace StiLib.Vision.Stimuli
             {
                 if (!ex.Flow.IsRested)
                 {
-                    // Stimulus Offset Marker
-                    ex.PPort.Trigger();
-
                     ex.Flow.IsRested = true;
-                    for (int i = 0; i < Grating.Length; i++)
+                    for (int i = 0; i < gratings.Length; i++)
                     {
-                        Grating[i].SetVisible(false);
+                        gratings[i].Visible = false;
                     }
+                    ex.Flow.IsStiOff = true;
                 }
 
-                if (ex.Flow.TCount < ex.Expara.trial - 1)
+                if (ex.Flow.TrialCount < ex.Exdesign.trial - 1)
                 {
-                    if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.trestT)
+                    if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.trestT)
                     {
-                        ex.Flow.IsStiOn = true;
                         ex.Flow.IsPred = false;
                         ex.Flow.IsRested = false;
-                        ex.Flow.TCount += 1;
+                        ex.Flow.TrialCount += 1;
                         // Set Temporal Phase back to zero for new stimulus
-                        for (int i = 0; i < Grating.Length; i++)
+                        for (int i = 0; i < gratings.Length; i++)
                         {
-                            Grating[i].SetTime(0.0f);
+                            gratings[i].SetTime(0.0f);
                         }
+                        ex.PPort.Timer.Reset();
                     }
                 }
-                else
-                {
-                    GO_OVER = false;
-                }
-
             }
         }
 
@@ -283,27 +297,40 @@ namespace StiLib.Vision.Stimuli
         {
             if (ex.Flow.IsStiOn)
             {
-                ex.Flow.IsStiOn = false;
-                ex.PPort.timer.ReStart();
+                ex.PPort.Timer.Start();
                 // Stimulus Onset Marker
                 ex.PPort.Trigger();
+                ex.Flow.IsStiOn = false;
             }
 
-            ex.Flow.LastTime = ex.PPort.timer.ElapsedSeconds;
+            if (ex.Flow.IsStiOff)
+            {
+                // Stimulus Offset Marker
+                ex.PPort.Trigger();
+                ex.Flow.IsStiOff = false;
+                if ((ex.Flow.TrialCount == ex.Exdesign.trial - 1) && (ex.Flow.StiCount == ex.Exdesign.stimuli[0] - 1))
+                {
+                    GO_OVER = false;
+                    return;
+                }
+            }
+
+            ex.Flow.LastingTime = ex.PPort.Timer.ElapsedSeconds;
 
             // In Presentation
-            if (ex.Flow.LastTime < ex.Flow.StiTime)
+            if (ex.Flow.LastingTime < ex.Flow.StiTime)
             {
                 // Blank Control
-                if (ex.Rand.RSequence[ex.Flow.SCount] == 0)
+                if (ex.Rand.Sequence[ex.Flow.StiCount] == 0)
                 {
                     if (!ex.Flow.IsBlanked)
                     {
                         ex.Flow.IsBlanked = true;
-                        for (int i = 0; i < Grating.Length; i++)
+                        for (int i = 0; i < gratings.Length; i++)
                         {
-                            Grating[i].SetVisible(false);
+                            gratings[i].Visible = false;
                         }
+                        ex.Flow.IsStiOn = true;
                     }
                 }
                 else // Normal Stimulus
@@ -311,22 +338,22 @@ namespace StiLib.Vision.Stimuli
                     if (!ex.Flow.IsPred)
                     {
                         ex.Flow.IsPred = true;
+                        ex.Flow.Direction = (ex.Rand.Sequence[ex.Flow.StiCount] - 1) * ex.Flow.CondStep[0];
 
-                        float rad = (float)((ex.Rand.RSequence[ex.Flow.SCount] - 1) * (2 * Math.PI / ex.Cond[0].VALUE.ValueN));
-                        for (int i = 0; i < Grating.Length; i++)
+                        for (int i = 0; i < gratings.Length; i++)
                         {
-                            ex.Flow.Translate = Matrix.CreateRotationZ((float)(gratingangle * i * Math.PI / 180.0) + rad) *
-                                                         Matrix.CreateTranslation(Grating[i].Para.BasePara.center);
-                            Grating[i].SetWorld(ex.Flow.Translate);
-                            Grating[i].SetVisible(true);
+                            gratings[i].Ori3DMatrix = Matrix.CreateRotationZ(gratingangle * i * (float)SLConstant.Rad_p_Deg + ex.Flow.Direction);
+                            gratings[i].WorldMatrix = Matrix.CreateTranslation(gratings[i].Para.BasePara.center);
+                            gratings[i].Visible = true;
                         }
+                        ex.Flow.IsStiOn = true;
                     }
 
-                    if (ex.Flow.LastTime > ex.Expara.preT && ex.Flow.LastTime < ex.Flow.PreDurTime)
+                    if (ex.Flow.LastingTime > ex.Exdesign.preT && ex.Flow.LastingTime < ex.Flow.PreDurTime)
                     {
-                        for (int i = 0; i < Grating.Length; i++)
+                        for (int i = 0; i < gratings.Length; i++)
                         {
-                            Grating[i].SetTime((float)ex.Flow.LastTime - ex.Expara.preT);
+                            gratings[i].SetTime((float)ex.Flow.LastingTime - ex.Exdesign.preT);
                         }
                     }
                 }
@@ -335,54 +362,48 @@ namespace StiLib.Vision.Stimuli
             {
                 if (!ex.Flow.IsRested)
                 {
-                    // Stimulus Offset Marker
-                    ex.PPort.Trigger();
-
                     ex.Flow.IsRested = true;
-                    for (int i = 0; i < Grating.Length; i++)
+                    for (int i = 0; i < gratings.Length; i++)
                     {
-                        Grating[i].SetVisible(false);
+                        gratings[i].Visible = false;
                     }
+                    ex.Flow.IsStiOff = true;
                 }
 
-                if (ex.Flow.SCount < ex.Expara.stimuli[0] - 1)
+                if (ex.Flow.StiCount < ex.Exdesign.stimuli[0] - 1)
                 {
-                    if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.srestT)
+                    if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.srestT)
                     {
-                        ex.Flow.IsStiOn = true;
                         ex.Flow.IsPred = false;
                         ex.Flow.IsRested = false;
-                        ex.Flow.SCount += 1;
+                        ex.Flow.StiCount += 1;
                         // Set Temporal Phase back to zero for new stimulus
-                        for (int i = 0; i < Grating.Length; i++)
+                        for (int i = 0; i < gratings.Length; i++)
                         {
-                            Grating[i].SetTime(0.0f);
+                            gratings[i].SetTime(0.0f);
                         }
+                        ex.PPort.Timer.Reset();
                     }
                 }
                 else
                 {
-                    if (ex.Flow.TCount < ex.Expara.trial - 1)
+                    if (ex.Flow.TrialCount < ex.Exdesign.trial - 1)
                     {
-                        if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.trestT)
+                        if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.trestT)
                         {
-                            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
-                            ex.Flow.IsStiOn = true;
+                            ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
                             ex.Flow.IsPred = false;
                             ex.Flow.IsRested = false;
                             ex.Flow.IsBlanked = false;
-                            ex.Flow.TCount += 1;
-                            ex.Flow.SCount = 0;
+                            ex.Flow.TrialCount += 1;
+                            ex.Flow.StiCount = 0;
                             // Set Temporal Phase back to zero for new stimulus
-                            for (int i = 0; i < Grating.Length; i++)
+                            for (int i = 0; i < gratings.Length; i++)
                             {
-                                Grating[i].SetTime(0.0f);
+                                gratings[i].SetTime(0.0f);
                             }
+                            ex.PPort.Timer.Reset();
                         }
-                    }
-                    else
-                    {
-                        GO_OVER = false;
                     }
                 }
             }

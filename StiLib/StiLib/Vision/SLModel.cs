@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // SLModel.cs
 //
-// StiLib Model Service.
+// StiLib Model Stimulus.
 // Copyright (c) Zhang Li. 2009-03-06.
 //-----------------------------------------------------------------------------
 #endregion
@@ -10,38 +10,38 @@
 #region Using Statements
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Windows.Forms;
+using StiLib.Core;
 #endregion
 
 namespace StiLib.Vision
 {
     /// <summary>
-    /// StiLib Model Service to load, render, manipulate a model
+    /// StiLib Model Service to Load, Render and Manipulate Models
     /// </summary>
     public class SLModel : VisionStimulus
     {
         #region Fields
 
         /// <summary>
-        /// Model Parameter
+        /// Model Parameters
         /// </summary>
         public ModelPara Para;
+        /// <summary>
+        /// Model Bone Transforms
+        /// </summary>
+        public Matrix[] BoneTransforms;
         Model model;
-        ContentManager cm;
-        Matrix[] BoneTransforms;
-        Matrix Matrix_R;
-        Matrix Matrix_T;
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Get the XNA Model
+        /// Gets the XNA Model
         /// </summary>
         public Model Model
         {
@@ -49,24 +49,50 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get Content Manager
+        /// Model Basic Parameters
         /// </summary>
-        public ContentManager Content
+        public override vsBasePara BasePara
         {
-            get { return cm; }
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
+        }
+
+        /// <summary>
+        /// Center
+        /// </summary>
+        public override Vector3 Center
+        {
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
         }
 
         #endregion
 
 
         /// <summary>
-        /// Set SLModel parameters to default before LoadContent() and Init()
+        /// Sets Default ModelPara, need LoadContent() and Init()
         /// </summary>
         public SLModel()
         {
-            Para = ModelPara.Default;
-            RotateModel(Para.BasePara.orientation3d);
-            TranslateModel(Para.BasePara.center);
+            Para = new ModelPara("");
         }
 
         /// <summary>
@@ -75,49 +101,102 @@ namespace StiLib.Vision
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="mfilename"></param>
-        public SLModel(GraphicsDevice gd, IServiceProvider service, string path, string mfilename) : this()
+        /// <param name="modelname"></param>
+        public SLModel(GraphicsDevice gd, IServiceProvider service, string path, string modelname)
+            : base(gd)
         {
-            LoadContent(service, path, mfilename);
+            Para = new ModelPara(modelname);
+            LoadContent(service, path, modelname);
             Init(gd);
         }
 
         /// <summary>
-        /// Init
+        /// Init with Custom ModelPara
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="mpara"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="mfilename"></param>
-        public SLModel(GraphicsDevice gd, ModelPara mpara, IServiceProvider service, string path, string mfilename)
+        /// <param name="modelpara"></param>
+        public SLModel(GraphicsDevice gd, IServiceProvider service, string path, ModelPara modelpara)
+            : base(gd)
         {
-            Para = mpara;
-            RotateModel(Para.BasePara.orientation3d);
-            TranslateModel(Para.BasePara.center);
-            LoadContent(service, path, mfilename);
+            Para = modelpara;
+            LoadContent(service, path, modelpara.modelname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom ModelPara and Configuration
+        /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="modelpara"></param>
+        public SLModel(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, IServiceProvider service, string path, ModelPara modelpara)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = modelpara;
+            LoadContent(service, path, modelpara.modelname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom ModelPara and StiLib Configuration File
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="modelpara"></param>
+        public SLModel(GraphicsDevice gd, AssemblySettings slconfig, IServiceProvider service, string path, ModelPara modelpara)
+            : base(gd, slconfig)
+        {
+            Para = modelpara;
+            LoadContent(service, path, modelpara.modelname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom ModelPara and Model Name
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="modelname"></param>
+        /// <param name="modelpara"></param>
+        public SLModel(GraphicsDevice gd, IServiceProvider service, string path, string modelname, ModelPara modelpara)
+            : base(gd)
+        {
+            Para = modelpara;
+            LoadContent(service, path, modelname);
             Init(gd);
         }
 
 
         /// <summary>
-        /// Load a Model
+        /// Load the Model
         /// </summary>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="mfilename"></param>
-        public void LoadContent(IServiceProvider service, string path, string mfilename)
+        /// <param name="modelname"></param>
+        public override void LoadContent(IServiceProvider service, string path, string modelname)
         {
-            cm = new ContentManager(service, path);
+            contentManager = new ContentManager(service, path);
             try
             {
-                model = cm.Load<Model>(mfilename);
+                model = contentManager.Load<Model>(modelname);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error !");
             }
-            Para.MFilename = mfilename;
+
+            Para.modelname = modelname;
         }
 
         /// <summary>
@@ -130,23 +209,37 @@ namespace StiLib.Vision
 
             BoneTransforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(BoneTransforms);
+
+            ori3DMatrix = GetOri3DMatrix(Para.BasePara.orientation3D);
+            worldMatrix = Matrix.CreateTranslation(Para.BasePara.center);
         }
 
         /// <summary>
-        /// Init to custom SLModel parameters
+        /// Init with Custom ModelPara
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="mpara"></param>
-        public void Init(GraphicsDevice gd, ModelPara mpara)
+        /// <param name="modelpara"></param>
+        public void Init(GraphicsDevice gd, ModelPara modelpara)
         {
-            Para = mpara;
+            modelpara.modelname = Para.modelname;
+            modelpara.BasePara.contentname = Para.BasePara.contentname;
+            Para = modelpara;
             Init(gd);
         }
 
         /// <summary>
         /// Draw Model Using BasicEffect
         /// </summary>
-        public void Draw()
+        /// <param name="gd"></param>
+        public override void Draw(GraphicsDevice gd)
+        {
+            Draw();
+        }
+
+        /// <summary>
+        /// Draw Model Using BasicEffect
+        /// </summary>
+        public override void Draw()
         {
             if (Para.BasePara.visible)
             {
@@ -157,50 +250,30 @@ namespace StiLib.Vision
                         effect.EnableDefaultLighting();
                         effect.GraphicsDevice.RenderState.DepthBufferEnable = true;
 
-                        effect.World = Matrix_R * BoneTransforms[mesh.ParentBone.Index] * Matrix_T;
-                        effect.View = GlobalView();
-                        effect.Projection = GlobalProj();
+                        effect.World = ori3DMatrix * BoneTransforms[mesh.ParentBone.Index] * worldMatrix;
+                        effect.View = ViewMatrix;
+                        effect.Projection = ProjectionMatrix;
                     }
                     mesh.Draw();
                 }
             }
         }
 
-
         /// <summary>
-        /// Rotate Model in model space
+        /// Creates a new object that is a copy of the current instance
         /// </summary>
-        /// <param name="rotate"></param>
-        public void RotateModel(Vector3 rotate)
+        /// <returns></returns>
+        public override object Clone()
         {
-            Matrix_R = Matrix.CreateFromYawPitchRoll(rotate.Y, rotate.X, rotate.Z);
-        }
-
-        /// <summary>
-        /// Translate Model in world space
-        /// </summary>
-        /// <param name="translate"></param>
-        public void TranslateModel(Vector3 translate)
-        {
-            Matrix_T = Matrix.CreateTranslation(translate);
-        }
-
-        /// <summary>
-        /// Set World Transform
-        /// </summary>
-        /// <param name="world"></param>
-        public override void SetWorld(Matrix world)
-        {
-            Matrix_T = world;
-        }
-
-        /// <summary>
-        /// Set Visible State
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            Para.BasePara.visible = isvisible;
+            if (gdRef != null)
+            {
+                return new SLModel(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, contentManager.ServiceProvider, contentManager.RootDirectory, Para);
+            }
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
+            }
         }
 
     }

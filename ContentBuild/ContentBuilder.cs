@@ -141,10 +141,11 @@ namespace ContentBuild
 
             // Include the standard targets file that defines
             // how to build XNA Framework content.
-            //msBuildProject.AddNewImport("$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.1" +
-            //                                                  "\\Microsoft.Xna.GameStudio.ContentPipeline.targets", null);
             msBuildProject.AddNewImport(Directory.GetCurrentDirectory() +
                                                          "\\Microsoft.Xna.GameStudio.ContentPipeline.targets", null);
+            //msBuildProject.AddNewImport("$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.1" +
+            //                                                  "\\Microsoft.Xna.GameStudio.ContentPipeline.targets", null);
+
         }
 
         /// <summary>
@@ -298,5 +299,6 @@ namespace ContentBuild
         }
 
         #endregion
+
     }
 }

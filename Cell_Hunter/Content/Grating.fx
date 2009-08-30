@@ -1,9 +1,9 @@
 //-----------------------------------------------------------------------------
 // File: Grating.fx
 //
-// Effect Shader to render grating stimulus
+// Effect Shader to Render Grating Stimulus
 //
-// Copyright (c) Zhang Li.	2009/03/03
+// Copyright (c) Zhang Li.	2009/03/03.
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -14,7 +14,6 @@ float4x4 View;
 float4x4 Projection;
 
 float		time;
-float		radius;
 float		tf;
 float		sf;
 float		sphase;
@@ -47,7 +46,7 @@ struct VertexShaderOutput
 float4 Sinusoidal(float4 Position)
 {
     // Interpolate Color to Sin Function
-    float Cstep = sin( 2 * 3.14159f * sf * ( Position.x + radius + sphase/sf - tf * time ) );
+    float Cstep = sin( 2 * 3.14159f * sf * ( Position.x + sphase/sf - tf * time ) );
 	return float4( (Cstep+1)*colorwidth.x/2+mincolor.x,
 						(Cstep+1)*colorwidth.y/2+mincolor.y, 
 						(Cstep+1)*colorwidth.z/2+mincolor.z, 
@@ -56,7 +55,7 @@ float4 Sinusoidal(float4 Position)
 
 float4 Square(float4 Position)
 {
-    float Cstep = sin( 2 * 3.14159f * sf * ( Position.x + radius + sphase/sf - tf * time ) );
+    float Cstep = sin( 2 * 3.14159f * sf * ( Position.x + sphase/sf - tf * time ) );
     if (Cstep>0)
     {
 		return float4( maxcolor.x, maxcolor.y, maxcolor.z, colorwidth.w );
@@ -69,14 +68,9 @@ float4 Square(float4 Position)
 
 float4 Linear(float4 Position)
 {
-	float X = abs( Position.x + radius + sphase/sf - tf * time );
-	float XX = fmod( X, 1/sf/2 );
-	float which = - sign( fmod( floor( X * sf * 2 ), 2 ) - 0.5 );
-	float Cstep= which * 4 * sf * XX;
-	if ( abs(Cstep) > 1 )
-	{
-		Cstep = which * 2 - Cstep;
-	}
+	float X = Position.x + sphase/sf - tf * time;
+	float XX = frac( X * sf + 0.25 );
+	float Cstep= 1 - abs(XX - 0.5) * 4;
 	return float4( (Cstep+1)*colorwidth.x/2+mincolor.x,
 						(Cstep+1)*colorwidth.y/2+mincolor.y, 
 						(Cstep+1)*colorwidth.z/2+mincolor.z, 
@@ -143,7 +137,8 @@ float4 PSNone(VertexShaderOutput input) : COLOR0
 float4 PSGaussian(VertexShaderOutput input) : COLOR0
 {
 	float d = pow( input.Texcoord.x, 2 ) + pow( input.Texcoord.y, 2 );
-    return input.Color * exp( - d / (2 * pow(sigma, 2) ) );
+	input.Color.w = input.Color.w * exp( - d / (2 * pow(sigma, 2) ) );
+    return input.Color;
 }
 //-----------------------------------------------------------------------------
 // Shader and technique definitions

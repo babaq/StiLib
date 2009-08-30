@@ -9,8 +9,8 @@
 
 #region Using Statements
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using StiLib.Core;
 #endregion
@@ -18,75 +18,66 @@ using StiLib.Core;
 namespace StiLib.Vision
 {
     /// <summary>
-    /// Vision stimulus base class
+    /// StiLib Vision Stimulus Abstract Base Class
     /// </summary>
-    abstract public class VisionStimulus
+    public abstract class VisionStimulus : ICloneable
     {
-        #region Visual Configuration
+        #region Visual Configurations
 
         /// <summary>
-        /// Perpendicular Distance from eye to display (mm), Usually Map 1deg Visual Angle to 10mm on Display 
+        /// Perpendicular Distance From Eye to Display(mm), Usually Map 1(deg) Visual Angle to 10(mm) on Display. 
         /// </summary>
-        public float distance2display;
-
+        public float distance2Display;
         /// <summary>
-        /// Display AspectRatio (Width : Height), 1.333(4:3) or 1.778(16:9)
+        /// Display Viewable Width : Height AspectRatio, 1.333(4:3) or 1.778(16:9)
         /// </summary>
-        public float displayratio;
-
+        public float displayRatio;
         /// <summary>
-        /// Display Size (Viewable Diagonal Length in Inch (1 Inch = 25.4mm), 17inch: 15, 22inch: 20 )
+        /// Display Viewable Diagonal Length in Inch(1 Inch = 25.4 mm), 17inch CRT Display: 15 Viewable, 22inch CRT Display: 20 Viewable
         /// </summary>
-        public float displaysize;
+        public float displaySize;
 
         #endregion
 
-        #region Display Parameter
+        #region Display Parameters
 
         /// <summary>
-        /// Current Display viewable height in mm
+        /// Current Display Viewable Height in MM
         /// </summary>
-        public float view_h_mm;
-
+        public float display_H_mm;
         /// <summary>
-        /// Current Display viewable width in mm
+        /// Current Display Viewable Width in MM
         /// </summary>
-        public float view_w_mm;
-
+        public float display_W_mm;
         /// <summary>
-        /// Current Display viewable height in pixel
+        /// Current Display Viewable Height in Current Full Screen Resolution Pixel
         /// </summary>
-        public int view_h_pixel;
-
+        public int display_H_pixel;
         /// <summary>
-        /// Current Display viewable width in pixel
+        /// Current Display Viewable Width in Current Full Screen Resolution Pixel
         /// </summary>
-        public int view_w_pixel;
-
+        public int display_W_pixel;
         /// <summary>
-        /// Current Display viewable height in visual angle degree
+        /// Current Display Viewable Height in Visual Angle Degree
         /// </summary>
-        public float view_h_deg;
-
+        public float display_H_deg;
         /// <summary>
-        /// Current Display viewable width in visual angle degree
+        /// Current Display Viewable Width in Visual Angle Degree
         /// </summary>
-        public float view_w_deg;
+        public float display_W_deg;
 
         #endregion
 
-        #region Unit Conversion Factor
+        #region Unit Conversion Factors
 
         /// <summary>
         /// Current Display Size (MM) per Visual Angle (Deg)
         /// </summary>
         public float mm_p_deg;
-
         /// <summary>
         /// Current Full Screen Resolution (Pixel) per Visual Angle (Deg)
         /// </summary>
         public float pixel_p_deg;
-
         /// <summary>
         /// Current Full Screen Resolution (Pixel) per Display Size (MM)
         /// </summary>
@@ -94,27 +85,71 @@ namespace StiLib.Vision
 
         #endregion
 
-        #region Presentation Parameter
+        #region Stimulus Internal States
 
         /// <summary>
-        /// Global Camera
+        /// Global Camera to View Vision Stimulus
         /// </summary>
-        public SLCamera gcamera;
+        public SLCamera globalCamera;
         /// <summary>
-        /// Global Unit
+        /// Global Unit to Measure Vision Stimulus Size
         /// </summary>
         public Unit unit;
         /// <summary>
         /// Current Global Unit Conversion Factor
         /// </summary>
-        public float ufactor;
+        public float unitFactor;
+        /// <summary>
+        /// Internal GraphicsDevice Reference
+        /// </summary>
+        public GraphicsDevice gdRef;
+        /// <summary>
+        /// Vision Stimulus 3D Orientation Rotation Matrix
+        /// </summary>
+        protected Matrix ori3DMatrix = Matrix.Identity;
+        /// <summary>
+        /// Vision Stimulus World Transform Matrix
+        /// </summary>
+        protected Matrix worldMatrix = Matrix.Identity;
+        /// <summary>
+        /// Vision Stimulus Vertex Declaration
+        /// </summary>
+        public VertexDeclaration vertexDeclaration;
+        /// <summary>
+        /// Vision Stimulus Vertex Array
+        /// </summary>
+        protected VertexPositionColor[] vertexArray;
+        /// <summary>
+        /// Vision Stimulus Index Array
+        /// </summary>
+        protected int[] indexArray;
+        /// <summary>
+        /// Vision Stimulus Vertex Buffer
+        /// </summary>
+        public VertexBuffer vertexBuffer;
+        /// <summary>
+        /// Vision Stimulus Index Buffer
+        /// </summary>
+        public IndexBuffer indexBuffer;
+        /// <summary>
+        /// Vision Stimulus Content Manager
+        /// </summary>
+        public ContentManager contentManager;
+        /// <summary>
+        /// Vision Stimulus Sprite Batch
+        /// </summary>
+        public SpriteBatch spriteBatch;
+        /// <summary>
+        /// Vision Stimulus Basic Effect
+        /// </summary>
+        public BasicEffect basicEffect;
 
         #endregion
 
 
         /// <summary>
-        /// Init to default settings -- distance2display:570mm, displayratio:1.333, displaysize:20inch, 
-        /// fullscreen_w_p:800, fullscreen_h_p:600, camera:default, unit:Deg
+        /// Initialize Vision Stimulus Using Default Settings -- distance2Display: 570mm, displayRatio: 1.333, displaySize: 20inch, 
+        /// Fullscreen_w_pixel: 800, Fullscreen_h_pixel: 600, Camera: Default, Unit: Deg
         /// </summary>
         public VisionStimulus()
             : this(570, 1.333f, 20, 800, 600, new SLCamera(), Unit.Deg)
@@ -122,297 +157,857 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Init to default settings -- distance2display:570mm, displayratio:1.333, displaysize:20inch, unit:Deg
-        /// and current GraphicsDevice fullscreen resolution and viewport
+        /// Initialize Vision Stimulus Using StiLib Configuration File, 
+        /// and Default Settings -- Fullscreen_w_pixel: 800, Fullscreen_h_pixel: 600, Camera: Default, Unit: Deg
+        /// </summary>
+        /// <param name="slconfig"></param>
+        public VisionStimulus(AssemblySettings slconfig)
+            : this(Convert.ToSingle(slconfig["distance2display"]), Convert.ToSingle(slconfig["displayratio"]), Convert.ToSingle(slconfig["displaysize"]), 800, 600, new SLCamera(), Unit.Deg)
+        {
+        }
+
+        /// <summary>
+        /// Initialize Vision Stimulus Using StiLib Configuration File, Current GraphicsDevice Fullscreen Resolution and Viewport, 
+        /// and Default Settings -- Unit: Deg and Set Internal GraphicsDevice Reference
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        public VisionStimulus(GraphicsDevice gd, AssemblySettings slconfig)
+            : this(Convert.ToSingle(slconfig["distance2display"]), Convert.ToSingle(slconfig["displayratio"]), Convert.ToSingle(slconfig["displaysize"]), gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), Unit.Deg)
+        {
+            gdRef = gd;
+        }
+
+        /// <summary>
+        /// Initialize Vision Stimulus Using Current GraphicsDevice Fullscreen Resolution and Viewport, 
+        /// and Default Settings -- distance2Display: 570mm, displayRatio: 1.333, displaySize: 20inch, Unit: Deg
+        /// and Set Internal GraphicsDevice Reference
         /// </summary>
         /// <param name="gd"></param>
         public VisionStimulus(GraphicsDevice gd)
             : this(570, 1.333f, 20, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), Unit.Deg)
         {
+            gdRef = gd;
         }
 
         /// <summary>
-        /// Init to custom settings according to current GraphicsDevice
+        /// Initialize Vision Stimulus According to Current GraphicsDevice Fullscreen Resolution, 
+        /// and Set Internal GraphicsDevice Reference
         /// </summary>
-        /// <param name="distance"></param>
-        /// <param name="ratio"></param>
-        /// <param name="size"></param>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
         /// <param name="gd"></param>
-        /// <param name="u"></param>
-        public VisionStimulus(float distance, float ratio, float size, GraphicsDevice gd, Unit u)
-            : this(distance, ratio, size, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), u)
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        public VisionStimulus(float distance2display, float displayratio, float displaysize, GraphicsDevice gd, SLCamera camera, Unit unit)
+            : this(distance2display, displayratio, displaysize, gd.DisplayMode.Width, gd.DisplayMode.Height, camera, unit)
         {
+            gdRef = gd;
         }
 
         /// <summary>
-        /// Init to custom settings
+        /// Initialize Vision Stimulus
         /// </summary>
-        /// <param name="distance">distance2display</param>
-        /// <param name="ratio">displayratio</param>
-        /// <param name="size">displaysize</param>
-        /// <param name="fullscreen_w_p">full screen resolution pixel in width</param>
-        /// <param name="fullscreen_h_p">full screen resolution pixel in height</param>
-        /// <param name="cam">Global Camera</param>
-        /// <param name="u">Global Unit</param>
-        public VisionStimulus(float distance, float ratio, float size, int fullscreen_w_p, int fullscreen_h_p, SLCamera cam, Unit u)
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="fullscreen_w_pixel"></param>
+        /// <param name="fullscreen_h_pixel"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        public VisionStimulus(float distance2display, float displayratio, float displaysize, int fullscreen_w_pixel, int fullscreen_h_pixel, SLCamera camera, Unit unit)
         {
-            InitVS(distance, ratio, size, fullscreen_w_p, fullscreen_h_p, cam, u);
+            InitVS(distance2display, displayratio, displaysize, fullscreen_w_pixel, fullscreen_h_pixel, camera, unit);
         }
 
 
         /// <summary>
         /// Set Configuration Parameters
         /// </summary>
-        /// <param name="distance">distance2display</param>
-        /// <param name="ratio">displayratio</param>
-        /// <param name="size">displaysize</param>
-        /// <param name="fullscreen_w_p">full screen resolution pixel in width</param>
-        /// <param name="fullscreen_h_p">full screen resolution pixel in height</param>
-        /// <param name="cam">Global Camera</param>
-        /// <param name="u">Global Unit</param>
-        public void SetConfigPara(float distance, float ratio, float size, int fullscreen_w_p, int fullscreen_h_p, SLCamera cam, Unit u)
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="fullscreen_w_pixel"></param>
+        /// <param name="fullscreen_h_pixel"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        public void SetConfig(float distance2display, float displayratio, float displaysize, int fullscreen_w_pixel, int fullscreen_h_pixel, SLCamera camera, Unit unit)
         {
-            distance2display = distance;
-            displayratio = ratio;
-            displaysize = size;
-            view_w_pixel = fullscreen_w_p;
-            view_h_pixel = fullscreen_h_p;
-            gcamera = cam.Clone() as SLCamera;
-            unit = u;
+            this.distance2Display = distance2display;
+            this.displayRatio = displayratio;
+            this.displaySize = displaysize;
+            this.display_W_pixel = fullscreen_w_pixel;
+            this.display_H_pixel = fullscreen_h_pixel;
+            this.globalCamera = camera.Clone() as SLCamera;
+            this.unit = unit;
         }
 
         /// <summary>
-        /// Setup Visual Environment according to Config Parameters after SetConfigPara() Method
+        /// Setup Visual Environment According to Internal Configuration Parameters
         /// </summary>
         public void Config()
         {
             // Map Display(mm) to Visual Angle(deg)
-            mm_p_deg = 2 * 0.008737f * distance2display; // tan(0.5)=0.008737
+            mm_p_deg = 2 * 0.008737f * distance2Display; // tan(0.5) = 0.008737
 
-            // Get Display viewable size in mm
-            view_h_mm = (float)Math.Sqrt(Math.Pow(displaysize * SLConstant.MMpInch, 2) / (1 + Math.Pow(displayratio, 2)));
-            view_w_mm = view_h_mm * displayratio;
+            // Get Display Viewable Size in MM
+            display_H_mm = (float)Math.Sqrt(Math.Pow(displaySize * SLConstant.MM_p_Inch, 2) / (1 + Math.Pow(displayRatio, 2)));
+            display_W_mm = display_H_mm * displayRatio;
 
-            // Get Display viewable size in deg
-            view_h_deg = view_h_mm / mm_p_deg;
-            view_w_deg = view_h_deg * displayratio;
+            // Get Display Viewable Size in Deg
+            display_H_deg = display_H_mm / mm_p_deg;
+            display_W_deg = display_H_deg * displayRatio;
 
             // Map Display(pixel) to Display(mm)
-            pixel_p_mm = view_w_pixel / view_w_mm;
+            pixel_p_mm = display_W_pixel / display_W_mm;
 
             // Map Display(pixel) to Visual Angle(deg)
-            pixel_p_deg = view_w_pixel / view_w_deg;
+            pixel_p_deg = display_W_pixel / display_W_deg;
 
-            // Set Current Global Unit Conversion Factor according to Current Global Unit
+            // Set Current Global Unit Conversion Factor According to Current Global Unit
             switch (unit)
             {
                 case Unit.Deg:
-                    ufactor = pixel_p_deg; break;
+                    unitFactor = pixel_p_deg; break;
                 case Unit.MM:
-                    ufactor = pixel_p_mm; break;
+                    unitFactor = pixel_p_mm; break;
                 case Unit.Pixel:
-                    ufactor = 1.0f; break;
+                    unitFactor = 1.0f; break;
             }
         }
 
         /// <summary>
-        /// Initialize all configuration
+        /// Initialize Vision Stimulus Configuration
         /// </summary>
-        /// <param name="distance">distance2display</param>
-        /// <param name="ratio">displayratio</param>
-        /// <param name="size">displaysize</param>
-        /// <param name="fullscreen_w_p">full screen resolution pixel in width</param>
-        /// <param name="fullscreen_h_p">full screen resolution pixel in height</param>
-        /// <param name="cam">Global Camera</param>
-        /// <param name="u">Global Unit</param>
-        public void InitVS(float distance, float ratio, float size, int fullscreen_w_p, int fullscreen_h_p, SLCamera cam, Unit u)
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="fullscreen_w_pixel"></param>
+        /// <param name="fullscreen_h_pixel"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        public void InitVS(float distance2display, float displayratio, float displaysize, int fullscreen_w_pixel, int fullscreen_h_pixel, SLCamera camera, Unit unit)
         {
-            if ((view_w_pixel != fullscreen_w_p) || (view_h_pixel != fullscreen_h_p) || (distance2display != distance) || (displayratio != ratio) || (displaysize != size) || (!gcamera.Equals(cam)) || (unit != u))
+            if ((this.distance2Display != distance2display) || (this.displayRatio != displayratio) || (this.displaySize != displaysize) || (this.display_W_pixel != fullscreen_w_pixel) || (this.display_H_pixel != fullscreen_h_pixel) || (!this.globalCamera.Equals(camera)) || (this.unit != unit))
             {
-                SetConfigPara(distance, ratio, size, fullscreen_w_p, fullscreen_h_p, cam, u);
+                SetConfig(distance2display, displayratio, displaysize, fullscreen_w_pixel, fullscreen_h_pixel, camera, unit);
                 Config();
             }
         }
 
         /// <summary>
-        /// Init according to current GraphicsDevice fullscreen resolution and viewport
+        /// Set Internal GraphicsDevice Reference,
+        /// and Initialize Vision Stimulus Configuration According to Current GraphicsDevice Fullscreen Resolution and Viewport. 
+        /// This method needs to be called before any derived stimulus initialization.
         /// </summary>
         /// <param name="gd"></param>
         public void InitVS(GraphicsDevice gd)
         {
-            InitVS(distance2display, displayratio, displaysize, gd.DisplayMode.Width, gd.DisplayMode.Height, new SLCamera(gd), unit);
+            gdRef = gd;
+            InitVS(distance2Display, displayRatio, displaySize, gd.DisplayMode.Width, gd.DisplayMode.Height, globalCamera.Clone(gd) as SLCamera, unit);
         }
 
         /// <summary>
-        /// Get Global Camera View Matrix
+        /// Set Internal GraphicsDevice Reference,
+        /// and Initialize Vision Stimulus Configuration According to StiLib Configuration File, 
+        /// Current GraphicsDevice Fullscreen Resolution and Viewport. 
+        /// This method needs to be called before any derived stimulus initialization.
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        public void InitVS(GraphicsDevice gd, AssemblySettings slconfig)
+        {
+            gdRef = gd;
+            InitVS(Convert.ToSingle(slconfig["distance2display"]), Convert.ToSingle(slconfig["displayratio"]), Convert.ToSingle(slconfig["displaysize"]), gd.DisplayMode.Width, gd.DisplayMode.Height, globalCamera.Clone(gd) as SLCamera, unit);
+        }
+
+
+        #region Abstract Virtual Functions
+
+        /// <summary>
+        /// Initialize Stimulus According to Internal Parameters
+        /// </summary>
+        /// <param name="gd"></param>
+        public abstract void Init(GraphicsDevice gd);
+
+        /// <summary>
+        /// Draw Stimulus Using Current GraphicsDevice
+        /// </summary>
+        /// <param name="gd"></param>
+        public abstract void Draw(GraphicsDevice gd);
+
+        /// <summary>
+        /// Creates a New Object That is a Copy of the Current Instance
         /// </summary>
         /// <returns></returns>
-        public Matrix GlobalView()
-        {
-            return gcamera.ViewMatrix;
-        }
+        public abstract object Clone();
 
         /// <summary>
-        /// Get Global Camera Unified Projection Matrix
+        /// Vision Stimulus Basic Parameters
         /// </summary>
-        /// <returns></returns>
-        public Matrix GlobalProj()
-        {
-            return gcamera.GetUnitProj(gcamera.projtype, ufactor);
-        }
+        public abstract vsBasePara BasePara { get; set; }
 
         /// <summary>
-        /// Global Projection Type
+        /// Vision Stimulus Center
         /// </summary>
-        public ProjectionType GlobalProjType
-        {
-            get { return gcamera.projtype; }
-            set { gcamera.projtype = value; }
-        }
+        public abstract Vector3 Center { get; set; }
+
+        /// <summary>
+        /// Vision Stimulus 3D Space Speed
+        /// </summary>
+        public abstract Vector3 Speed3D { get; set; }
+
+        /// <summary>
+        /// Vision Stimulus Visible State
+        /// </summary>
+        public abstract bool Visible { get; set; }
+
+        #endregion
 
 
         /// <summary>
         /// Load Stimulus Content
         /// </summary>
         /// <param name="service"></param>
-        /// <param name="path"></param>
-        public virtual void LoadContent(IServiceProvider service, string path)
+        /// <param name="contentpath"></param>
+        /// <param name="content"></param>
+        public virtual void LoadContent(IServiceProvider service, string contentpath, string content)
         {
         }
 
         /// <summary>
-        /// Init Stimulus according to internal parameters
+        /// Update Stimulus
+        /// </summary>
+        /// <param name="time"></param>
+        public virtual void Update(double time)
+        {
+        }
+
+        /// <summary>
+        /// Draw Stimulus Using Internal GraphicsDevice Reference
+        /// </summary>
+        public virtual void Draw()
+        {
+            if (gdRef != null)
+            {
+                Draw(gdRef);
+            }
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+            }
+        }
+
+        /// <summary>
+        /// Sets Vision Stimulus Vertex Buffer
         /// </summary>
         /// <param name="gd"></param>
-        public virtual void Init(GraphicsDevice gd)
+        public virtual void SetVertexBuffer(GraphicsDevice gd)
         {
+            int temp = VertexArray.Length * VertexPositionColor.SizeInBytes;
+            if (vertexBuffer == null)
+            {
+                vertexBuffer = new VertexBuffer(gd, temp, BufferUsage.None);
+            }
+            else
+            {
+                if (temp > vertexBuffer.SizeInBytes)
+                {
+                    vertexBuffer.Dispose();
+                    vertexBuffer = new VertexBuffer(gd, temp, BufferUsage.None);
+                }
+            }
+            vertexBuffer.SetData<VertexPositionColor>(VertexArray);
         }
 
         /// <summary>
-        /// Draw Stimulus
+        /// Sets Vision Stimulus Vertex Buffer Using Internal GraphicsDevice Reference
+        /// </summary>
+        public virtual void SetVertexBuffer()
+        {
+            SetVertexBuffer(gdRef);
+        }
+
+        /// <summary>
+        /// Sets Vision Stimulus Index Buffer
         /// </summary>
         /// <param name="gd"></param>
-        public virtual void Draw(GraphicsDevice gd)
+        public virtual void SetIndexBuffer(GraphicsDevice gd)
         {
+            int temp = IndexArray.Length * sizeof(int);
+            if (indexBuffer == null)
+            {
+                indexBuffer = new IndexBuffer(gd, temp, BufferUsage.None, IndexElementSize.ThirtyTwoBits);
+            }
+            else
+            {
+                if (temp > indexBuffer.SizeInBytes)
+                {
+                    indexBuffer.Dispose();
+                    indexBuffer = new IndexBuffer(gd, temp, BufferUsage.None, IndexElementSize.ThirtyTwoBits);
+                }
+            }
+            indexBuffer.SetData<int>(IndexArray);
         }
 
         /// <summary>
-        /// Set World Transform
+        /// Sets Vision Stimulus Index Buffer Using Internal GraphicsDevice Reference
         /// </summary>
-        /// <param name="world"></param>
-        public virtual void SetWorld(Matrix world)
+        public virtual void SetIndexBuffer()
         {
+            SetIndexBuffer(gdRef);
         }
 
         /// <summary>
-        /// Set View Transform
+        /// Vision Stimulus Vertex Array
         /// </summary>
-        /// <param name="view"></param>
-        public virtual void SetView(Matrix view)
+        public virtual VertexPositionColor[] VertexArray
         {
+            get { return vertexArray; }
+            set { vertexArray = value; }
         }
 
         /// <summary>
-        /// Set Projection Transform
+        /// Vision Stimulus Index Array
         /// </summary>
-        /// <param name="proj"></param>
-        public virtual void SetProjection(Matrix proj)
+        public virtual int[] IndexArray
         {
+            get { return indexArray; }
+            set { indexArray = value; }
         }
 
         /// <summary>
-        /// Set Visible State
+        /// Vision Stimulus 3D Orientation Rotation Matrix
         /// </summary>
-        /// <param name="isvisible"></param>
-        public virtual void SetVisible(bool isvisible)
+        public virtual Matrix Ori3DMatrix
         {
+            get { return ori3DMatrix; }
+            set { ori3DMatrix = value; }
+        }
+
+        /// <summary>
+        /// Vision Stimulus World Transform Matrix
+        /// </summary>
+        public virtual Matrix WorldMatrix
+        {
+            get { return worldMatrix; }
+            set { worldMatrix = value; }
+        }
+
+        /// <summary>
+        /// Gets Global Camera View. Sets BasicEffect View.
+        /// </summary>
+        public virtual Matrix ViewMatrix
+        {
+            get { return globalCamera.ViewMatrix; }
+            set { basicEffect.View = value; }
+        }
+
+        /// <summary>
+        /// Gets Global Camera Projection. Sets BasicEffect Projection.
+        /// </summary>
+        public virtual Matrix ProjectionMatrix
+        {
+            get { return globalCamera.GetUnitProjection(globalCamera.projectionType, unitFactor); }
+            set { basicEffect.Projection = value; }
+        }
+
+        /// <summary>
+        /// Vision Stimulus Projection Type
+        /// </summary>
+        public virtual ProjectionType ProjectionType
+        {
+            get { return globalCamera.projectionType; }
+            set { globalCamera.projectionType = value; }
+        }
+
+        /// <summary>
+        /// Gets Current Vision Stimulus Type
+        /// </summary>
+        public virtual VSType VSType
+        {
+            get { return BasePara.vstype; }
+        }
+
+
+        /// <summary>
+        /// Check Primitive Count
+        /// </summary>
+        /// <param name="primitivetype"></param>
+        /// <param name="numindices"></param>
+        /// <param name="primitivecount"></param>
+        /// <returns>Checked Primitive Count</returns>
+        public static int CheckPrimitiveCount(PrimitiveType primitivetype, int numindices, int primitivecount)
+        {
+            int temp = 0;
+            switch (primitivetype)
+            {
+                case PrimitiveType.PointList:
+                    temp = numindices;
+                    break;
+                case PrimitiveType.LineList:
+                    temp = numindices / 2;
+                    break;
+                case PrimitiveType.LineStrip:
+                    temp = numindices - 1;
+                    break;
+                case PrimitiveType.TriangleList:
+                    temp = numindices / 3;
+                    break;
+                case PrimitiveType.TriangleStrip:
+                case PrimitiveType.TriangleFan:
+                    temp = numindices - 2;
+                    break;
+            }
+
+            if (primitivecount > temp)
+            {
+                primitivecount = temp;
+            }
+            return primitivecount;
+        }
+
+        /// <summary>
+        /// Get 3D Orientation Rotation Matrix
+        /// </summary>
+        /// <param name="orientation3d"></param>
+        /// <returns></returns>
+        public static Matrix GetOri3DMatrix(Vector3 orientation3d)
+        {
+            return Matrix.CreateFromYawPitchRoll(orientation3d.Y, orientation3d.X, orientation3d.Z);
         }
 
     }
 
-    #region Parameter Type
+    #region Vision Stimulus Parameter Structs
 
     /// <summary>
     /// Visual Stimulus Basic Parameters
     /// </summary>
-    public struct BasePara
+    public struct vsBasePara
     {
         /// <summary>
-        /// Init to custom parameters
+        /// Initialize BasePara Using Custom Parameters
         /// </summary>
         /// <param name="center"></param>
         /// <param name="diameter"></param>
         /// <param name="orientation"></param>
         /// <param name="orientation3d"></param>
+        /// <param name="rotationspeed"></param>
+        /// <param name="rotationspeed3d"></param>
+        /// <param name="direction"></param>
         /// <param name="speed"></param>
-        /// <param name="movearea"></param>
+        /// <param name="speed3d"></param>
+        /// <param name="space"></param>
         /// <param name="color"></param>
         /// <param name="visible"></param>
-        public BasePara(Vector3 center, float diameter, float orientation, Vector3 orientation3d, Vector3 speed, float movearea, Color color, bool visible)
+        /// <param name="vstype"></param>
+        /// <param name="contentname"></param>
+        /// <param name="lifetime"></param>
+        /// <param name="primitivetype"></param>
+        public vsBasePara(Vector3 center, float diameter, float orientation, Vector3 orientation3d, float rotationspeed, Vector3 rotationspeed3d, float direction, float speed, Vector3 speed3d, float space, Color color, bool visible, VSType vstype, string contentname, double lifetime, PrimitiveType primitivetype)
         {
             this.center = center;
             this.diameter = diameter;
             this.orientation = orientation;
-            this.orientation3d = orientation3d;
+            this.orientation3D = orientation3d;
+            this.rotationspeed = rotationspeed;
+            this.rotationspeed3D = rotationspeed3d;
+            this.direction = direction;
             this.speed = speed;
-            this.movearea = movearea;
+            this.speed3D = speed3d;
+            this.space = space;
             this.color = color;
             this.visible = visible;
+            this.vstype = vstype;
+            this.contentname = contentname;
+            this.lifetime = lifetime;
+            this.primitivetype = primitivetype;
         }
 
         /// <summary>
-        /// Get Default BasePara -- center:(0,0,0), diameter:10Unit, orientation:0.0deg, orientation3d:(0,0,0), speed:(0,0,0), movearea:10Unit, color:White, visible:true
+        /// Gets Default BasePara -- center: (0, 0, 0), diameter: 5.0Unit, orientation: 0.0deg, orientation3D: (0, 0, 0), rotationspeed: 10.0Rad/s, rotationspeed3D: (0, 0, 0), 
+        /// direction: 0.0deg, speed: 10.0Unit/s, speed3D: (0, 0, 0), space: 10.0Unit, color: White, visible: true, vstype: None, contentname: "BasicEffect", lifetime: 1.0sec, primitivetype: PointList
         /// </summary>
-        public static BasePara Default
+        public static vsBasePara Default
         {
             get
             {
-                return new BasePara(Vector3.Zero, 10.0f, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, Color.White, true);
+                return new vsBasePara(Vector3.Zero, 5.0f, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, Color.White, true, VSType.None, "BasicEffect", 1.0, PrimitiveType.PointList);
+            }
+        }
+
+        /// <summary>
+        /// Gets Default BasePara Except VSType
+        /// </summary>
+        /// <param name="vstype"></param>
+        /// <returns></returns>
+        public static vsBasePara VSTypeDefault(VSType vstype)
+        {
+            return new vsBasePara(Vector3.Zero, 5.0f, 0.0f, Vector3.Zero, 0.0f, Vector3.Zero, 0.0f, 0.0f, Vector3.Zero, 10.0f, Color.White, true, vstype, "BasicEffect", 1.0, PrimitiveType.PointList);
+        }
+
+        /// <summary>
+        /// Gets Default BasePara Except VSType and PrimitiveType
+        /// </summary>
+        /// <param name="vstype"></param>
+        /// <param name="ptype"></param>
+        /// <returns></returns>
+        public static vsBasePara VS_PTypeDefault(VSType vstype, PrimitiveType ptype)
+        {
+            return new vsBasePara(Vector3.Zero, 5.0f, 0.0f, Vector3.Zero, 0.0f, Vector3.Zero, 0.0f, 0.0f, Vector3.Zero, 10.0f, Color.White, true, vstype, "BasicEffect", 1.0, ptype);
+        }
+
+        /// <summary>
+        /// Gets Default BasePara Except VSType and ContentName
+        /// </summary>
+        /// <param name="vstype"></param>
+        /// <param name="contentname"></param>
+        /// <returns></returns>
+        public static vsBasePara VSTypeContentDefault(VSType vstype, string contentname)
+        {
+            return new vsBasePara(Vector3.Zero, 5.0f, 0.0f, Vector3.Zero, 0.0f, Vector3.Zero, 0.0f, 0.0f, Vector3.Zero, 10.0f, Color.White, true, vstype, contentname, 1.0, PrimitiveType.PointList);
+        }
+
+        /// <summary>
+        /// Gets Default BasePara Except VSType, PrimitiveType and ContentName
+        /// </summary>
+        /// <param name="vstype"></param>
+        /// <param name="ptype"></param>
+        /// <param name="contentname"></param>
+        /// <returns></returns>
+        public static vsBasePara VS_PTypeContentDefault(VSType vstype, PrimitiveType ptype, string contentname)
+        {
+            return new vsBasePara(Vector3.Zero, 5.0f, 0.0f, Vector3.Zero, 0.0f, Vector3.Zero, 0.0f, 0.0f, Vector3.Zero, 10.0f, Color.White, true, vstype, contentname, 1.0, ptype);
+        }
+
+        /// <summary>
+        /// Stimulus Center in World Space(Unit)
+        /// </summary>
+        public Vector3 center;
+        /// <summary>
+        /// Stimulus Size(Unit)
+        /// </summary>
+        public float diameter;
+        /// <summary>
+        /// Stimulus Orientation: [0, 180)(deg), Counterclockwise
+        /// </summary>
+        public float orientation;
+        /// <summary>
+        /// Stimulus 3D Space Orientation
+        /// </summary>
+        public Vector3 orientation3D;
+        /// <summary>
+        /// Stimulus Rotating Speed(Rad/s)
+        /// </summary>
+        public float rotationspeed;
+        /// <summary>
+        /// Stimulus 3D Space Rotating Speed(Rad/s)
+        /// </summary>
+        public Vector3 rotationspeed3D;
+        /// <summary>
+        /// Stimulus Moving Direction: [0, 360)(deg), Counterclockwise
+        /// </summary>
+        public float direction;
+        /// <summary>
+        /// Stimulus Translating Speed(Unit/s)
+        /// </summary>
+        public float speed;
+        /// <summary>
+        /// Stimulus 3D Space Translating Speed(Unit/s)
+        /// </summary>
+        public Vector3 speed3D;
+        /// <summary>
+        /// Define the space*space*space(Unit^3) 3D Space that Confines Stimulus
+        /// </summary>
+        public float space;
+        /// <summary>
+        /// Stimulus Color(R, G, B, A)
+        /// </summary>
+        public Color color;
+        /// <summary>
+        /// Stimulus Visible State
+        /// </summary>
+        public bool visible;
+        /// <summary>
+        /// Stimulus Type
+        /// </summary>
+        public VSType vstype;
+        /// <summary>
+        /// Stimulus Content Name
+        /// </summary>
+        public string contentname;
+        /// <summary>
+        /// Stimulus Life Time(sec)
+        /// </summary>
+        public double lifetime;
+        /// <summary>
+        /// Primitive Draw Type
+        /// </summary>
+        public PrimitiveType primitivetype;
+    }
+
+    /// <summary>
+    /// Bar Parameters
+    /// </summary>
+    public struct BarPara
+    {
+        /// <summary>
+        /// Initialize Bar Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public BarPara(vsBasePara basepara, float width, float height)
+        {
+            basepara.vstype = VSType.Bar;
+            basepara.primitivetype = PrimitiveType.TriangleFan;
+            this.BasePara = basepara;
+            this.width = width;
+            this.height = height;
+        }
+
+        /// <summary>
+        /// Gets Default BarPara -- BasePara: VS_PTypeDefault(VSType.Bar, PrimitiveType.TriangleFan), width: 3.0, height: 1.0
+        /// </summary>
+        public static BarPara Default
+        {
+            get { return new BarPara(vsBasePara.VS_PTypeDefault(VSType.Bar, PrimitiveType.TriangleFan), 3.0f, 1.0f); }
+        }
+
+        /// <summary>
+        /// Encode Common Bar Parameters in MarkerHeader
+        /// </summary>
+        /// <param name="PPort"></param>
+        public void Encode(ParallelPort PPort)
+        {
+            PPort.MarkerEncode((int)Math.Floor(height * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(width * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.direction * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.speed * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+        /// <summary>
+        /// Bar Width(Unit)
+        /// </summary>
+        public float width;
+        /// <summary>
+        /// Bar Height(Unit)
+        /// </summary>
+        public float height;
+    }
+
+    /// <summary>
+    /// Grating Parameters
+    /// </summary>
+    public struct GratingPara
+    {
+        /// <summary>
+        /// Initialize Grating Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        /// <param name="maskpara"></param>
+        /// <param name="shape"></param>
+        /// <param name="gratingtype"></param>
+        /// <param name="movetype"></param>
+        /// <param name="tf"></param>
+        /// <param name="sf"></param>
+        /// <param name="sphase"></param>
+        /// <param name="luminance"></param>
+        /// <param name="contrast"></param>
+        /// <param name="lhcolor"></param>
+        /// <param name="rlcolor"></param>
+        /// <param name="resolution"></param>
+        public GratingPara(vsBasePara basepara, MaskPara maskpara, Shape shape, GratingType gratingtype, MoveType movetype, float tf, float sf, float sphase, float luminance, float contrast, Color lhcolor, Color rlcolor, int resolution)
+        {
+            basepara.vstype = VSType.Grating;
+            basepara.primitivetype = PrimitiveType.TriangleStrip;
+            this.BasePara = basepara;
+            this.maskpara = maskpara;
+            this.shape = shape;
+            this.gratingtype = gratingtype;
+            this.movetype = movetype;
+            this.tf = tf;
+            this.sf = sf;
+            this.sphase = sphase;
+            this.luminance = luminance;
+            this.contrast = contrast;
+            this.lhcolor = lhcolor;
+            this.rlcolor = rlcolor;
+            this.resolution = resolution;
+        }
+
+        /// <summary>
+        /// Gets Default GratingPara -- BasePara:VS_PTypeContentDefault(VSType.Grating, PrimitiveType.TriangleStrip, "Grating"), Mask: None, Shape: Circle, 
+        /// GratingType: Sinusoidal, MoveType: Drifting, TF: 2.0, SF: 0.5, SPhase: 0.0, Luminance: 0.5, Contrast: 1.0, LeftHighColor: White, RightLowColor: Black, Resolution: 100
+        /// </summary>
+        public static GratingPara Default
+        {
+            get
+            {
+                return new GratingPara(vsBasePara.VS_PTypeContentDefault(VSType.Grating, PrimitiveType.TriangleStrip, "Grating"), MaskPara.Default, Shape.Circle, GratingType.Sinusoidal, MoveType.Drifting, 2.0f, 0.5f, 0.0f, 0.5f, 1.0f, Color.White, Color.Black, 100);
+            }
+        }
+
+        /// <summary>
+        /// Encode Common Grating Parameters in MarkerHeader
+        /// </summary>
+        /// <param name="PPort"></param>
+        public void Encode(ParallelPort PPort)
+        {
+            PPort.MarkerEncode((int)Math.Floor(tf * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(sf * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(sphase * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.direction * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(luminance * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(contrast * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
+            PPort.MarkerEncode((int)Math.Floor(BasePara.diameter * 100.0));
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+        /// <summary>
+        /// Mask Parameters
+        /// </summary>
+        public MaskPara maskpara;
+        /// <summary>
+        /// Grating Geometry
+        /// </summary>
+        public Shape shape;
+        /// <summary>
+        /// Grating Type
+        /// </summary>
+        public GratingType gratingtype;
+        /// <summary>
+        /// Move Type
+        /// </summary>
+        public MoveType movetype;
+        /// <summary>
+        /// Temporal Frequency(circle/s)
+        /// </summary>
+        public float tf;
+        /// <summary>
+        /// Spatial Frequency(circle/Unit)
+        /// </summary>
+        public float sf;
+        /// <summary>
+        /// Grating Spatial Phase [0, 1) == [0, 2pi)
+        /// </summary>
+        public float sphase;
+        /// <summary>
+        /// Grating Average Luminance [0, 1]
+        /// </summary>
+        public float luminance;
+        /// <summary>
+        /// Grating Luminance Contrast [0, 1]
+        /// </summary>
+        public float contrast;
+        /// <summary>
+        /// Grating Left High Peak Color
+        /// </summary>
+        public Color lhcolor;
+        /// <summary>
+        /// Grating Right Low Trough Color
+        /// </summary>
+        public Color rlcolor;
+        /// <summary>
+        /// Grating Interpolation Resolution of One Circle
+        /// </summary>
+        public int resolution;
+    }
+
+    /// <summary>
+    /// Stimulus Mask Parameters
+    /// </summary>
+    public struct MaskPara
+    {
+        /// <summary>
+        /// Initialize Mask Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        /// <param name="masktype"></param>
+        public MaskPara(vsBasePara basepara, MaskType masktype)
+        {
+            basepara.vstype = VSType.Mask;
+            this.BasePara = basepara;
+            this.masktype = masktype;
+        }
+
+        /// <summary>
+        /// Gets Default MaskPara -- Mask: None
+        /// </summary>
+        public static MaskPara Default
+        {
+            get
+            {
+                return new MaskPara(vsBasePara.VSTypeDefault(VSType.Mask), MaskType.None);
             }
         }
 
 
         /// <summary>
-        /// center in World Space(Unit)
+        /// Basic Parameters
         /// </summary>
-        public Vector3 center;
+        public vsBasePara BasePara;
         /// <summary>
-        /// Size(Unit)
+        /// Mask Type
         /// </summary>
-        public float diameter;
-        /// <summary>
-        /// Orientation: [0,180)(deg), Counterclockwise
-        /// </summary>
-        public float orientation;
-        /// <summary>
-        /// 3D Space Orientation Vector
-        /// </summary>
-        public Vector3 orientation3d;
-        /// <summary>
-        /// Moving Speed(Unit/s)
-        /// </summary>
-        public Vector3 speed;
-        /// <summary>
-        /// Moving Area(Unit)
-        /// </summary>
-        public float movearea;
-        /// <summary>
-        /// Color
-        /// </summary>
-        public Color color;
-        /// <summary>
-        /// Visible State
-        /// </summary>
-        public bool visible;
+        public MaskType masktype;
     }
 
     /// <summary>
-    /// Primitive Type Parameters
+    /// Image Parameters
+    /// </summary>
+    public struct ImagePara
+    {
+        /// <summary>
+        /// Initialize Image Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        public ImagePara(vsBasePara basepara)
+        {
+            basepara.vstype = VSType.Image;
+            this.BasePara = basepara;
+        }
+
+        /// <summary>
+        /// Gets Custom ImagePara
+        /// </summary>
+        /// <param name="imagename"></param>
+        public ImagePara(string imagename)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeContentDefault(VSType.Image, imagename);
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+    }
+
+    /// <summary>
+    /// Primitive Parameters
     /// </summary>
     public struct PrimitivePara
     {
         /// <summary>
-        /// Init All Parameters to custom
+        /// Initialize PrimitivePara Parameters
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="indices"></param>
@@ -420,46 +1015,54 @@ namespace StiLib.Vision
         /// <param name="diameter"></param>
         /// <param name="orientation"></param>
         /// <param name="orientation3d"></param>
+        /// <param name="rotationspeed"></param>
+        /// <param name="rotationspeed3d"></param>
+        /// <param name="direction"></param>
         /// <param name="speed"></param>
-        /// <param name="movearea"></param>
+        /// <param name="speed3d"></param>
+        /// <param name="space"></param>
         /// <param name="color"></param>
         /// <param name="visible"></param>
-        public PrimitivePara(VertexPositionColor[] vertices, int[] indices, Vector3 center, float diameter, float orientation, Vector3 orientation3d, Vector3 speed, float movearea, Color color, bool visible)
+        /// <param name="contentname"></param>
+        /// <param name="lifetime"></param>
+        /// <param name="primitivetype"></param>
+        public PrimitivePara(VertexPositionColor[] vertices, int[] indices, Vector3 center, float diameter, float orientation, Vector3 orientation3d, float rotationspeed, Vector3 rotationspeed3d, float direction, float speed, Vector3 speed3d, float space, Color color, bool visible, string contentname, double lifetime, PrimitiveType primitivetype)
         {
             this.vertices = vertices;
             this.indices = indices;
-            this.BasePara = new BasePara(center, diameter, orientation, orientation3d, speed, movearea, color, visible);
+            this.BasePara = new vsBasePara(center, diameter, orientation, orientation3d, rotationspeed, rotationspeed3d, direction, speed, speed3d, space, color, visible, VSType.Primitive, contentname, lifetime, primitivetype);
         }
 
         /// <summary>
-        /// Init all parameters to custom
+        /// Initialize Primitive Parameters
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="indices"></param>
         /// <param name="basepara"></param>
-        public PrimitivePara(VertexPositionColor[] vertices, int[] indices, BasePara basepara)
+        public PrimitivePara(VertexPositionColor[] vertices, int[] indices, vsBasePara basepara)
         {
             this.vertices = vertices;
             this.indices = indices;
+            basepara.vstype = VSType.Primitive;
             this.BasePara = basepara;
         }
 
         /// <summary>
-        /// Get default Primitive parameters -- A White Point at Origin in World Space
+        /// Gets Default PrimitivePara -- A White Point at Origin in World Space
         /// </summary>
         public static PrimitivePara Default
         {
             get
             {
-                return new PrimitivePara(new VertexPositionColor[] { new VertexPositionColor(Vector3.Zero, Color.White) }, new int[] { 0 }, BasePara.Default);
+                return new PrimitivePara(new VertexPositionColor[] { new VertexPositionColor(Vector3.Zero, Color.White) }, new int[] { 0 }, vsBasePara.VSTypeDefault(VSType.Primitive));
             }
         }
 
 
-        #region Primitive Functions
+        #region Custom Primitives
 
         /// <summary>
-        /// Get a Arrow parameter with center=(0,0,0), headangle=60(deg), headslopesize=1(visual angle degree)
+        /// Gets a Arrow Primitive Parameters with center = (0, 0, 0), headangle = 60.0(deg), headslopesize = 1.0(Unit)
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="color"></param>
@@ -470,7 +1073,7 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get a Arrow parameter
+        /// Gets a Arrow Primitive Parameters
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="color"></param>
@@ -502,11 +1105,11 @@ namespace StiLib.Vision
             i[4] = 0;
             i[5] = 3;
 
-            return new PrimitivePara(v, i, center, diameter, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, color, true);
+            return new PrimitivePara(v, i, center, diameter, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, color, true, "BasicEffect", 1.0, PrimitiveType.LineList);
         }
 
         /// <summary>
-        /// Get a Cross parameter
+        /// Gets a Cross Primitive Parameters
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="color"></param>
@@ -530,11 +1133,11 @@ namespace StiLib.Vision
             i[2] = 2;
             i[3] = 3;
 
-            return new PrimitivePara(v, i, center, diameter, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, color, true);
+            return new PrimitivePara(v, i, center, diameter, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, color, true, "BasicEffect", 1.0, PrimitiveType.LineList);
         }
 
         /// <summary>
-        /// Get a circle parameter with center=(0,0,0), resolution=100 points in the circle
+        /// Gets a Circle Primitive Parameters with center = (0, 0, 0), resolution = 100 points in a circle
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="color"></param>
@@ -546,7 +1149,7 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get a Circle parameter
+        /// Gets a Circle Primitive Parameters
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="color"></param>
@@ -557,6 +1160,7 @@ namespace StiLib.Vision
         public static PrimitivePara Circle(float diameter, Color color, Vector3 center, int resolution, bool isfilled)
         {
             VertexPositionColor[] v;
+            PrimitiveType type;
             int[] index;
             double res_rad = 2 * Math.PI / resolution;
 
@@ -577,6 +1181,8 @@ namespace StiLib.Vision
                 }
                 v[resolution + 1] = v[1];
                 index[resolution + 1] = resolution + 1;
+
+                type = PrimitiveType.TriangleFan;
             }
             else
             {
@@ -592,13 +1198,15 @@ namespace StiLib.Vision
                 }
                 v[resolution] = v[0];
                 index[resolution] = resolution;
+
+                type = PrimitiveType.LineStrip;
             }
 
-            return new PrimitivePara(v, index, center, diameter, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, color, true);
+            return new PrimitivePara(v, index, center, diameter, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, color, true, "BasicEffect", 1.0, type);
         }
 
         /// <summary>
-        /// Get a RadialCircle parameter with center=(0,0,0), resolution=100 points in the circle
+        /// Gets a RadialCircle Primitive Parameters with center = (0, 0, 0), resolution = 100 points in a circle
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="centercolor"></param>
@@ -610,7 +1218,7 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get a RadialCircle parameter
+        /// Gets a RadialCircle Primitive Parameters
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="centercolor"></param>
@@ -640,11 +1248,11 @@ namespace StiLib.Vision
             v[resolution + 1] = v[1];
             index[resolution + 1] = resolution + 1;
 
-            return new PrimitivePara(v, index, center, diameter, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, circlecolor, true);
+            return new PrimitivePara(v, index, center, diameter, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, circlecolor, true, "BasicEffect", 1.0, PrimitiveType.TriangleFan);
         }
 
         /// <summary>
-        /// Get Gaussian Mask Parameters using default Resolution:150
+        /// Gets a Gaussian Mask Grid Primitive Parameters with Resolution = 150 (151*151 Grid)
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="sigma"></param>
@@ -657,7 +1265,7 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get Gaussian Mask Parameters
+        /// Gets a Gaussian Mask Grid Primitive Parameters
         /// </summary>
         /// <param name="diameter"></param>
         /// <param name="sigma"></param>
@@ -715,7 +1323,7 @@ namespace StiLib.Vision
                 }
             }
 
-            return new PrimitivePara(v, vindex, center, diameter, 0.0f, Vector3.Zero, Vector3.Zero, 10.0f, centercolor, true);
+            return new PrimitivePara(v, vindex, center, diameter, 0.0f, Vector3.Zero, 10.0f, Vector3.Zero, 0.0f, 10.0f, Vector3.Zero, 10.0f, centercolor, true, "BasicEffect", 1.0, PrimitiveType.TriangleList);
         }
 
         #endregion
@@ -732,288 +1340,311 @@ namespace StiLib.Vision
         /// <summary>
         /// Basic Parameters
         /// </summary>
-        public BasePara BasePara;
+        public vsBasePara BasePara;
     }
 
     /// <summary>
-    /// Stimulus Mask Parameters
-    /// </summary>
-    public struct MaskPara
-    {
-        /// <summary>
-        /// Init to custom settings
-        /// </summary>
-        /// <param name="bpara"></param>
-        /// <param name="mtype"></param>
-        public MaskPara(BasePara bpara, MaskType mtype)
-        {
-            this.BasePara = bpara;
-            this.MaskType = mtype;
-        }
-
-        /// <summary>
-        /// Get Default:None Mask
-        /// </summary>
-        public static MaskPara Default
-        {
-            get
-            {
-                return new MaskPara(BasePara.Default, MaskType.None);
-            }
-        }
-
-
-        /// <summary>
-        /// Mask Basic Parameters
-        /// </summary>
-        public BasePara BasePara;
-        /// <summary>
-        /// Mask Type
-        /// </summary>
-        public MaskType MaskType;
-    }
-
-    /// <summary>
-    /// Bar Type Parameters
-    /// </summary>
-    public struct BarPara
-    {
-        /// <summary>
-        /// Init Bar Parameters
-        /// </summary>
-        /// <param name="bpara"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="direction"></param>
-        /// <param name="speed"></param>
-        public BarPara(BasePara bpara, float width, float height, float direction, float speed)
-        {
-            this.BasePara = bpara;
-            this.width = width;
-            this.height = height;
-            this.direction = direction;
-            this.speed = speed;
-        }
-
-        /// <summary>
-        /// Get default parameters -- BasePara:default, width:3, height:1, direction:0, speed:10
-        /// </summary>
-        public static BarPara Default
-        {
-            get { return new BarPara(BasePara.Default, 3.0f, 1.0f, 0.0f, 10.0f); }
-        }
-
-        /// <summary>
-        /// Encode common Bar Parameters in MarkerHeader
-        /// </summary>
-        /// <param name="PPort"></param>
-        public void Encode(ParallelPort PPort)
-        {
-            PPort.MarkerEncode((int)Math.Floor(height * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(width * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(direction * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(speed * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
-        }
-
-
-        /// <summary>
-        /// Basic Parameters
-        /// </summary>
-        public BasePara BasePara;
-        /// <summary>
-        /// Bar Width
-        /// </summary>
-        public float width;
-        /// <summary>
-        /// Bar Height
-        /// </summary>
-        public float height;
-        /// <summary>
-        /// Bar Moving Direction(deg)
-        /// </summary>
-        public float direction;
-        /// <summary>
-        /// Bar Moving Speed(Unit/s)
-        /// </summary>
-        public float speed;
-    }
-
-    /// <summary>
-    /// Grating Type Parameters
-    /// </summary>
-    public struct GratingPara
-    {
-        /// <summary>
-        /// Init Grating Parameters
-        /// </summary>
-        /// <param name="bpara"></param>
-        /// <param name="mpara"></param>
-        /// <param name="shape"></param>
-        /// <param name="gtype"></param>
-        /// <param name="mtype"></param>
-        /// <param name="direction"></param>
-        /// <param name="tf"></param>
-        /// <param name="sf"></param>
-        /// <param name="sphase"></param>
-        /// <param name="luminance"></param>
-        /// <param name="contrast"></param>
-        /// <param name="lhcolor"></param>
-        /// <param name="rlcolor"></param>
-        /// <param name="resolution"></param>
-        public GratingPara(BasePara bpara, MaskPara mpara, Shape shape, GratingType gtype, MoveType mtype, float direction, float tf, float sf, float sphase, float luminance, float contrast, Color lhcolor, Color rlcolor, int resolution)
-        {
-            this.BasePara = bpara;
-            this.maskpara = mpara;
-            this.shape = shape;
-            this.gratingtype = gtype;
-            this.movetype = mtype;
-            this.direction = direction;
-            this.tf = tf;
-            this.sf = sf;
-            this.sphase = sphase;
-            this.luminance = luminance;
-            this.contrast = contrast;
-            this.lhcolor = lhcolor;
-            this.rlcolor = rlcolor;
-            this.resolution = resolution;
-        }
-
-        /// <summary>
-        /// Get default parameters -- BasePara:default, Mask:None, Shape:circle, GratingType:sinusoidal, MoveType:drifting, 
-        /// Direction:0, TF:2, SF:0.5, Phase:0, Luminance:0.5, Contrast:1, LeftHighColor:white, RightLowColor:black, Resolution:100
-        /// </summary>
-        public static GratingPara Default
-        {
-            get
-            {
-                return new GratingPara(BasePara.Default, MaskPara.Default, Shape.Circle, GratingType.Sinusoidal, MoveType.Drifting, 0.0f, 2.0f, 0.5f, 0.0f, 0.5f, 1.0f, Color.White, Color.Black, 100);
-            }
-        }
-
-        /// <summary>
-        /// Encode common Grating Parameters in MarkerHeader
-        /// </summary>
-        /// <param name="PPort"></param>
-        public void Encode(ParallelPort PPort)
-        {
-            PPort.MarkerEncode((int)Math.Floor(tf * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(sf * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(sphase * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(BasePara.orientation * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(direction * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(luminance * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(contrast * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((BasePara.center.X + 60.0f) * 100.0));
-            PPort.MarkerEncode((int)Math.Floor((BasePara.center.Y + 60.0f) * 100.0));
-            PPort.MarkerEncode((int)Math.Floor(BasePara.diameter * 100.0));
-        }
-
-
-        /// <summary>
-        /// Basic Parameters
-        /// </summary>
-        public BasePara BasePara;
-        /// <summary>
-        /// Mask Parameters
-        /// </summary>
-        public MaskPara maskpara;
-        /// <summary>
-        /// Grating Geometry
-        /// </summary>
-        public Shape shape;
-        /// <summary>
-        /// Grating Type
-        /// </summary>
-        public GratingType gratingtype;
-        /// <summary>
-        /// Move Type
-        /// </summary>
-        public MoveType movetype;
-        /// <summary>
-        /// Move Direction
-        /// </summary>
-        public float direction;
-        /// <summary>
-        /// Temporal Frequency(circle/s)
-        /// </summary>
-        public float tf;
-        /// <summary>
-        /// Spatial Frequency(circle/Unit)
-        /// </summary>
-        public float sf;
-        /// <summary>
-        /// Grating Spatial Phase (0-1):(0:2pi)
-        /// </summary>
-        public float sphase;
-        /// <summary>
-        /// Grating Average Luminance(0-1)
-        /// </summary>
-        public float luminance;
-        /// <summary>
-        /// Grating Brightness Contrast(0-1)
-        /// </summary>
-        public float contrast;
-        /// <summary>
-        /// Grating Left High Color
-        /// </summary>
-        public Color lhcolor;
-        /// <summary>
-        /// Grating Right Low Color
-        /// </summary>
-        public Color rlcolor;
-        /// <summary>
-        /// Grating Interpolation Resolution
-        /// </summary>
-        public int resolution;
-    }
-
-    /// <summary>
-    /// Model Type Parameter
+    /// Model Parameters
     /// </summary>
     public struct ModelPara
     {
         /// <summary>
-        /// Init
+        /// Initialize Model Parameters
         /// </summary>
-        /// <param name="bpara"></param>
-        /// <param name="mfile"></param>
-        public ModelPara(BasePara bpara, string mfile)
+        /// <param name="basepara"></param>
+        /// <param name="modelname"></param>
+        public ModelPara(vsBasePara basepara, string modelname)
         {
-            this.BasePara = bpara;
-            this.MFilename = mfile;
+            basepara.vstype = VSType.SLModel;
+            this.BasePara = basepara;
+            this.modelname = modelname;
         }
 
         /// <summary>
-        /// Get default model parameter -- BasePara:default, ModelName:""
+        /// Gets Custom Model Parameters
         /// </summary>
-        public static ModelPara Default
+        /// <param name="modelname"></param>
+        public ModelPara(string modelname)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeDefault(VSType.SLModel);
+            this.modelname = modelname;
+        }
+
+        /// <summary>
+        /// Gets Custom Model Parameters
+        /// </summary>
+        /// <param name="modelname"></param>
+        /// <param name="shader"></param>
+        public ModelPara(string modelname, string shader)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeContentDefault(VSType.SLModel, shader);
+            this.modelname = modelname;
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+        /// <summary>
+        /// Model Name
+        /// </summary>
+        public string modelname;
+    }
+
+    /// <summary>
+    /// Quad Parameters
+    /// </summary>
+    public struct Quad
+    {
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+        /// <summary>
+        /// UpperLeft Vertex
+        /// </summary>
+        public Vector3 UpperLeft;
+        /// <summary>
+        /// LowerLeft Vertex
+        /// </summary>
+        public Vector3 LowerLeft;
+        /// <summary>
+        /// UpperRight Vertex
+        /// </summary>
+        public Vector3 UpperRight;
+        /// <summary>
+        /// LowerRight Vertex
+        /// </summary>
+        public Vector3 LowerRight;
+        /// <summary>
+        /// Normal Vector
+        /// </summary>
+        public Vector3 Normal;
+        /// <summary>
+        /// Up Direction
+        /// </summary>
+        public Vector3 Up;
+        /// <summary>
+        /// Left Direction
+        /// </summary>
+        public Vector3 Left;
+        /// <summary>
+        /// Vertex Array
+        /// </summary>
+        public VertexPositionNormalTexture[] vertices;
+        /// <summary>
+        /// Index Array
+        /// </summary>
+        public int[] indices;
+
+
+        /// <summary>
+        /// Initialize Quad Parameters with -- Center: (0, 0, 0), Normal: (0, 0, 1), Up: (0, 1, 0)
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public Quad(float width, float height)
+            : this(Vector3.Zero, Vector3.Backward, Vector3.Up, width, height)
+        {
+        }
+
+        /// <summary>
+        /// Initialize Quad Parameters
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="normal"></param>
+        /// <param name="up"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public Quad(Vector3 center, Vector3 normal, Vector3 up, float width, float height)
+        {
+            BasePara = StiLib.Vision.vsBasePara.VS_PTypeDefault(VSType.SLQuad, PrimitiveType.TriangleList);
+            vertices = new VertexPositionNormalTexture[4];
+            indices = new int[6];
+            BasePara.center = center;
+            Normal = normal;
+            Up = up;
+
+            // Calculate the quad corners
+            Left = Vector3.Cross(normal, Up);
+            Vector3 uppercenter = (Up * height / 2) + center;
+            UpperLeft = uppercenter + (Left * width / 2);
+            UpperRight = uppercenter - (Left * width / 2);
+            LowerLeft = UpperLeft - (Up * height);
+            LowerRight = UpperRight - (Up * height);
+
+            FillVertices();
+        }
+
+        /// <summary>
+        /// Gets a Quad Parameters with -- Width: 15, Height: 5
+        /// </summary>
+        public static Quad Default
         {
             get
             {
-                return new ModelPara(BasePara.Default, "");
+                return new Quad(15, 5);
             }
         }
 
 
+        void FillVertices()
+        {
+            // Fill in texture coordinates to display full texture on quad
+            Vector2 textureUpperLeft = new Vector2(0.0f, 0.0f);
+            Vector2 textureUpperRight = new Vector2(1.0f, 0.0f);
+            Vector2 textureLowerLeft = new Vector2(0.0f, 1.0f);
+            Vector2 textureLowerRight = new Vector2(1.0f, 1.0f);
+
+            // Provide a normal for each vertex
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].Normal = Normal;
+            }
+
+            // Set the position and texture coordinate for each vertex
+            vertices[0].Position = LowerLeft;
+            vertices[0].TextureCoordinate = textureLowerLeft;
+            vertices[1].Position = UpperLeft;
+            vertices[1].TextureCoordinate = textureUpperLeft;
+            vertices[2].Position = LowerRight;
+            vertices[2].TextureCoordinate = textureLowerRight;
+            vertices[3].Position = UpperRight;
+            vertices[3].TextureCoordinate = textureUpperRight;
+
+            // Set the index buffer for each vertex, using clockwise winding
+            indices[0] = 0;
+            indices[1] = 1;
+            indices[2] = 2;
+            indices[3] = 2;
+            indices[4] = 1;
+            indices[5] = 3;
+        }
+    }
+
+    /// <summary>
+    /// Video Type Parameters
+    /// </summary>
+    public struct VideoPara
+    {
         /// <summary>
-        /// Basic Parameter
+        /// Initialize Video Parameters
         /// </summary>
-        public BasePara BasePara;
+        /// <param name="basepara"></param>
+        public VideoPara(vsBasePara basepara)
+        {
+            basepara.vstype = VSType.SLVideo;
+            this.BasePara = basepara;
+        }
+
         /// <summary>
-        /// Model File Name
+        /// Gets a Custom VideoPara
         /// </summary>
-        public string MFilename;
+        /// <param name="videoname"></param>
+        public VideoPara(string videoname)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeContentDefault(VSType.SLVideo, videoname);
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+    }
+
+    /// <summary>
+    /// Text Parameters
+    /// </summary>
+    public struct TextPara
+    {
+        /// <summary>
+        /// Initialize Text Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        public TextPara(vsBasePara basepara)
+        {
+            basepara.vstype = VSType.Text;
+            this.BasePara = basepara;
+        }
+
+        /// <summary>
+        /// Gets a Custom TextPara
+        /// </summary>
+        /// <param name="spritefont"></param>
+        public TextPara(string spritefont)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeContentDefault(VSType.Text, spritefont);
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+    }
+
+    /// <summary>
+    /// Collection Parameters
+    /// </summary>
+    public struct CollectionPara
+    {
+        /// <summary>
+        /// Initialize Collection Parameters
+        /// </summary>
+        /// <param name="basepara"></param>
+        /// <param name="collectioncenter"></param>
+        /// <param name="collectionspeed"></param>
+        public CollectionPara(vsBasePara basepara, Vector3 collectioncenter, Vector3 collectionspeed)
+        {
+            basepara.vstype = VSType.VSCollection;
+            this.BasePara = basepara;
+            this.CollectionCenter = collectioncenter;
+            this.CollectionSpeed = collectionspeed;
+        }
+
+        /// <summary>
+        /// Gets a Custom CollectionPara with -- CollectionCenter: (0, 0, 0), CollectionSpeed: (0, 0, 0) 
+        /// </summary>
+        /// <param name="shader"></param>
+        public CollectionPara(string shader)
+        {
+            this.BasePara = StiLib.Vision.vsBasePara.VSTypeContentDefault(VSType.VSCollection, shader);
+            this.CollectionCenter = Vector3.Zero;
+            this.CollectionSpeed = Vector3.Zero;
+        }
+
+
+        /// <summary>
+        /// Gets Default CollectionPara with -- BasePara: VSTypeDefault(VSType.VSCollection), CollectionCenter: (0, 0, 0), CollectionSpeed: (0, 0, 0) 
+        /// </summary>
+        public static CollectionPara Default
+        {
+            get { return new CollectionPara(vsBasePara.VSTypeDefault(VSType.VSCollection), Vector3.Zero, Vector3.Zero); }
+        }
+
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public vsBasePara BasePara;
+        /// <summary>
+        /// Current Collection Center
+        /// </summary>
+        public Vector3 CollectionCenter;
+        /// <summary>
+        /// Current Collection Speed
+        /// </summary>
+        public Vector3 CollectionSpeed;
     }
 
     #endregion
 
-    #region Type Define
+    #region Enum Types
 
     /// <summary>
-    /// Visual Measure Unit
+    /// Vision Measurment Unit
     /// </summary>
     public enum Unit
     {
@@ -1026,13 +1657,13 @@ namespace StiLib.Vision
         /// </summary>
         MM,
         /// <summary>
-        /// GraphicsDevice Resolution
+        /// Display Resolution Pixel
         /// </summary>
         Pixel
     }
 
     /// <summary>
-    /// Visual Stimulus Shape
+    /// Geometry Shape
     /// </summary>
     public enum Shape
     {
@@ -1104,6 +1735,10 @@ namespace StiLib.Vision
     public enum VSType
     {
         /// <summary>
+        /// None
+        /// </summary>
+        None,
+        /// <summary>
         /// Bar
         /// </summary>
         Bar,
@@ -1116,25 +1751,33 @@ namespace StiLib.Vision
         /// </summary>
         Image,
         /// <summary>
-        /// Simple Primitive
+        /// Primitive
         /// </summary>
         Primitive,
         /// <summary>
-        /// Model
+        /// SLModel
         /// </summary>
         SLModel,
         /// <summary>
-        /// Quad
+        /// SLQuad
         /// </summary>
         SLQuad,
         /// <summary>
-        /// Texture
+        /// SLVideo
         /// </summary>
-        SLTexture,
+        SLVideo,
         /// <summary>
         /// Text
         /// </summary>
         Text,
+        /// <summary>
+        /// VSCollection
+        /// </summary>
+        VSCollection,
+        /// <summary>
+        /// Mask
+        /// </summary>
+        Mask,
     }
 
     /// <summary>

@@ -28,14 +28,11 @@ namespace StiLib.Core
 
         // Singleton device service instance.
         static SLGDService singletonInstance;
-
         // Keep track of how many consumers are sharing the singletonInstance.
         static int referenceCount;
-
-        GraphicsDevice gDevice;
-
         // Store the current device settings.
-        PresentationParameters presentPara;
+        PresentationParameters pp;
+        GraphicsDevice gd;
 
         // IGraphicsDeviceService events.
         /// <summary>
@@ -64,7 +61,7 @@ namespace StiLib.Core
         /// </summary>
         public GraphicsDevice GraphicsDevice
         {
-            get { return gDevice; }
+            get { return gd; }
         }
 
         #endregion
@@ -79,44 +76,49 @@ namespace StiLib.Core
         /// <param name="height"></param>
         SLGDService(IntPtr windowHandle, int width, int height)
         {
-            presentPara = new PresentationParameters();
-
+            pp = new PresentationParameters();
+            // Check Shader Model 2.0 Support
+            GraphicsDeviceCapabilities gdcap = GraphicsAdapter.DefaultAdapter.GetCapabilities(DeviceType.Hardware);
+            if (gdcap.MaxPixelShaderProfile < ShaderProfile.PS_2_0 || gdcap.MaxVertexShaderProfile < ShaderProfile.VS_2_0)
+            {
+                MessageBox.Show("This Adapter Does Not Support Shader Model 2.0.", "Warning !");
+            }
+            // Check Full Screen MultiSampling Support
             int quality;
             if (GraphicsAdapter.DefaultAdapter.CheckDeviceMultiSampleType(DeviceType.Hardware, SurfaceFormat.Color, false, MultiSampleType.NonMaskable, out quality))
             {
-                presentPara.MultiSampleType = MultiSampleType.NonMaskable;
+                pp.MultiSampleType = MultiSampleType.NonMaskable;
                 if (quality < 2)
                 {
-                    presentPara.MultiSampleQuality = quality;
+                    pp.MultiSampleQuality = quality;
                 }
                 else
                 {
-                    presentPara.MultiSampleQuality = 2;
+                    pp.MultiSampleQuality = 2;
                 }
             }
 
-            presentPara.BackBufferCount = 1;
-            presentPara.PresentationInterval = PresentInterval.One;
-
-            presentPara.BackBufferWidth = Math.Max(width, 1);
-            presentPara.BackBufferHeight = Math.Max(height, 1);
-            presentPara.BackBufferFormat = SurfaceFormat.Color;
-
-            presentPara.EnableAutoDepthStencil = true;
-            presentPara.AutoDepthStencilFormat = DepthFormat.Depth24;
+            pp.PresentationInterval = PresentInterval.One;
+            pp.BackBufferCount = 1;
+            pp.BackBufferWidth = Math.Max(width, 1);
+            pp.BackBufferHeight = Math.Max(height, 1);
+            pp.BackBufferFormat = SurfaceFormat.Color;
+            pp.EnableAutoDepthStencil = true;
+            pp.AutoDepthStencilFormat = DepthFormat.Depth24;
 
             try
             {
-                gDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter,
-                                                                 DeviceType.Hardware,
-                                                                 windowHandle,
-                                                                 presentPara);
+                gd = new GraphicsDevice(GraphicsAdapter.DefaultAdapter, DeviceType.Hardware, windowHandle, pp);
+
+                if (DeviceCreated != null)
+                    DeviceCreated(this, EventArgs.Empty);
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message.ToString(), "GraphicsDevice Initialization Failed !");
+                MessageBox.Show(e.Message, "GraphicsDevice Initialization Failed !");
             }
         }
+
 
         /// <summary>
         /// Gets a reference to the singleton instance.
@@ -152,10 +154,9 @@ namespace StiLib.Core
                     if (DeviceDisposing != null)
                         DeviceDisposing(this, EventArgs.Empty);
 
-                    gDevice.Dispose();
+                    gd.Dispose();
                 }
-
-                gDevice = null;
+                gd = null;
             }
         }
 
@@ -171,10 +172,10 @@ namespace StiLib.Core
             if (DeviceResetting != null)
                 DeviceResetting(this, EventArgs.Empty);
 
-            presentPara.BackBufferWidth = Math.Max(presentPara.BackBufferWidth, width);
-            presentPara.BackBufferHeight = Math.Max(presentPara.BackBufferHeight, height);
+            pp.BackBufferWidth = Math.Max(pp.BackBufferWidth, width);
+            pp.BackBufferHeight = Math.Max(pp.BackBufferHeight, height);
 
-            gDevice.Reset(presentPara);
+            gd.Reset(pp);
 
             if (DeviceReset != null)
                 DeviceReset(this, EventArgs.Empty);

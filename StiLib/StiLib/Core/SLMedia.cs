@@ -1,6 +1,6 @@
 ﻿#region File Description
 //-----------------------------------------------------------------------------
-// Media.cs
+// SLMedia.cs
 //
 // StiLib Media Service
 // Copyright (c) Zhang Li. 2009-03-05.
@@ -25,7 +25,7 @@ namespace StiLib.Core
     /// </summary>
     public class Media : COMBase, IMFAsyncCallback
     {
-        #region External
+        #region External Win32 API
 
         [DllImport("user32", CharSet = CharSet.Auto)]
         private extern static int PostMessage(IntPtr handle, int msg, IntPtr wParam, IntPtr lParam);
@@ -37,7 +37,7 @@ namespace StiLib.Core
         const int WM_APP = 0x8000;
         const int WM_APP_ERROR = WM_APP + 2;
         const int WM_APP_NOTIFY = WM_APP + 1;
-        const int WAIT_TIMEOUT = 258;
+        const int WAIT_TIMEOUT = 5000;
         const int MF_VERSION = 0x10070;
 
         /// <summary>
@@ -54,11 +54,11 @@ namespace StiLib.Core
         protected IMFVideoDisplayControl m_pVideoDisplay;
 
         /// <summary>
-        /// Video window
+        /// Video Window Handle
         /// </summary>
         protected IntPtr m_hwndVideo;
         /// <summary>
-        /// App window to receive events
+        /// Application Window to Receive Events
         /// </summary>
         protected IntPtr m_hwndEvent;
         /// <summary>
@@ -80,7 +80,7 @@ namespace StiLib.Core
         /// <param name="hEvent"></param>
         public Media(IntPtr hVideo, IntPtr hEvent)
         {
-            TRACE(("Media::Media"));
+            TRACE("Media::Media");
             Debug.Assert(hVideo != IntPtr.Zero);
             Debug.Assert(hEvent != IntPtr.Zero);
 
@@ -92,8 +92,9 @@ namespace StiLib.Core
             m_state = MediaState.Ready;
             m_hCloseEvent = new AutoResetEvent(false);
 
-            MFExtern.MFStartup(0x10070, MFStartup.Full);
+            MFExtern.MFStartup(MF_VERSION, MFStartup.Full);
         }
+
 
         #region Public Methods
 
@@ -120,16 +121,12 @@ namespace StiLib.Core
 
                 // Create the media session.
                 CreateSession();
-
                 // Create the media source.
                 CreateMediaSource(sURL);
-
                 // Create a partial topology.
                 CreateTopologyFromSource(out pTopology);
-
                 // Set the topology on the media session.
                 m_pSession.SetTopology(0, pTopology);
-
                 // Set our state to "open pending"
                 m_state = MediaState.OpenPending;
                 NotifyState();
@@ -167,7 +164,6 @@ namespace StiLib.Core
             }
 
             int hr = S_Ok;
-
             try
             {
                 StartPlayback();
@@ -202,7 +198,6 @@ namespace StiLib.Core
             }
 
             int hr = S_Ok;
-
             try
             {
                 m_pSession.Pause();
@@ -220,7 +215,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Shut down MF
+        /// Shut down media
         /// </summary>
         /// <returns></returns>
         public int Shutdown()
@@ -228,14 +223,12 @@ namespace StiLib.Core
             TRACE("Media::ShutDown");
 
             int hr = S_Ok;
-
             try
             {
                 if (m_hCloseEvent != null)
                 {
                     // Close the session
                     CloseSession();
-
                     // Shutdown the Media Foundation platform
                     MFExtern.MFShutdown();
 
@@ -252,13 +245,12 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Update frame
+        /// Update Frame
         /// </summary>
         /// <returns></returns>
         public int Repaint()
         {
             int hr = S_Ok;
-
             if (m_pVideoDisplay != null)
             {
                 try
@@ -282,9 +274,9 @@ namespace StiLib.Core
         /// <returns></returns>
         public int ResizeVideo(short width, short height)
         {
-            int hr = S_Ok;
             TRACE(string.Format("ResizeVideo: {0}x{1}", width, height));
 
+            int hr = S_Ok;
             if (m_pVideoDisplay != null)
             {
                 try
@@ -384,10 +376,10 @@ namespace StiLib.Core
                 m_pSession.Close();
 
                 // Wait for the close operation to complete
-                bool res = m_hCloseEvent.WaitOne(5000, true);
+                bool res = m_hCloseEvent.WaitOne(WAIT_TIMEOUT, true);
                 if (!res)
                 {
-                    TRACE(("WaitForSingleObject Timed Out !"));
+                    TRACE("WaitForSingleObject Timed Out !");
                 }
             }
 
@@ -410,7 +402,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Play back Media
+        /// Start play Media
         /// </summary>
         protected void StartPlayback()
         {
@@ -568,7 +560,6 @@ namespace StiLib.Core
             out IMFTopologyNode ppNode)
         {
             Debug.Assert(m_pSource != null);
-
             IMFTopologyNode pNode = null;
 
             try
@@ -614,7 +605,6 @@ namespace StiLib.Core
 
             // Get the stream ID.
             int streamID = 0;
-
             try
             {
                 try
@@ -861,6 +851,7 @@ namespace StiLib.Core
         }
 
         #endregion
+
     }
 
     /// <summary>
@@ -893,4 +884,5 @@ namespace StiLib.Core
         /// </summary>
         StartPending,
     }
+
 }

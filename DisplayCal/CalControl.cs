@@ -28,5 +28,6 @@ namespace DisplayCal
         {
             GraphicsDevice.Clear(new Color(calColor));
         }
+
     }
 }

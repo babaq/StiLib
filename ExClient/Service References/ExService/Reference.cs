@@ -15,11 +15,11 @@ namespace ExClient.ExService {
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ExService.IExService")]
     public interface IExService {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Run", ReplyAction="http://tempuri.org/IExService/RunResponse")]
-        string Run(string ex);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Invoke", ReplyAction="http://tempuri.org/IExService/InvokeResponse")]
+        string Invoke(string ex);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/RunScript", ReplyAction="http://tempuri.org/IExService/RunScriptResponse")]
-        string RunScript(string ex, string script);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/InvokeScript", ReplyAction="http://tempuri.org/IExService/InvokeScriptResponse")]
+        string InvokeScript(string ex, string script);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetEx", ReplyAction="http://tempuri.org/IExService/GetExResponse")]
         string[] GetEx();
@@ -52,12 +52,12 @@ namespace ExClient.ExService {
                 base(binding, remoteAddress) {
         }
         
-        public string Run(string ex) {
-            return base.Channel.Run(ex);
+        public string Invoke(string ex) {
+            return base.Channel.Invoke(ex);
         }
         
-        public string RunScript(string ex, string script) {
-            return base.Channel.RunScript(ex, script);
+        public string InvokeScript(string ex, string script) {
+            return base.Channel.InvokeScript(ex, script);
         }
         
         public string[] GetEx() {

@@ -29,15 +29,20 @@ namespace StiLib.Vision
         /// Grating Parameters
         /// </summary>
         public GratingPara Para;
-        VertexPositionColor[] gratingvertex;
-        int[] gvindex;
-        VertexDeclaration gvdec;
-        ContentManager cm;
-        Effect effect;
-        EffectParameter eWorld;
-        EffectParameter eTime;
+        /// <summary>
+        /// Grating Effect
+        /// </summary>
+        public Effect gratingeffect;
+        /// <summary>
+        /// Grating Effect World Matrix Parameter
+        /// </summary>
+        public EffectParameter eWorld;
+        /// <summary>
+        /// Grating Effect time Parameter
+        /// </summary>
+        public EffectParameter eTime;
 
-        int vex_n;
+        int vertexN;
         float maxfactor;
         float minfactor;
         Vector4 mincolor;
@@ -48,24 +53,6 @@ namespace StiLib.Vision
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// Grating Effect
-        /// </summary>
-        public Effect Effect
-        {
-            get { return effect; }
-            set { effect = value; }
-        }
-
-        /// <summary>
-        /// Grating Content Manager
-        /// </summary>
-        public ContentManager Content
-        {
-            get { return cm; }
-            set { cm = value; }
-        }
 
         /// <summary>
         /// Get Grating Peak Color
@@ -83,11 +70,65 @@ namespace StiLib.Vision
             get { return mincolor; }
         }
 
+        /// <summary>
+        /// Grating Basic Parameters
+        /// </summary>
+        public override vsBasePara BasePara
+        {
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
+        }
+
+        /// <summary>
+        /// Grating Center
+        /// </summary>
+        public override Vector3 Center
+        {
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Grating Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Grating Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
+        }
+
+        /// <summary>
+        /// Gets Global Camera View. Sets GratingEffect View.
+        /// </summary>
+        public override Matrix ViewMatrix
+        {
+            get { return globalCamera.ViewMatrix; }
+            set { gratingeffect.Parameters["View"].SetValue(value); }
+        }
+
+        /// <summary>
+        /// Gets Global Camera Projection. Sets GratingEffect Projection.
+        /// </summary>
+        public override Matrix ProjectionMatrix
+        {
+            get { return globalCamera.GetUnitProjection(globalCamera.projectionType, unitFactor); }
+            set { gratingeffect.Parameters["Projection"].SetValue(value); }
+        }
+
         #endregion
 
 
         /// <summary>
-        /// Set Grating Parameters to default before LoadContent() and Init()
+        /// Sets Default GratingPara, need LoadContent() and Init()
         /// </summary>
         public Grating()
         {
@@ -95,20 +136,21 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Init Grating to default
+        /// Init Grating with Default GratingPara and "Technique1"
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
         public Grating(GraphicsDevice gd, IServiceProvider service, string path)
-            : this()
+            : base(gd)
         {
+            Para = GratingPara.Default;
             LoadContent(service, path);
             Init(gd);
         }
 
         /// <summary>
-        /// Init Grating to custom settings
+        /// Init Grating with Custom Shader Content and Default GratingPara
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
@@ -116,53 +158,105 @@ namespace StiLib.Vision
         /// <param name="shader"></param>
         /// <param name="technique"></param>
         public Grating(GraphicsDevice gd, IServiceProvider service, string path, string shader, string technique)
-            : this()
+            : base(gd)
         {
+            Para = GratingPara.Default;
             LoadContent(service, path, shader, technique);
             Init(gd);
         }
 
         /// <summary>
-        /// Init Grating to custom settings and default -- Shader:"Grating", Technique:"Technique1"
+        /// Init Grating with Custom GratingPara and Default: "Technique1"
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
         /// <param name="gratingpara"></param>
         public Grating(GraphicsDevice gd, IServiceProvider service, string path, GratingPara gratingpara)
+            : base(gd)
         {
-            LoadContent(service, path);
-            Init(gd, gratingpara);
+            Para = gratingpara;
+            LoadContent(service, path, gratingpara.BasePara.contentname);
+            Init(gd);
         }
 
         /// <summary>
-        /// Init Grating to custom settings
+        /// Init Grating with Custom GratingPara, Configuration and Default: "Technique1"
         /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
         /// <param name="gratingpara"></param>
+        public Grating(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, IServiceProvider service, string path, GratingPara gratingpara)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = gratingpara;
+            LoadContent(service, path, gratingpara.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init Grating with Custom GratingPara, StiLib Configuration File and Default: "Technique1"
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="gratingpara"></param>
+        public Grating(GraphicsDevice gd, AssemblySettings slconfig, IServiceProvider service, string path, GratingPara gratingpara)
+            : base(gd, slconfig)
+        {
+            Para = gratingpara;
+            LoadContent(service, path, gratingpara.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init Grating with Custom GratingPara
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
         /// <param name="shader"></param>
         /// <param name="technique"></param>
+        /// <param name="gratingpara"></param>
         public Grating(GraphicsDevice gd, IServiceProvider service, string path, string shader, string technique, GratingPara gratingpara)
+            : base(gd)
         {
+            Para = gratingpara;
             LoadContent(service, path, shader, technique);
-            Init(gd, gratingpara);
+            Init(gd);
         }
 
 
         /// <summary>
-        /// Load default shader "Grating" and "Technique1"
+        /// Load Internal GratingPara Shader Content and Default: "Technique1"
         /// </summary>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        public override void LoadContent(IServiceProvider service, string path)
+        public void LoadContent(IServiceProvider service, string path)
         {
-            LoadContent(service, path, "Grating", "Technique1");
+            LoadContent(service, path, Para.BasePara.contentname, "Technique1");
         }
 
         /// <summary>
-        /// Load Grating Shader and Technique
+        /// Load Custom Grating Shader and Default: "Technique1"
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="shader"></param>
+        public override void LoadContent(IServiceProvider service, string path, string shader)
+        {
+            LoadContent(service, path, shader, "Technique1");
+        }
+
+        /// <summary>
+        /// Load Custom Grating Shader and Technique
         /// </summary>
         /// <param name="service"></param>
         /// <param name="path"></param>
@@ -170,20 +264,23 @@ namespace StiLib.Vision
         /// <param name="technique"></param>
         public void LoadContent(IServiceProvider service, string path, string shader, string technique)
         {
-            cm = new ContentManager(service, path);
+            contentManager = new ContentManager(service, path);
             try
             {
-                effect = cm.Load<Effect>(shader);
+                gratingeffect = contentManager.Load<Effect>(shader);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error !");
             }
-            effect.CurrentTechnique = effect.Techniques[technique];
+            gratingeffect.CurrentTechnique = gratingeffect.Techniques[technique];
+
+            // Save Content Name
+            Para.BasePara.contentname = shader;
         }
 
         /// <summary>
-        /// Init according to internal grating parameters
+        /// Init According to Internal GratingPara
         /// </summary>
         /// <param name="gd"></param>
         public override void Init(GraphicsDevice gd)
@@ -192,26 +289,26 @@ namespace StiLib.Vision
             ColorFactor();
             SetMaxMinColor();
 
-            // Init Vertex according to grating type and shape
-            gvdec = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
-            SetVertex();
+            // Init Vertex and Index According to Grating Type and Shape
+            vertexDeclaration = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
+            FillGrating(true);
             SetGratingType(Para.gratingtype);
 
             // Set Mask
-            SetMask(Para.maskpara.MaskType);
+            SetMask(Para.maskpara.masktype);
 
             // Set Effect Parameters
-            eWorld = effect.Parameters["World"];
-            eTime = effect.Parameters["time"];
-            eWorld.SetValue(Matrix.CreateRotationZ(Para.direction * (float)SLConstant.RadpDeg) * Matrix.CreateTranslation(Para.BasePara.center));
+            eWorld = gratingeffect.Parameters["World"];
+            eTime = gratingeffect.Parameters["time"];
+            ori3DMatrix = Matrix.CreateRotationZ(Para.BasePara.direction * (float)SLConstant.Rad_p_Deg);
+            worldMatrix = Matrix.CreateTranslation(Para.BasePara.center);
             eTime.SetValue(0.0f);
-            effect.Parameters["View"].SetValue(GlobalView());
-            effect.Parameters["Projection"].SetValue(GlobalProj());
-            effect.Parameters["tf"].SetValue(Para.tf);
-            effect.Parameters["sf"].SetValue(Para.sf);
-            effect.Parameters["sphase"].SetValue(Para.sphase);
-            effect.Parameters["sigma"].SetValue(Para.maskpara.BasePara.diameter);
-
+            gratingeffect.Parameters["View"].SetValue(ViewMatrix);
+            gratingeffect.Parameters["Projection"].SetValue(ProjectionMatrix);
+            gratingeffect.Parameters["tf"].SetValue(Para.tf);
+            gratingeffect.Parameters["sf"].SetValue(Para.sf);
+            gratingeffect.Parameters["sphase"].SetValue(Para.sphase);
+            gratingeffect.Parameters["sigma"].SetValue(Para.maskpara.BasePara.diameter);
         }
 
         /// <summary>
@@ -221,37 +318,65 @@ namespace StiLib.Vision
         /// <param name="gratingpara"></param>
         public void Init(GraphicsDevice gd, GratingPara gratingpara)
         {
+            // New content shader need LoadContent() first, so here just renew grating parameters except content
+            gratingpara.BasePara.contentname = Para.BasePara.contentname;
             Para = gratingpara;
             Init(gd);
         }
 
         /// <summary>
-        /// Initialize Grating Vertex
+        /// Draw Grating
         /// </summary>
-        public void SetVertex()
+        /// <param name="gd"></param>
+        public override void Draw(GraphicsDevice gd)
+        {
+            if (Para.BasePara.visible)
+            {
+                gd.VertexDeclaration = vertexDeclaration;
+                gd.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionColor.SizeInBytes);
+                gd.Indices = indexBuffer;
+                gd.RenderState.CullMode = CullMode.None;
+                eWorld.SetValue(ori3DMatrix * worldMatrix);
+
+                gratingeffect.Begin();
+                gratingeffect.CurrentTechnique.Passes[0].Begin();
+                gd.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0, 0, vertexN, 0, vertexN - 2);
+                gratingeffect.CurrentTechnique.Passes[0].End();
+                gratingeffect.End();
+            }
+        }
+
+        /// <summary>
+        /// Fill Grating Vertex and Index
+        /// </summary>
+        /// <param name="ischeckresolution">if optimize resolution of interpolation</param>
+        public void FillGrating(bool ischeckresolution)
         {
             radius = Para.BasePara.diameter / 2.0;
-            // Set Max Effective Resolution
-            if (Para.resolution > ufactor / Para.sf)
+            if (ischeckresolution)
             {
-                Para.resolution = (int)Math.Floor(ufactor / Para.sf);
-            }
-            // Set Min Effective Resolution
-            if (Para.resolution < ufactor / Para.sf / 2)
-            {
-                Para.resolution = (int)Math.Floor(ufactor / Para.sf / 2);
+                // Set Max Effective Resolution(Every Pixel in a Circle)
+                if (Para.resolution > unitFactor / Para.sf)
+                {
+                    Para.resolution = (int)Math.Floor(unitFactor / Para.sf);
+                }
+                // Set Min Effective Resolution(Every Two Pixel in a Circle)
+                if (Para.resolution < unitFactor / Para.sf / 2)
+                {
+                    Para.resolution = (int)Math.Floor(unitFactor / Para.sf / 2);
+                }
             }
             // Interpolation Interval in Unit
             double interval = (1 / Para.sf) / Para.resolution;
 
-            vex_n = 2 * (2 * (int)Math.Round(radius / interval) + 1);
-            gratingvertex = new VertexPositionColor[vex_n];
-            gvindex = new int[vex_n];
+            vertexN = 2 * (2 * (int)Math.Round(radius / interval) + 1);
+            vertexArray = new VertexPositionColor[vertexN];
+            indexArray = new int[vertexN];
 
             int updown;
             double Ycoor = 0;
             double Xstep;
-            for (int i = 0; i < vex_n; i++)
+            for (int i = 0; i < vertexN; i++)
             {
                 updown = i % 2;
                 Xstep = Math.Floor(i / 2.0) * interval;
@@ -280,69 +405,17 @@ namespace StiLib.Vision
                             Ycoor = -radius; break;
                     }
                 }
-                gratingvertex[i].Position = new Vector3((float)(-radius + Xstep), (float)Ycoor, 0);
-                gvindex[i] = i;
+                vertexArray[i].Position = new Vector3((float)(-radius + Xstep), (float)Ycoor, 0);
+                indexArray[i] = i;
             }
-        }
 
-        /// <summary>
-        /// Draw Grating
-        /// </summary>
-        /// <param name="gd"></param>
-        public override void Draw(GraphicsDevice gd)
-        {
-            if (Para.BasePara.visible)
-            {
-                gd.VertexDeclaration = gvdec;
-                gd.RenderState.CullMode = CullMode.None;
-
-                effect.Begin();
-                effect.CurrentTechnique.Passes[0].Begin();
-                gd.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, gratingvertex, 0, vex_n, gvindex, 0, vex_n - 2);
-                effect.CurrentTechnique.Passes[0].End();
-                effect.End();
-            }
+            SetVertexBuffer();
+            SetIndexBuffer();
         }
 
 
         /// <summary>
-        /// Set Effect's World matrix
-        /// </summary>
-        /// <param name="world"></param>
-        public override void SetWorld(Matrix world)
-        {
-            eWorld.SetValue(world);
-        }
-
-        /// <summary>
-        /// Set Effect's View matrix
-        /// </summary>
-        /// <param name="view"></param>
-        public override void SetView(Matrix view)
-        {
-            effect.Parameters["View"].SetValue(view);
-        }
-
-        /// <summary>
-        /// Set Effect's Projection matrix
-        /// </summary>
-        /// <param name="proj"></param>
-        public override void SetProjection(Matrix proj)
-        {
-            effect.Parameters["Projection"].SetValue(proj);
-        }
-
-        /// <summary>
-        /// Set visible state
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            Para.BasePara.visible = isvisible;
-        }
-
-        /// <summary>
-        /// Set effect's Time Parameter
+        /// Sets GratingEffect's Time Parameter
         /// </summary>
         /// <param name="time"></param>
         public void SetTime(float time)
@@ -357,8 +430,8 @@ namespace StiLib.Vision
         public void SetSF(float sf)
         {
             Para.sf = sf;
-            SetVertex();
-            effect.Parameters["sf"].SetValue(sf);
+            FillGrating(true);
+            gratingeffect.Parameters["sf"].SetValue(sf);
         }
 
         /// <summary>
@@ -368,8 +441,7 @@ namespace StiLib.Vision
         public void SetDiameter(float diameter)
         {
             Para.BasePara.diameter = diameter;
-            radius = diameter / 2;
-            SetVertex();
+            FillGrating(true);
         }
 
         /// <summary>
@@ -379,7 +451,7 @@ namespace StiLib.Vision
         public void SetTF(float tf)
         {
             Para.tf = tf;
-            effect.Parameters["tf"].SetValue(tf);
+            gratingeffect.Parameters["tf"].SetValue(tf);
         }
 
         /// <summary>
@@ -389,28 +461,29 @@ namespace StiLib.Vision
         public void SetSPhase(float sphase)
         {
             Para.sphase = sphase;
-            effect.Parameters["sphase"].SetValue(sphase);
+            gratingeffect.Parameters["sphase"].SetValue(sphase);
         }
 
         /// <summary>
         /// Set Grating Interpolation Resolution
         /// </summary>
-        /// <param name="res"></param>
-        public void SetResolution(int res)
+        /// <param name="resolution"></param>
+        /// <param name="ischeckresolution">if optimize resolution of interpolation</param>
+        public void SetResolution(int resolution, bool ischeckresolution)
         {
-            Para.resolution = res;
-            SetVertex();
+            Para.resolution = resolution;
+            FillGrating(ischeckresolution);
         }
 
         /// <summary>
-        /// Set Grating Type
+        /// Sets Grating Type
         /// </summary>
-        /// <param name="gtype"></param>
-        public void SetGratingType(GratingType gtype)
+        /// <param name="gratingtype"></param>
+        public void SetGratingType(GratingType gratingtype)
         {
-            Para.gratingtype = gtype;
+            Para.gratingtype = gratingtype;
             int temp = 0;
-            switch (gtype)
+            switch (gratingtype)
             {
                 case GratingType.Square:
                     temp = 1; break;
@@ -419,7 +492,7 @@ namespace StiLib.Vision
                 default: // Sinusoidal
                     temp = 0; break;
             }
-            effect.Parameters["VSIndex"].SetValue(temp);
+            gratingeffect.Parameters["VSIndex"].SetValue(temp);
         }
 
         /// <summary>
@@ -429,11 +502,11 @@ namespace StiLib.Vision
         public void SetShape(Shape shape)
         {
             Para.shape = shape;
-            SetVertex();
+            FillGrating(true);
         }
 
         /// <summary>
-        /// Get Luminance and Contrast Constrains 
+        /// Gets Luminance and Contrast Constrains 
         /// </summary>
         public void ColorFactor()
         {
@@ -450,7 +523,7 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get Color Interpolation Profile according to Luminance and Contrast
+        /// Gets Color Interpolation Profile According to Luminance and Contrast
         /// </summary>
         public void SetMaxMinColor()
         {
@@ -458,70 +531,87 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Get Color Interpolation Profile according to custom colors
+        /// Gets Color Interpolation Profile According to Custom Colors
         /// </summary>
-        /// <param name="max"></param>
-        /// <param name="min"></param>
-        public void SetMaxMinColor(Vector4 max, Vector4 min)
+        /// <param name="maxc"></param>
+        /// <param name="minc"></param>
+        public void SetMaxMinColor(Vector4 maxc, Vector4 minc)
         {
-            maxcolor = max;
-            mincolor = min;
-            colorwidth = new Vector4(Math.Abs(max.X - min.X), Math.Abs(max.Y - min.Y), Math.Abs(max.Z - min.Z), Math.Max(max.W, min.W));
-            effect.Parameters["maxcolor"].SetValue(max);
-            effect.Parameters["mincolor"].SetValue(min);
-            effect.Parameters["colorwidth"].SetValue(colorwidth);
+            this.maxcolor = maxc;
+            this.mincolor = minc;
+            this.colorwidth = new Vector4(Math.Abs(maxc.X - minc.X), Math.Abs(maxc.Y - minc.Y), Math.Abs(maxc.Z - minc.Z), Math.Max(maxc.W, minc.W));
+            gratingeffect.Parameters["maxcolor"].SetValue(maxc);
+            gratingeffect.Parameters["mincolor"].SetValue(minc);
+            gratingeffect.Parameters["colorwidth"].SetValue(colorwidth);
         }
 
         /// <summary>
         /// Set Grating Transparency
         /// </summary>
-        /// <param name="a">0-1</param>
-        public void SetTransparency(float a)
+        /// <param name="alpha">[0, 1]</param>
+        public void SetTransparency(float alpha)
         {
-            maxcolor.W = a;
-            mincolor.W = a;
+            maxcolor.W = alpha;
+            mincolor.W = alpha;
             SetMaxMinColor(maxcolor, mincolor);
         }
 
         /// <summary>
         /// Set Luminance and Contrast
         /// </summary>
-        /// <param name="lum"></param>
-        /// <param name="con"></param>
-        public void SetLum_Con(float lum, float con)
+        /// <param name="luminance"></param>
+        /// <param name="contrast"></param>
+        public void SetLumCon(float luminance, float contrast)
         {
-            Para.luminance = lum;
-            Para.contrast = con;
+            Para.luminance = luminance;
+            Para.contrast = contrast;
             ColorFactor();
             SetMaxMinColor();
         }
 
         /// <summary>
-        /// Set Mask
+        /// Sets Mask
         /// </summary>
-        /// <param name="mtype"></param>
-        public void SetMask(MaskType mtype)
+        /// <param name="masktype"></param>
+        public void SetMask(MaskType masktype)
         {
-            Para.maskpara.MaskType = mtype;
+            Para.maskpara.masktype = masktype;
             int temp = 0;
-            switch (mtype)
+            switch (masktype)
             {
                 case MaskType.Gaussian:
                     temp = 1; break;
                 default: // None
                     temp = 0; break;
             }
-            effect.Parameters["PSIndex"].SetValue(temp);
+            gratingeffect.Parameters["PSIndex"].SetValue(temp);
         }
 
         /// <summary>
         /// Set Gaussian Mask Sigma Parameter
         /// </summary>
         /// <param name="sigma"></param>
-        public void SetSigma(float sigma)
+        public void SetGaussianSigma(float sigma)
         {
             Para.maskpara.BasePara.diameter = sigma;
-            effect.Parameters["sigma"].SetValue(sigma);
+            gratingeffect.Parameters["sigma"].SetValue(sigma);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
+        {
+            if (gdRef != null)
+            {
+                return new Grating(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, contentManager.ServiceProvider, contentManager.RootDirectory, Para);
+            }
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
+            }
         }
 
     }

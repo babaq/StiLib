@@ -1,12 +1,9 @@
 ---------------------------------------------------------------------
-Version 1.0.7.0----2010_12_15
+Version 1.0.7.0----2009_09_01
     New:
-		Linux and Mac OS_X (Mono and MonoXNA)
 		VSCollection
-		HearingStimulus
-        Vision-Hearing
-        Visual Looming
-        Visual Disparity
+		COM Ports
+		Video
     Change:
         Upgrade to XNA 3.1
     Fix:
@@ -21,13 +18,14 @@ Version 1.0.6.0----2009_04_30
 ---------------------------------------------------------------------	
 Version 1.0.5.0----2009_03_30
     New:
-        Logging to files
+        Logging to Files
         FrameInfo to analysis frame presentation
         SystemInfo to get environment information
         Auto Gamma Calibration
-        Fast Version of RF_fBar
-        Unicode Text and Image
-        Movie and Audio
+        Unicode Text
+        Image
+        Audio
+        Movie
         Primitive Gaussian Mask
         Masked Square and Linear Grating
         ContentBuild
@@ -39,16 +37,16 @@ Version 1.0.5.0----2009_03_30
 Version 1.0.3.0----2009_02_08
     New:
         Primitive Object
-        DisplayCal with ColorCal colorimeter of  Cambridge Research System, Ltd.
+        DisplayCal with ColorCal Colorimeter of  Cambridge Research System, Ltd.
     Change:
-        Add Visible property of all stimulus object to toggle visible state more easily
+        Add Visible Property to Toggle Visible State
     Fix:
         Graphic Device Check
 ---------------------------------------------------------------------	
 Version 1.0.2.0----2009_01_05
 	Generation of Bar and Sinusoidal Grating
-	Randomize seed and sequence
-	Marker encode and Triggering through parallel port
+	Randomize Seed and Sequence
+	Marker Encode and Triggering Through Parallel Port
 ---------------------------------------------------------------------	
 Version 1.0.1.0----2008_08_27
 	Complete FrameWork

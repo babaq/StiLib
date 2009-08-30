@@ -29,7 +29,7 @@ namespace StiLib.Core
         /// </summary>
         public Dictionary<pK, V> pDictionary = new Dictionary<pK, V>();
         /// <summary>
-        /// map Secondary key to primary key
+        /// map secondary key to primary key
         /// </summary>
         public Dictionary<sK, pK> sTop = new Dictionary<sK, pK>();
         /// <summary>
@@ -40,7 +40,7 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Get Value from Primary Key
+        /// Gets/Sets Value from Primary Key
         /// </summary>
         /// <param name="pKey"></param>
         /// <returns></returns>
@@ -53,10 +53,24 @@ namespace StiLib.Core
                     return item;
                 throw new KeyNotFoundException("Primary Key Not Found: " + pKey.ToString());
             }
+            set
+            {
+                if (ContainsKey(pKey))
+                {
+                    lock (lockobject)
+                    {
+                        pDictionary[pKey] = value;
+                    }
+                }
+                else
+                {
+                    throw new KeyNotFoundException("Primary Key Not Found: " + pKey.ToString());
+                }
+            }
         }
 
         /// <summary>
-        /// Get Value from Secondary Key
+        /// Gets/Sets Value from Secondary Key
         /// </summary>
         /// <param name="sKey"></param>
         /// <returns></returns>
@@ -68,6 +82,20 @@ namespace StiLib.Core
                 if (TryGetValue(sKey, out item))
                     return item;
                 throw new KeyNotFoundException("Secondary Key Not Found: " + sKey.ToString());
+            }
+            set
+            {
+                if (ContainsKey(sKey))
+                {
+                    lock (lockobject)
+                    {
+                        pDictionary[sTop[sKey]] = value;
+                    }
+                }
+                else
+                {
+                    throw new KeyNotFoundException("Secondary Key Not Found: " + sKey.ToString());
+                }
             }
         }
 
@@ -93,7 +121,6 @@ namespace StiLib.Core
                     sTop.Add(sKey, pKey);
                     pTos.Add(pKey, sKey);
                 }
-
             }
         }
 
@@ -183,7 +210,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// If Contains specified primary key
+        /// If contains specified primary key
         /// </summary>
         /// <param name="pKey"></param>
         /// <returns></returns>
@@ -194,7 +221,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// If Contains specified secondary key
+        /// If contains specified secondary key
         /// </summary>
         /// <param name="sKey"></param>
         /// <returns></returns>
@@ -232,9 +259,9 @@ namespace StiLib.Core
             {
                 if (sTop.ContainsKey(sKey))
                 {
-                    if(pDictionary.ContainsKey(sTop[sKey]))
+                    if (pDictionary.ContainsKey(sTop[sKey]))
                         pDictionary.Remove(sTop[sKey]);
-                    if(pTos.ContainsKey(sTop[sKey]))
+                    if (pTos.ContainsKey(sTop[sKey]))
                         pTos.Remove(sTop[sKey]);
                     sTop.Remove(sKey);
                 }
@@ -280,7 +307,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Get a clone array of all Primary keys
+        /// Get a clone array of all primary keys
         /// </summary>
         /// <returns></returns>
         public pK[] ClonePrimaryKeys()
@@ -294,7 +321,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Get a clone array of all Secondary keys
+        /// Get a clone array of all secondary keys
         /// </summary>
         /// <returns></returns>
         public sK[] CloneSecondaryKeys()
@@ -312,7 +339,7 @@ namespace StiLib.Core
         /// </summary>
         public void Clear()
         {
-            lock(lockobject)
+            lock (lockobject)
             {
                 pDictionary.Clear();
                 sTop.Clear();

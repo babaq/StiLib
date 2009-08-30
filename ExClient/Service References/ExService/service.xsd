@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
-  <xs:element name="Run">
+  <xs:element name="Invoke">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="ex" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="RunResponse">
+  <xs:element name="InvokeResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="RunResult" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="InvokeResult" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="RunScript">
+  <xs:element name="InvokeScript">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="ex" nillable="true" type="xs:string" />
@@ -23,10 +23,10 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="RunScriptResponse">
+  <xs:element name="InvokeScriptResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="RunScriptResult" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="InvokeScriptResult" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

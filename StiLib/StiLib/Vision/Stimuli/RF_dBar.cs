@@ -23,7 +23,7 @@ namespace StiLib.Vision.Stimuli
     public class RF_dBar : SLForm
     {
         /// <summary>
-        /// Default SLForm Settings
+        /// Init to Default SLForm Settings
         /// </summary>
         public RF_dBar()
             : base()
@@ -31,7 +31,16 @@ namespace StiLib.Vision.Stimuli
         }
 
         /// <summary>
-        /// Custom SLForm Settings
+        /// Init to configurations
+        /// </summary>
+        /// <param name="configfile"></param>
+        public RF_dBar(string configfile)
+            : base(configfile)
+        {
+        }
+
+        /// <summary>
+        /// Init to Custom SLForm Settings
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -55,15 +64,19 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// Drifting Bar
         /// </summary>
-        public Bar Bar;
+        public Bar bar;
         /// <summary>
         /// Scanning Row Number
         /// </summary>
         public int Rows;
         /// <summary>
-        /// Scanning Area
+        /// Scanning Rows Interval
         /// </summary>
-        public float ScanArea;
+        public float Step;
+        /// <summary>
+        /// Scanning Space
+        /// </summary>
+        public float ScanSpace;
 
 
         /// <summary>
@@ -73,43 +86,44 @@ namespace StiLib.Vision.Stimuli
         {
             text = new Text(GraphicsDevice, Services, SLConfig["content"], "Arial");
 
-            // Init Experiment Parameter
+            // Init Experiment Parameters
             ex = new SLExperiment();
             ex.AddExType(ExType.RF_dBar);
             ex.AddCondition(ExPara.Direction, 4);
-            ex.Expara.trial = 3;
-            ex.Expara.trestT = 1.0f;
-            ex.Expara.srestT = 0.5f;
-            ex.Expara.preT = 0.25f;
-            ex.Expara.durT = 1.0f;
-            ex.Expara.posT = 0.25f;
-            ex.Expara.bgcolor = Color.Black;
+            ex.Exdesign.trial = 3;
+            ex.Exdesign.trestT = 1.0f;
+            ex.Exdesign.srestT = 0.5f;
+            ex.Exdesign.preT = 0.25f;
+            ex.Exdesign.durT = 1.0f;
+            ex.Exdesign.posT = 0.25f;
+            ex.Exdesign.bgcolor = Color.Black;
 
             // Init Bar Parameter
             BarPara bpara = BarPara.Default;
             bpara.width = 1.0f;
             bpara.height = 4.0f;
-            bpara.direction = 0.0f;
-            bpara.speed = 10.0f;
-            bpara.BasePara.movearea = 10.0f;
+            bpara.BasePara.direction = 0.0f;
+            bpara.BasePara.speed = 10.0f;
+            bpara.BasePara.space = 10.0f;
             bpara.BasePara.center = new Vector3(0.0f, 0.0f, 0.0f);
             bpara.BasePara.color = Color.White;
-            Bar = new Bar(GraphicsDevice, bpara);
+            bar = new Bar(GraphicsDevice, bpara);
 
+            Step = 3.0f;
             InitScan();
         }
 
         /// <summary>
-        /// Init Scanning parameter
+        /// Init Scanning 'Rows' and 'ScanSpace' according to 'Step' and Bar's 'Space'
         /// </summary>
         public void InitScan()
         {
-            Rows = (int)Math.Floor(Bar.Para.BasePara.movearea / Bar.Para.height);
+            Rows = (int)Math.Floor(bar.Para.BasePara.space / Step);
             if (Rows % 2 == 0)
             {
                 Rows += 1;
             }
-            ScanArea = Rows * Bar.Para.height;
+            ScanSpace = (Rows - 1) * Step;
         }
 
         /// <summary>
@@ -117,33 +131,36 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void SetFlow()
         {
-            ex.Flow.SCount = 0;
-            ex.Flow.TCount = 0;
+            ex.Flow.StiCount = 0;
+            ex.Flow.TrialCount = 0;
             ex.Flow.IsPred = false;
             ex.Flow.IsRested = false;
-            ex.Flow.PreDurTime = ex.Expara.preT + ScanArea / Bar.Para.speed;
-            ex.Flow.Location = new Vector3((Rows - 1) * Bar.Para.height / 2);
-            ex.Flow.StiTime = ex.Flow.PreDurTime + ex.Expara.posT;
+            ex.Flow.PreDurTime = ex.Exdesign.preT + ScanSpace / bar.Para.BasePara.speed;
+            ex.Flow.Location = new Vector3((Rows - 1) * Step / 2);
+            ex.Flow.StiTime = ex.Flow.PreDurTime + ex.Exdesign.posT;
+
+            ex.Flow.RotateDir = Matrix.CreateRotationZ(bar.Para.BasePara.direction * (float)SLConstant.Rad_p_Deg);
+            ex.Flow.TranslateCenter = Matrix.CreateTranslation(bar.Para.BasePara.center);
         }
 
         /// <summary>
-        /// Send crucial information in MarkerHeader 
+        /// Send information in MarkerHeader 
         /// </summary>
         protected override void MarkHead()
         {
-            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
+            DrawTip(ref text, ex.Exdesign.bgcolor, SLConstant.MarkHead);
 
             // Single Condition
             if (ex.Cond[0].VALUE.ValueN == 0)
             {
-                ex.Expara.stimuli[0] = Rows;
+                ex.Exdesign.stimuli[0] = Rows;
             }
             else // Multiple Conditions
             {
-                ex.Expara.stimuli[0] = ex.Cond[0].VALUE.ValueN * Rows;
+                ex.Exdesign.stimuli[0] = ex.Cond[0].VALUE.ValueN * Rows;
+                ex.Flow.CondStep = new float[] { (float)(2 * Math.PI / ex.Cond[0].VALUE.ValueN) };
             }
-            ex.Rand.RandomizeSeed();
-            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
 
             // Experiment Type Encoding
             ex.PPort.MarkerEncode(ex.Extype[0].Value);
@@ -152,27 +169,24 @@ namespace StiLib.Vision.Stimuli
             // Condition Number Encoding
             ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
             // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
+            ex.PPort.MarkerEncode(ex.Rand.Seed);
             // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
+            ex.PPort.MarkerEncode(ex.Exdesign.trial);
 
             // Keywords Group Seperator
             ex.PPort.MarkerSeparatorEncode();
 
             // Custom Parameters Encoding
+            bar.Para.Encode(ex.PPort);
+            ex.PPort.MarkerEncode((int)Math.Floor(bar.display_H_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(bar.display_W_deg * 100.0));
             ex.PPort.MarkerEncode(Rows);
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.height * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.direction * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.Para.speed * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.X + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar.Para.BasePara.center.Y + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.view_h_deg * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar.view_w_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Step * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
+            // Set Timer to begin
+            ex.PPort.Timer.Reset();
         }
 
         /// <summary>
@@ -199,14 +213,14 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Draw()
         {
-            GraphicsDevice.Clear(ex.Expara.bgcolor);
+            GraphicsDevice.Clear(ex.Exdesign.bgcolor);
 
             if (GO_OVER)
             {
-                Bar.Draw(GraphicsDevice);
+                bar.Draw(GraphicsDevice);
 
-                ex.Flow.Info = ex.Flow.TCount.ToString() + " / " + ex.Expara.trial.ToString() + " Trials\n" +
-                                     ex.Flow.SCount.ToString() + " / " + ex.Expara.stimuli[0].ToString() + " Stimuli";
+                ex.Flow.Info = ex.Flow.TrialCount.ToString() + " / " + ex.Exdesign.trial.ToString() + " Trials\n" +
+                                     ex.Flow.StiCount.ToString() + " / " + ex.Exdesign.stimuli[0].ToString() + " Stimuli";
                 text.Draw(ex.Flow.Info);
             }
             else
@@ -219,75 +233,79 @@ namespace StiLib.Vision.Stimuli
         {
             if (ex.Flow.IsStiOn)
             {
-                ex.Flow.IsStiOn = false;
-                ex.PPort.timer.ReStart();
+                ex.PPort.Timer.Start();
                 // Stimulus Onset Marker
                 ex.PPort.Trigger();
+                ex.Flow.IsStiOn = false;
             }
 
-            ex.Flow.LastTime = ex.PPort.timer.ElapsedSeconds;
+            if (ex.Flow.IsStiOff)
+            {
+                // Stimulus Offset Marker
+                ex.PPort.Trigger();
+                ex.Flow.IsStiOff = false;
+                if ((ex.Flow.TrialCount == ex.Exdesign.trial - 1) && (ex.Flow.StiCount == ex.Exdesign.stimuli[0] - 1))
+                {
+                    GO_OVER = false;
+                    return;
+                }
+            }
+
+            ex.Flow.LastingTime = ex.PPort.Timer.ElapsedSeconds;
 
             // In Presentation
-            if (ex.Flow.LastTime < ex.Flow.StiTime)
+            if (ex.Flow.LastingTime < ex.Flow.StiTime)
             {
                 if (!ex.Flow.IsPred)
                 {
                     ex.Flow.IsPred = true;
 
-                    ex.Flow.Rotate = Matrix.CreateTranslation(-ScanArea / 2, ex.Flow.Location.Y - Bar.Para.height * ex.Rand.RSequence[ex.Flow.SCount], 0.0f) *
-                                             Matrix.CreateRotationZ((float)(Bar.Para.direction * Math.PI / 180.0));
-                    ex.Flow.Translate = ex.Flow.Rotate * Matrix.CreateTranslation(Bar.Para.BasePara.center);
-                    Bar.SetWorld(ex.Flow.Translate);
-                    Bar.SetVisible(true);
+                    bar.WorldMatrix = Matrix.CreateTranslation(-ScanSpace / 2, ex.Flow.Location.Y - Step * ex.Rand.Sequence[ex.Flow.StiCount], 0.0f) *
+                                                  ex.Flow.RotateDir * ex.Flow.TranslateCenter;
+                    bar.Visible = true;
+
+                    ex.Flow.IsStiOn = true;
                 }
 
-                if (ex.Flow.LastTime > ex.Expara.preT && ex.Flow.LastTime < ex.Flow.PreDurTime)
+                if (ex.Flow.LastingTime > ex.Exdesign.preT && ex.Flow.LastingTime < ex.Flow.PreDurTime)
                 {
-                    float MovedDis = (float)(ex.Flow.LastTime - ex.Expara.preT) * Bar.Para.speed;
-                    ex.Flow.Rotate = Matrix.CreateTranslation(-ScanArea / 2 + MovedDis, ex.Flow.Location.Y - Bar.Para.height * ex.Rand.RSequence[ex.Flow.SCount], 0.0f) *
-                                             Matrix.CreateRotationZ((float)(Bar.Para.direction * Math.PI / 180.0));
-                    ex.Flow.Translate = ex.Flow.Rotate * Matrix.CreateTranslation(Bar.Para.BasePara.center);
-                    Bar.SetWorld(ex.Flow.Translate);
+                    float MovedDis = (float)(ex.Flow.LastingTime - ex.Exdesign.preT) * bar.Para.BasePara.speed;
+                    bar.WorldMatrix = Matrix.CreateTranslation(-ScanSpace / 2 + MovedDis, ex.Flow.Location.Y - Step * ex.Rand.Sequence[ex.Flow.StiCount], 0.0f) *
+                                                  ex.Flow.RotateDir * ex.Flow.TranslateCenter;
                 }
             }
             else // End of Presentation
             {
                 if (!ex.Flow.IsRested)
                 {
-                    // Stimulus Offset Marker
-                    ex.PPort.Trigger();
-
                     ex.Flow.IsRested = true;
-                    Bar.SetVisible(false);
+                    bar.Visible = false;
+                    ex.Flow.IsStiOff = true;
                 }
 
-                if (ex.Flow.SCount < ex.Expara.stimuli[0] - 1)
+                if (ex.Flow.StiCount < ex.Exdesign.stimuli[0] - 1)
                 {
-                    if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.srestT)
+                    if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.srestT)
                     {
-                        ex.Flow.IsStiOn = true;
                         ex.Flow.IsPred = false;
                         ex.Flow.IsRested = false;
-                        ex.Flow.SCount += 1;
+                        ex.Flow.StiCount += 1;
+                        ex.PPort.Timer.Reset();
                     }
                 }
                 else
                 {
-                    if (ex.Flow.TCount < ex.Expara.trial - 1)
+                    if (ex.Flow.TrialCount < ex.Exdesign.trial - 1)
                     {
-                        if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.trestT)
+                        if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.trestT)
                         {
-                            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
-                            ex.Flow.IsStiOn = true;
+                            ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
                             ex.Flow.IsPred = false;
                             ex.Flow.IsRested = false;
-                            ex.Flow.TCount += 1;
-                            ex.Flow.SCount = 0;
+                            ex.Flow.TrialCount += 1;
+                            ex.Flow.StiCount = 0;
+                            ex.PPort.Timer.Reset();
                         }
-                    }
-                    else
-                    {
-                        GO_OVER = false;
                     }
                 }
             }
@@ -297,79 +315,83 @@ namespace StiLib.Vision.Stimuli
         {
             if (ex.Flow.IsStiOn)
             {
-                ex.Flow.IsStiOn = false;
-                ex.PPort.timer.ReStart();
+                ex.PPort.Timer.Start();
                 // Stimulus Onset Marker
                 ex.PPort.Trigger();
+                ex.Flow.IsStiOn = false;
             }
 
-            ex.Flow.LastTime = ex.PPort.timer.ElapsedSeconds;
+            if (ex.Flow.IsStiOff)
+            {
+                // Stimulus Offset Marker
+                ex.PPort.Trigger();
+                ex.Flow.IsStiOff = false;
+                if ((ex.Flow.TrialCount == ex.Exdesign.trial - 1) && (ex.Flow.StiCount == ex.Exdesign.stimuli[0] - 1))
+                {
+                    GO_OVER = false;
+                    return;
+                }
+            }
+
+            ex.Flow.LastingTime = ex.PPort.Timer.ElapsedSeconds;
 
             // In Presentation
-            if (ex.Flow.LastTime < ex.Flow.StiTime)
+            if (ex.Flow.LastingTime < ex.Flow.StiTime)
             {
-                int nScan = ex.Rand.RSequence[ex.Flow.SCount] % Rows;
-                int nCondition = (int)Math.Floor((double)ex.Rand.RSequence[ex.Flow.SCount] / Rows);
-                float rad = (float)(nCondition * (2 * Math.PI / ex.Cond[0].VALUE.ValueN));
-
                 if (!ex.Flow.IsPred)
                 {
                     ex.Flow.IsPred = true;
 
-                    ex.Flow.Rotate = Matrix.CreateTranslation(-ScanArea / 2, ex.Flow.Location.Y - Bar.Para.height * nScan, 0.0f) *
-                                             Matrix.CreateRotationZ(rad);
-                    ex.Flow.Translate = ex.Flow.Rotate * Matrix.CreateTranslation(Bar.Para.BasePara.center);
-                    Bar.SetWorld(ex.Flow.Translate);
-                    Bar.SetVisible(true);
+                    ex.Flow.ColumnCount = (int)Math.Floor((double)ex.Rand.Sequence[ex.Flow.StiCount] / Rows);
+                    ex.Flow.RowCount = ex.Rand.Sequence[ex.Flow.StiCount] % Rows;
+                    ex.Flow.Direction = ex.Flow.ColumnCount * ex.Flow.CondStep[0];
+
+                    bar.WorldMatrix = Matrix.CreateTranslation(-ScanSpace / 2, ex.Flow.Location.Y - Step * ex.Flow.RowCount, 0.0f) *
+                                                  Matrix.CreateRotationZ(ex.Flow.Direction) * ex.Flow.TranslateCenter;
+                    bar.Visible = true;
+
+                    ex.Flow.IsStiOn = true;
                 }
 
-                if (ex.Flow.LastTime > ex.Expara.preT && ex.Flow.LastTime < ex.Flow.PreDurTime)
+                if (ex.Flow.LastingTime > ex.Exdesign.preT && ex.Flow.LastingTime < ex.Flow.PreDurTime)
                 {
-                    float MovedDis = (float)(ex.Flow.LastTime - ex.Expara.preT) * Bar.Para.speed;
-                    ex.Flow.Rotate = Matrix.CreateTranslation(-ScanArea / 2 + MovedDis, ex.Flow.Location.Y - Bar.Para.height * nScan, 0.0f) *
-                                             Matrix.CreateRotationZ(rad);
-                    ex.Flow.Translate = ex.Flow.Rotate * Matrix.CreateTranslation(Bar.Para.BasePara.center);
-                    Bar.SetWorld(ex.Flow.Translate);
+                    float MovedDis = (float)(ex.Flow.LastingTime - ex.Exdesign.preT) * bar.Para.BasePara.speed;
+                    bar.WorldMatrix = Matrix.CreateTranslation(-ScanSpace / 2 + MovedDis, ex.Flow.Location.Y - Step * ex.Flow.RowCount, 0.0f) *
+                                                  Matrix.CreateRotationZ(ex.Flow.Direction) * ex.Flow.TranslateCenter;
                 }
             }
             else // End of Presentation
             {
                 if (!ex.Flow.IsRested)
                 {
-                    // Stimulus Offset Marker
-                    ex.PPort.Trigger();
-
                     ex.Flow.IsRested = true;
-                    Bar.SetVisible(false);
+                    bar.Visible = false;
+                    ex.Flow.IsStiOff = true;
                 }
 
-                if (ex.Flow.SCount < ex.Expara.stimuli[0] - 1)
+                if (ex.Flow.StiCount < ex.Exdesign.stimuli[0] - 1)
                 {
-                    if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.srestT)
+                    if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.srestT)
                     {
-                        ex.Flow.IsStiOn = true;
                         ex.Flow.IsPred = false;
                         ex.Flow.IsRested = false;
-                        ex.Flow.SCount += 1;
+                        ex.Flow.StiCount += 1;
+                        ex.PPort.Timer.Reset();
                     }
                 }
                 else
                 {
-                    if (ex.Flow.TCount < ex.Expara.trial - 1)
+                    if (ex.Flow.TrialCount < ex.Exdesign.trial - 1)
                     {
-                        if (ex.Flow.LastTime > ex.Flow.StiTime + ex.Expara.trestT)
+                        if (ex.Flow.LastingTime > ex.Flow.StiTime + ex.Exdesign.trestT)
                         {
-                            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
-                            ex.Flow.IsStiOn = true;
+                            ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
                             ex.Flow.IsPred = false;
                             ex.Flow.IsRested = false;
-                            ex.Flow.TCount += 1;
-                            ex.Flow.SCount = 0;
+                            ex.Flow.TrialCount += 1;
+                            ex.Flow.StiCount = 0;
+                            ex.PPort.Timer.Reset();
                         }
-                    }
-                    else
-                    {
-                        GO_OVER = false;
                     }
                 }
             }

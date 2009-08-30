@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DisplayCal")]
-[assembly: AssemblyDescription("Display Calibration")]
+[assembly: AssemblyDescription("Display Calibration Tool")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alex-Joyce")]
 [assembly: AssemblyProduct("DisplayCal")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.6.5")]
-[assembly: AssemblyFileVersion("1.0.6.5")]
+[assembly: AssemblyVersion("1.0.7.0")]
+[assembly: AssemblyFileVersion("1.0.7.0")]

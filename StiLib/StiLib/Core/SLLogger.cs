@@ -43,7 +43,15 @@ namespace StiLib.Core
         public string FileName
         {
             get { return filename; }
-            set { filename = value; }
+            set
+            {
+                string newfilename = value;
+                if (newfilename != filename)
+                {
+                    filename = newfilename;
+                    ChangeLog();
+                }
+            }
         }
 
         /// <summary>
@@ -52,12 +60,17 @@ namespace StiLib.Core
         public string FilePath
         {
             get { return filepath; }
-            set 
-            { 
-                filepath = value;
-                if (filepath.LastIndexOf("\\") != (filepath.Length - 1))
+            set
+            {
+                string newfilepath = value;
+                if (newfilepath.LastIndexOf("\\") != (newfilepath.Length - 1))
                 {
-                    filepath += "\\";
+                    newfilepath += "\\";
+                }
+                if (newfilepath != filepath)
+                {
+                    filepath = newfilepath;
+                    ChangeLog();
                 }
             }
         }
@@ -66,35 +79,51 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Default Logger target to StiLib.log file in current directory
+        /// Init default Logger target to StiLib.log file in current directory
         /// </summary>
-        public SLLogger() : this(Directory.GetCurrentDirectory(), "StiLib.log")
+        public SLLogger()
+            : this(Directory.GetCurrentDirectory(), "StiLib.log")
         {
         }
 
         /// <summary>
-        /// Logger target to custom log file in current directory
+        /// Init Logger target to custom log file in current directory
         /// </summary>
         /// <param name="fname">Log File Name</param>
-        public SLLogger(string fname) : this(Directory.GetCurrentDirectory(), fname)
+        public SLLogger(string fname)
+            : this(Directory.GetCurrentDirectory(), fname)
         {
         }
 
         /// <summary>
-        /// Logger target to custom log file in custom directory
+        /// Init Logger target to custom log file in custom directory
         /// </summary>
         /// <param name="fpath"></param>
         /// <param name="fname"></param>
         public SLLogger(string fpath, string fname)
         {
-            FilePath = fpath;
             filename = fname;
-
-            filestream = new FileStream(filepath+filename, FileMode.Append, FileAccess.Write);
-            writer = new StreamWriter(filestream, Encoding.Unicode);
+            FilePath = fpath;
             message = new StringBuilder();
         }
 
+
+        /// <summary>
+        /// Change Internal Log Filestream and Streamwriter
+        /// </summary>
+        private void ChangeLog()
+        {
+            if (filestream != null)
+            {
+                filestream.Dispose();
+            }
+            if (writer != null)
+            {
+                writer.Dispose();
+            }
+            filestream = new FileStream(filepath + filename, FileMode.Append, FileAccess.Write);
+            writer = new StreamWriter(filestream, Encoding.Unicode);
+        }
 
         /// <summary>
         /// Log Exception
@@ -116,6 +145,10 @@ namespace StiLib.Core
                 message.Append(DateTime.Now.ToString()).Append("  ---  ").Append(info);
                 writer.WriteLine(message.ToString());
                 writer.Flush();
+            }
+            catch (Exception e)
+            {
+                SLConstant.ShowException(e);
             }
             finally
             {

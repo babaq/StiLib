@@ -189,11 +189,8 @@ namespace ContentBuild
                     vplayer.IsLooped = true;
                     vplayer.Play(video);
                 }
-                else
-                {
-                    texture = vplayer.GetTexture();
-                }
 
+                texture = vplayer.GetTexture();
                 if (texture != null)
                 {
                     spriteBatch.Begin();

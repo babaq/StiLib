@@ -27,6 +27,7 @@ namespace SLControl
             new VertexPositionColor(new Vector3( 0,  1, 0), Color.Green),
         };
 
+
         /// <summary>
         /// Initializes the control.
         /// </summary>
@@ -61,7 +62,7 @@ namespace SLControl
             float pitch = time * 0.8f;
             float roll = time * 0.9f;
 
-            effect.World = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);            
+            effect.World = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
         }
 
         /// <summary>
@@ -81,7 +82,7 @@ namespace SLControl
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.VertexDeclaration = tvdec;
             GraphicsDevice.RenderState.CullMode = CullMode.None;
-            
+
             //Draw the triangle.
             effect.Begin();
             effect.CurrentTechnique.Passes[0].Begin();

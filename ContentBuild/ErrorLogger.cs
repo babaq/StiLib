@@ -9,7 +9,6 @@ namespace ContentBuild
     class ErrorLogger : ILogger
     {
         List<string> errors = new List<string>();
-
         /// <summary>
         /// Gets a list of all the errors that have been logged.
         /// </summary>
@@ -48,6 +47,7 @@ namespace ContentBuild
 
         #region ILogger Members
 
+        string parameters;
         /// <summary>
         /// Implement the ILogger.Parameters property.
         /// </summary>
@@ -57,9 +57,7 @@ namespace ContentBuild
             set { parameters = value; }
         }
 
-        string parameters;
-
-
+        LoggerVerbosity verbosity = LoggerVerbosity.Normal;
         /// <summary>
         /// Implement the ILogger.Verbosity property.
         /// </summary>
@@ -69,8 +67,7 @@ namespace ContentBuild
             set { verbosity = value; }
         }
 
-        LoggerVerbosity verbosity = LoggerVerbosity.Normal;
-
         #endregion
+
     }
 }

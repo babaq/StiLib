@@ -7,9 +7,15 @@
     <UseKerning>true</UseKerning>
     <Style>Regular</Style>
     <CharacterRegions>
+      <!--Basic Latin-->
       <CharacterRegion>
         <Start>&#32;</Start>
-        <End>&#126;</End>
+        <End>&#127;</End>
+      </CharacterRegion>
+      <!--Basic Greek-->
+      <CharacterRegion>
+        <Start>&#880;</Start>
+        <End>&#1023;</End>
       </CharacterRegion>
     </CharacterRegions>
   </Asset>

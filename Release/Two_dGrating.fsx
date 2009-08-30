@@ -17,7 +17,7 @@ open StiLib.Vision.Stimuli
 
 // Our Custom Experiment is inherited from StiLib.Vision.Stimuli.Two_dGrating
 type ExTwo_dGrating() = class
-    inherit Two_dGrating(800, 600, 0, true, true)
+    inherit Two_dGrating(null)
     
     override self.Initialize() =
         self.text <- new Text(self.GraphicsDevice, self.Services, self.SLConfig.["content"], "Arial")
@@ -25,13 +25,13 @@ type ExTwo_dGrating() = class
         
         self.ex.AddExType(ExType.Two_dGrating)
         self.ex.AddCondition(ExPara.Direction, 4)
-        self.ex.Expara.trial <- 3
-        self.ex.Expara.trestT <- 1.0f
-        self.ex.Expara.srestT <- 0.5f
-        self.ex.Expara.preT <- 0.25f
-        self.ex.Expara.durT <- 1.0f
-        self.ex.Expara.posT <- 0.25f
-        self.ex.Expara.bgcolor <- Color.Gray
+        self.ex.Exdesign.trial <- 2
+        self.ex.Exdesign.trestT <- 1.0f
+        self.ex.Exdesign.srestT <- 0.5f
+        self.ex.Exdesign.preT <- 0.25f
+        self.ex.Exdesign.durT <- 1.0f
+        self.ex.Exdesign.posT <- 0.25f
+        self.ex.Exdesign.bgcolor <- Color.Gray
         
         let mutable gpara = GratingPara.Default
         gpara.gratingtype <- GratingType.Sinusoidal
@@ -45,17 +45,17 @@ type ExTwo_dGrating() = class
         gpara.BasePara.center <- new Vector3(4.0f, 0.0f, 0.0f)
         gpara.lhcolor <- Color.RosyBrown
         gpara.rlcolor <- Color.Blue
-        self.Grating.[0] <- new Grating(self.GraphicsDevice, self.Services, self.SLConfig.["content"], gpara)
+        self.gratings.[0] <- new Grating(self.GraphicsDevice, self.Services, self.SLConfig.["content"], gpara)
         
         gpara.sf <- 1.2f
         gpara.tf <- 2.0f
         gpara.sphase <- 0.5f
-        gpara.direction <- 90.0f
+        gpara.BasePara.direction <- 90.0f
         gpara.BasePara.diameter <- 6.0f
         gpara.BasePara.center <- new Vector3(-4.0f, 0.0f, 0.0f)
         gpara.lhcolor <- Color.Red
         gpara.rlcolor <- Color.Azure
-        self.Grating.[1] <- new Grating(self.GraphicsDevice, self.Services, self.SLConfig.["content"], gpara)
+        self.gratings.[1] <- new Grating(self.GraphicsDevice, self.Services, self.SLConfig.["content"], gpara)
         
         self.gratingangle <- 90.0f
         

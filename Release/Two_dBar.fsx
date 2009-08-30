@@ -17,7 +17,7 @@ open StiLib.Vision.Stimuli
 
 // Our Custom Experiment is inherited from StiLib.Vision.Stimuli.Two_dBar
 type ExTwo_dBar() = class
-    inherit Two_dBar(800, 600, 0, true, true)
+    inherit Two_dBar(null)
     
     override self.Initialize() =
         self.text <- new Text(self.GraphicsDevice, self.Services, self.SLConfig.["content"], "Arial")
@@ -25,31 +25,31 @@ type ExTwo_dBar() = class
         
         self.ex.AddExType(ExType.Two_dBar)
         self.ex.AddCondition(ExPara.Direction, 4)
-        self.ex.Expara.trial <- 3
-        self.ex.Expara.trestT <- 1.0f
-        self.ex.Expara.srestT <- 0.5f
-        self.ex.Expara.preT <- 0.25f
-        self.ex.Expara.durT <- 1.0f
-        self.ex.Expara.posT <- 0.25f
-        self.ex.Expara.bgcolor <- Color.Black
+        self.ex.Exdesign.trial <- 2
+        self.ex.Exdesign.trestT <- 1.0f
+        self.ex.Exdesign.srestT <- 0.5f
+        self.ex.Exdesign.preT <- 0.25f
+        self.ex.Exdesign.durT <- 1.0f
+        self.ex.Exdesign.posT <- 0.25f
+        self.ex.Exdesign.bgcolor <- Color.Black
         
         let mutable bpara = BarPara.Default
         bpara.width <- 4.0f
         bpara.height <- 2.0f
         bpara.BasePara.orientation <- 90.0f
-        bpara.direction <- 0.0f
-        bpara.speed <- 10.0f
-        bpara.BasePara.movearea <- 10.0f
+        bpara.BasePara.direction <- 0.0f
+        bpara.BasePara.speed <- 10.0f
+        bpara.BasePara.space <- 10.0f
         bpara.BasePara.center <- new Vector3(-3.0f, -3.0f, 0.0f)
         bpara.BasePara.color <- Color.SeaGreen
-        self.Bar.[0] <- new Bar(self.GraphicsDevice, bpara)
+        self.bars.[0] <- new Bar(self.GraphicsDevice, bpara)
         
         bpara.width <- 3.0f;
         bpara.height <- 1.0f;
-        bpara.direction <- 90.0f
+        bpara.BasePara.direction <- 90.0f
         bpara.BasePara.center <- new Vector3(3.0f, 3.0f, 0.0f)
         bpara.BasePara.color <- new Color(1.0f, 0.0f, 0.0f, 0.5f)
-        self.Bar.[1] <- new Bar(self.GraphicsDevice, bpara)
+        self.bars.[1] <- new Bar(self.GraphicsDevice, bpara)
         
         self.barangle <- 90.0f
         

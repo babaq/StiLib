@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // SLGDControl.cs
 //
-// StiLib Abstract GraphicsDevice Control.
+// StiLib GraphicsDevice Control Base Class.
 // Copyright (c) Zhang Li. 2008-7-31.
 //-----------------------------------------------------------------------------
 #endregion
@@ -20,19 +20,18 @@ namespace StiLib.Core
     // To avoid conflicts, we specify exactly which ones to use.
     using Color = System.Drawing.Color;
     using Rectangle = Microsoft.Xna.Framework.Rectangle;
-
     /// <summary>
     /// Custom control uses the XNA Framework GraphicsDevice to render onto
     /// a Windows Form. Derived classes can override the Initialize and Draw
     /// methods to add their own drawing code.
     /// </summary>
-    abstract public class SLGDControl : Control
+    public abstract class SLGDControl : Control
     {
         #region Fields
 
         // However many GraphicsDeviceControl instances you have, they all share
         // the same underlying GraphicsDevice, managed by the GraphicsDeviceService.
-        SLGDService gdService;
+        SLGDService gdservice;
         ServiceContainer services = new ServiceContainer();
 
         #endregion
@@ -44,7 +43,7 @@ namespace StiLib.Core
         /// </summary>
         public GraphicsDevice GraphicsDevice
         {
-            get { return gdService.GraphicsDevice; }
+            get { return gdservice.GraphicsDevice; }
         }
 
         /// <summary>
@@ -69,11 +68,9 @@ namespace StiLib.Core
             // Don't initialize the graphics device if we are running in the designer.
             if (!DesignMode)
             {
-                gdService = SLGDService.AddRef(Handle, ClientSize.Width, ClientSize.Height);
-
+                gdservice = SLGDService.AddRef(Handle, ClientSize.Width, ClientSize.Height);
                 // Register the service, so components like ContentManager can find it.
-                services.AddService<IGraphicsDeviceService>(gdService);
-
+                services.AddService<IGraphicsDeviceService>(gdservice);
                 // Give derived classes a chance to initialize themselves.
                 Initialize();
             }
@@ -87,10 +84,10 @@ namespace StiLib.Core
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (gdService != null)
+            if (gdservice != null)
             {
-                gdService.Release(disposing);
-                gdService = null;
+                gdservice.Release(disposing);
+                gdservice = null;
             }
 
             base.Dispose(disposing);
@@ -131,14 +128,13 @@ namespace StiLib.Core
         string BeginDraw()
         {
             // If we have no graphics device, we must be running in the designer.
-            if (gdService == null)
+            if (gdservice == null)
             {
                 return Text + "\n\n" + GetType();
             }
 
             // Make sure the graphics device is big enough, and is not lost.
             string deviceResetError = HandleDeviceReset();
-
             if (!string.IsNullOrEmpty(deviceResetError))
             {
                 return deviceResetError;
@@ -150,16 +146,13 @@ namespace StiLib.Core
             // a smaller control? To avoid unwanted stretching, we set the
             // viewport to only use the top left portion of the full backbuffer.
             Viewport viewport = new Viewport();
-
             viewport.X = 0;
             viewport.Y = 0;
 
             viewport.Width = ClientSize.Width;
             viewport.Height = ClientSize.Height;
-
             viewport.MinDepth = 0;
             viewport.MaxDepth = 1;
-
             GraphicsDevice.Viewport = viewport;
 
             return null;
@@ -176,7 +169,6 @@ namespace StiLib.Core
             try
             {
                 Rectangle sourceRectangle = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
-
                 GraphicsDevice.Present(sourceRectangle, null, this.Handle);
             }
             catch
@@ -223,11 +215,11 @@ namespace StiLib.Core
             {
                 try
                 {
-                    gdService.ResetDevice(ClientSize.Width, ClientSize.Height);
+                    gdservice.ResetDevice(ClientSize.Width, ClientSize.Height);
                 }
                 catch (Exception e)
                 {
-                    return "Graphics Device Reset Failed\n\n" + e;
+                    return "Graphics Device Reset Failed !\n\n" + e;
                 }
             }
 

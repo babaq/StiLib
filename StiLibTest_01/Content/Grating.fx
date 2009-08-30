@@ -1,9 +1,9 @@
 //-----------------------------------------------------------------------------
 // File: Grating.fx
 //
-// Effect Shader to render grating stimulus
+// Effect Shader to Render Grating Stimulus
 //
-// Copyright (c) Zhang Li.	2009/03/03
+// Copyright (c) Zhang Li.	2009/03/03.
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -137,7 +137,8 @@ float4 PSNone(VertexShaderOutput input) : COLOR0
 float4 PSGaussian(VertexShaderOutput input) : COLOR0
 {
 	float d = pow( input.Texcoord.x, 2 ) + pow( input.Texcoord.y, 2 );
-    return input.Color * exp( - d / (2 * pow(sigma, 2) ) );
+	input.Color.w = input.Color.w * exp( - d / (2 * pow(sigma, 2) ) );
+    return input.Color;
 }
 //-----------------------------------------------------------------------------
 // Shader and technique definitions

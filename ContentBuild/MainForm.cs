@@ -31,6 +31,7 @@ namespace ContentBuild
             this.Shown += openToolStripMenuItem_Click;
         }
 
+
         /// <summary>
         /// Event handler for the Open menu option.
         /// </summary>
@@ -47,13 +48,13 @@ namespace ContentBuild
 
             openfileDialog.InitialDirectory = contentPath;
             openfileDialog.Title = "Load Content";
-            openfileDialog.Filter = "Model Files (*.fbx;*.x)|*.fbx;*.x|" +
+            openfileDialog.Filter = "All Files (*.*)|*.*|" +
+                                "Model Files (*.fbx;*.x)|*.fbx;*.x|" +
                                 "Image Files (*.bmp;*.dds;*.dib;*.hdr;*.jpg;*.pfm;*.png;*.ppm;*.tga)|*.bmp;*.dds;*.dib;*.hdr;*.jpg;*.pfm;*.png;*.ppm;*.tga|" +
                                 "Font Files (*.spritefont)|*.spritefont|" +
                                 "Effect Files (*.fx)|*.fx|" +
                                 "Sound Files (*.mp3;*.wav;*.wma)|*.mp3;*.wav;*.wma)|" +
-                                "Video Files (*.wmv)|*.wmv|" +
-                                "All Files (*.*)|*.*";
+                                "Video Files (*.wmv)|*.wmv";
 
             if (openfileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -136,7 +137,7 @@ namespace ContentBuild
                     contentBuilder.Add(fileName, contentName, null, "VideoProcessor");
                     break;
                 default:
-                    MessageBox.Show("Content Type Not Supported !", "Error");
+                    MessageBox.Show("Content Type Not Supported !", "Error !");
                     Cursor = Cursors.Arrow;
                     return;
             }
@@ -186,7 +187,7 @@ namespace ContentBuild
             else
             {
                 // If the build failed, display an error message.
-                MessageBox.Show(buildError, "Error");
+                MessageBox.Show(buildError, "Error !");
             }
 
             Cursor = Cursors.Arrow;

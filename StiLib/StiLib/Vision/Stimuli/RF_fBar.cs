@@ -18,12 +18,12 @@ using StiLib.Core;
 namespace StiLib.Vision.Stimuli
 {
     /// <summary>
-    /// Reverse-Correlation RF Mapping
+    /// Flashing Bar Reverse-Correlation RF Mapping
     /// </summary>
     public class RF_fBar : SLForm
     {
         /// <summary>
-        /// Default SLForm Settings
+        /// Init to Default SLForm Settings
         /// </summary>
         public RF_fBar()
             : base()
@@ -31,7 +31,16 @@ namespace StiLib.Vision.Stimuli
         }
 
         /// <summary>
-        /// Custom SLForm Settings
+        /// Init to configurations
+        /// </summary>
+        /// <param name="configfile"></param>
+        public RF_fBar(string configfile)
+            : base(configfile)
+        {
+        }
+
+        /// <summary>
+        /// Init to Custom SLForm Settings
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -55,15 +64,23 @@ namespace StiLib.Vision.Stimuli
         /// <summary>
         /// RF Mapping Black and White Bars
         /// </summary>
-        public Bar[] Bar = new Bar[] { new Bar(), new Bar() };
+        public Bar[] bars = new Bar[] { new Bar(), new Bar() };
         /// <summary>
         /// Mapping Grid Row Number
         /// </summary>
         public int Rows;
         /// <summary>
+        /// Mapping Grid Row Resolution
+        /// </summary>
+        public float Rstep;
+        /// <summary>
         /// Mapping Grid Column Number
         /// </summary>
         public int Columns;
+        /// <summary>
+        /// Mapping Grid Column Resolution
+        /// </summary>
+        public float Cstep;
 
 
         /// <summary>
@@ -77,34 +94,36 @@ namespace StiLib.Vision.Stimuli
             ex = new SLExperiment();
             ex.AddExType(ExType.RF_fBar);
             ex.AddCondition(ExPara.Orientation, 0);
-            ex.Expara.trial = 60;
-            ex.Expara.durT = 0.030f;
-            ex.Expara.bgcolor = Color.Gray;
+            ex.Exdesign.trial = 50;
+            ex.Exdesign.durT = 0.030f;
+            ex.Exdesign.bgcolor = Color.Gray;
 
-            // Init Two Bars Parameter
+            // Init Two Bars Parameters
             BarPara bpara = BarPara.Default;
-            bpara.width = 1.5f;
+            bpara.width = 1.0f;
             bpara.height = 0.5f;
             bpara.BasePara.color = Color.Black;
-            Bar[0].Init(GraphicsDevice, bpara);
+            bars[0].Init(GraphicsDevice, bpara);
 
             bpara.BasePara.color = Color.White;
-            Bar[1].Init(GraphicsDevice, bpara);
+            bars[1].Init(GraphicsDevice, bpara);
 
+            Rstep = 0.5f;
+            Cstep = 0.5f;
             InitGrid();
         }
 
         /// <summary>
-        /// Init Mapping Grid
+        /// Init Mapping Grid 'Rows' and 'Columns' according to RowStep, ColumnStep and Bar's space
         /// </summary>
         public void InitGrid()
         {
-            Rows = (int)Math.Floor(Bar[0].Para.BasePara.movearea / Bar[0].Para.height);
-            Columns = (int)Math.Floor(Bar[0].Para.BasePara.movearea / Bar[0].Para.width);
+            Rows = (int)Math.Floor(bars[0].Para.BasePara.space / Rstep);
             if (Rows % 2 == 0)
             {
                 Rows += 1;
             }
+            Columns = (int)Math.Floor(bars[0].Para.BasePara.space / Cstep);
             if (Columns % 2 == 0)
             {
                 Columns += 1;
@@ -116,22 +135,24 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void SetFlow()
         {
-            ex.Flow.TCount = 0;
-            ex.Flow.SCount = 0;
+            ex.Flow.TrialCount = 0;
+            ex.Flow.StiCount = 0;
             ex.Flow.IsPred = false;
-            ex.Flow.StiTime = ex.Expara.durT;
+            ex.Flow.StiTime = ex.Exdesign.durT;
+
+            ex.Flow.RotateOri = Matrix.CreateRotationZ(bars[0].Para.BasePara.orientation * (float)SLConstant.Rad_p_Deg);
+            ex.Flow.TranslateCenter = Matrix.CreateTranslation(bars[0].Para.BasePara.center);
         }
 
         /// <summary>
-        /// Send crucial information in MarkerHeader 
+        /// Send information in MarkerHeader 
         /// </summary>
         protected override void MarkHead()
         {
-            DrawTip(ref text, ex.Expara.bgcolor, SLConstant.MarkHead);
+            DrawTip(ref text, ex.Exdesign.bgcolor, SLConstant.MarkHead);
 
-            ex.Expara.stimuli[0] = Rows * Columns * 2;
-            ex.Rand.RandomizeSeed();
-            ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
+            ex.Exdesign.stimuli[0] = Rows * Columns * 2;
+            ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
 
             // Experiment Type Encoding
             ex.PPort.MarkerEncode(ex.Extype[0].Value);
@@ -140,28 +161,26 @@ namespace StiLib.Vision.Stimuli
             // Condition Number Encoding
             ex.PPort.MarkerEncode(ex.Cond[0].VALUE.ValueN);
             // Random Seed Encoding
-            ex.PPort.MarkerEncode(ex.Rand.RSeed);
+            ex.PPort.MarkerEncode(ex.Rand.Seed);
             // Experiment Trials
-            ex.PPort.MarkerEncode(ex.Expara.trial);
+            ex.PPort.MarkerEncode(ex.Exdesign.trial);
 
             // Keywords Group Seperator
             ex.PPort.MarkerSeparatorEncode();
 
             // Custom Parameters Encoding
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.height * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.width * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].Para.BasePara.orientation * 100.0));
+            bars[0].Para.Encode(ex.PPort);
+            ex.PPort.MarkerEncode((int)Math.Floor(bars[0].display_H_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(bars[0].display_W_deg * 100.0));
             ex.PPort.MarkerEncode(Rows);
             ex.PPort.MarkerEncode(Columns);
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.X + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor((Bar[0].Para.BasePara.center.Y + 60.0f) * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].view_h_deg * 100.0));
-            ex.PPort.MarkerEncode((int)Math.Floor(Bar[0].view_w_deg * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Rstep * 100.0));
+            ex.PPort.MarkerEncode((int)Math.Floor(Cstep * 100.0));
 
             // End of Header Encoding
             ex.PPort.MarkerEndEncode();
-            // Set ready to begin
-            ex.Flow.IsStiOn = true;
+            // Set Timer to begin
+            ex.PPort.Timer.Reset();
         }
 
         /// <summary>
@@ -180,13 +199,13 @@ namespace StiLib.Vision.Stimuli
         /// </summary>
         protected override void Draw()
         {
-            GraphicsDevice.Clear(ex.Expara.bgcolor);
+            GraphicsDevice.Clear(ex.Exdesign.bgcolor);
 
             if (GO_OVER)
             {
-                Bar[ex.Flow.Which].Draw(GraphicsDevice);
-                ex.Flow.Info = ex.Flow.TCount.ToString() + " / " + ex.Expara.trial.ToString() + " Trials\n" +
-                                       ex.Flow.SCount.ToString() + " / " + ex.Expara.stimuli[0].ToString() + " Stimuli";
+                bars[ex.Flow.SliceCount].Draw(GraphicsDevice);
+                ex.Flow.Info = ex.Flow.TrialCount.ToString() + " / " + ex.Exdesign.trial.ToString() + " Trials\n" +
+                                       ex.Flow.StiCount.ToString() + " / " + ex.Exdesign.stimuli[0].ToString() + " Stimuli";
                 text.Draw(ex.Flow.Info);
             }
             else
@@ -199,56 +218,58 @@ namespace StiLib.Vision.Stimuli
         {
             if (ex.Flow.IsStiOn)
             {
-                ex.Flow.IsStiOn = false;
-                ex.PPort.timer.ReStart();
-                // Stimulus Onset Marker 
+                ex.PPort.Timer.Start();
+                // Stimulus Onset Marker
                 ex.PPort.Trigger();
+                ex.Flow.IsStiOn = false;
             }
 
             // In Presentation
-            if (ex.PPort.timer.ElapsedSeconds < ex.Flow.StiTime + 0.001)
+            if (ex.PPort.Timer.ElapsedSeconds < ex.Flow.StiTime)
             {
                 // Set Stimulus Position in Grid only once at the begining of Presentation
                 if (!ex.Flow.IsPred)
                 {
                     ex.Flow.IsPred = true;
 
-                    ex.Flow.RCount = (int)Math.Floor(ex.Rand.RSequence[ex.Flow.SCount] / (Columns * 2.0));
-                    int t = ex.Rand.RSequence[ex.Flow.SCount] % (Columns * 2);
-                    ex.Flow.CCount = (int)Math.Floor(t / 2.0);
-                    ex.Flow.Which = t % 2;
+                    ex.Flow.RowCount = (int)Math.Floor(ex.Rand.Sequence[ex.Flow.StiCount] / (Columns * 2.0));
+                    int t = ex.Rand.Sequence[ex.Flow.StiCount] % (Columns * 2);
+                    ex.Flow.ColumnCount = (int)Math.Floor(t / 2.0);
+                    ex.Flow.SliceCount = t % 2;
 
-                    float Xgrid = -(Columns - 1) * Bar[0].Para.width / 2 + Bar[0].Para.width * ex.Flow.CCount;
-                    float Ygrid = (Rows - 1) * Bar[0].Para.height / 2 - Bar[0].Para.height * ex.Flow.RCount;
-                    ex.Flow.Rotate = Matrix.CreateRotationZ((float)(Bar[0].Para.BasePara.orientation * Math.PI / 180.0));
-                    ex.Flow.Translate = Matrix.CreateTranslation(Xgrid, Ygrid, 0.0f) * ex.Flow.Rotate * Matrix.CreateTranslation(Bar[0].Para.BasePara.center);
-                    Bar[ex.Flow.Which].SetWorld(ex.Flow.Translate);
+                    float Xgrid = -(Columns - 1) * Cstep / 2 + Cstep * ex.Flow.ColumnCount;
+                    float Ygrid = (Rows - 1) * Rstep / 2 - Rstep * ex.Flow.RowCount;
+                    bars[ex.Flow.SliceCount].Ori3DMatrix = Matrix.CreateTranslation(Xgrid, Ygrid, 0.0f) * ex.Flow.RotateOri;
+                    bars[ex.Flow.SliceCount].WorldMatrix = ex.Flow.TranslateCenter;
+
+                    ex.Flow.IsStiOn = true;
                 }
             }
             else // End of Presentation
             {
                 // If Begin Another Stimulus
-                if (ex.Flow.SCount < ex.Expara.stimuli[0] - 1)
+                if (ex.Flow.StiCount < ex.Exdesign.stimuli[0] - 1)
                 {
-                    ex.Flow.IsStiOn = true;
                     ex.Flow.IsPred = false;
-                    ex.Flow.SCount += 1;
+                    ex.Flow.StiCount += 1;
+                    ex.PPort.Timer.Reset();
                 }
                 else
                 {
                     // If Begin Another Trial
-                    if (ex.Flow.TCount < ex.Expara.trial - 1)
+                    if (ex.Flow.TrialCount < ex.Exdesign.trial - 1)
                     {
                         // Each trial has different random sequence of stimulus
-                        ex.Rand.RandomizeSequence(ex.Expara.stimuli[0]);
-                        ex.Flow.IsStiOn = true;
+                        ex.Rand.RandomizeSequence(ex.Exdesign.stimuli[0]);
                         ex.Flow.IsPred = false;
-                        ex.Flow.TCount += 1;
-                        ex.Flow.SCount = 0;
+                        ex.Flow.TrialCount += 1;
+                        ex.Flow.StiCount = 0;
+                        ex.PPort.Timer.Reset();
                     }
                     else // End of Experiment
                     {
                         GO_OVER = false;
+                        return;
                     }
                 }
 

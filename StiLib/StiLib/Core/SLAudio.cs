@@ -26,20 +26,17 @@ namespace StiLib.Core
         #region Fields
 
         /// <summary>
-        /// Audio Engine for XACT
+        /// XACT Audio Engine
         /// </summary>
         AudioEngine audioEngine;
-
         /// <summary>
         /// Wave bank in memory
         /// </summary>
         WaveBank memoryWaveBank;
-
         /// <summary>
         /// Wave bank in streaming
         /// </summary>
         WaveBank streamWaveBank;
-
         /// <summary>
         /// Sound bank
         /// </summary>
@@ -49,18 +46,15 @@ namespace StiLib.Core
         /// A list of all non-3D cues
         /// </summary>
         List<Cue> activeCues;
-
         /// <summary>
-        /// A list of all cue3Ds
+        /// A list of all 3D Cues
         /// </summary>
         List<Cue3D> activeCue3Ds;
-
         /// <summary>
         /// A queue that keeps inactive Cue3D instances, so a new instance does not
         /// need to be created each time a sound is played
         /// </summary>
         Queue<Cue3D> inactiveCue3Ds;
-
         /// <summary>
         /// Sound Catagories
         /// </summary>
@@ -101,7 +95,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// States if the audio system has been initialized or not.
+        /// If the audio system has been initialized or not.
         /// </summary>
         public bool IsInitialized
         {
@@ -120,7 +114,7 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Creates a new AudioSystem instance before Initialize()
+        /// Creates a new AudioSystem instance, need Initialize()
         /// </summary>
         public SLAudio()
         {
@@ -131,7 +125,7 @@ namespace StiLib.Core
             categories = new SLDictionary<string, AudioCategory, float>();
 
             // Set default volume
-            globalVolume = 1f;
+            globalVolume = 1.0f;
         }
 
         /// <summary>
@@ -153,7 +147,7 @@ namespace StiLib.Core
         /// </summary>
         /// <param name="settingsFilePath">The filepath to the .xgs file.</param>
         /// <param name="memoryWBFilePath">The filepath to the .xwb in-memory wave bank.</param>
-        /// <param name="streamWBFilePath">The filepath to the streaming wave bank with default -- offset:0, packetsize:64</param>
+        /// <param name="streamWBFilePath">The filepath to the streaming wave bank with default -- offset: 0, packetsize: 64</param>
         /// <param name="SBFilePath">The filepath to the .xsb file.</param>
         public void Initialize(string settingsFilePath, string memoryWBFilePath, string streamWBFilePath, string SBFilePath)
         {
@@ -161,7 +155,7 @@ namespace StiLib.Core
             {
                 audioEngine = new AudioEngine(settingsFilePath + ".xgs");
                 memoryWaveBank = new WaveBank(audioEngine, memoryWBFilePath + ".xwb");
-                if (streamWBFilePath != null)
+                if (!string.IsNullOrEmpty(streamWBFilePath))
                 {
                     streamWaveBank = new WaveBank(audioEngine, streamWBFilePath + ".xwb", 0, 64);
                 }
@@ -171,7 +165,7 @@ namespace StiLib.Core
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Audio System Not Initialized !");
+                MessageBox.Show(e.Message, "Audio System Initialization Failed !");
                 isInitialized = false;
             }
 
@@ -217,7 +211,7 @@ namespace StiLib.Core
             else
             {
                 AudioCategory c = audioEngine.GetCategory(categoryName);
-                categories.Add(categoryName, c, 1f);
+                categories.Add(categoryName, c, 1.0f);
                 return c;
             }
         }
@@ -324,28 +318,40 @@ namespace StiLib.Core
         {
             for (int i = 0; i < activeCues.Count; i++)
             {
-                activeCues[i].Pause();
+                if (activeCues[i].IsPlaying)
+                {
+                    activeCues[i].Pause();
+                }
             }
 
             for (int i = 0; i < activeCue3Ds.Count; i++)
             {
-                activeCue3Ds[i].Pause();
+                if (activeCue3Ds[i].Cues[0].IsPlaying)
+                {
+                    activeCue3Ds[i].Pause();
+                }
             }
         }
 
         /// <summary>
         /// Resumes all paused cues played through the AudioSystem.
         /// </summary>
-        public void Resume()
+        public void ResumeAll()
         {
             for (int i = 0; i < activeCues.Count; i++)
             {
-                activeCues[i].Resume();
+                if (activeCues[i].IsPaused)
+                {
+                    activeCues[i].Resume();
+                }
             }
 
             for (int i = 0; i < activeCue3Ds.Count; i++)
             {
-                activeCue3Ds[i].Resume();
+                if (activeCue3Ds[i].Cues[0].IsPaused)
+                {
+                    activeCue3Ds[i].Resume();
+                }
             }
         }
 
@@ -354,7 +360,7 @@ namespace StiLib.Core
         /// Stopped cues cannot be resumed.
         /// </summary>
         /// <param name="stopOptions">Controls how the cues should stop.</param>
-        public void Stop(AudioStopOptions stopOptions)
+        public void StopAll(AudioStopOptions stopOptions)
         {
             for (int i = 0; i < activeCues.Count; i++)
             {
@@ -480,13 +486,56 @@ namespace StiLib.Core
             if (!isInitialized)
                 MessageBox.Show("Audio System Not Initialized !", "Error !");
 
-            if (bgMusic != null)
+            if (bgMusic != null && !bgMusic.IsStopped)
             {
                 bgMusic.Stop(AudioStopOptions.AsAuthored);
             }
             bgMusic = soundBank.GetCue(bgmusic_cue);
             bgMusic.Play();
             activeCues.Add(bgMusic);
+        }
+
+        /// <summary>
+        /// Pause Background Music
+        /// </summary>
+        public void PauseBgMusic()
+        {
+            if (!isInitialized)
+                MessageBox.Show("Audio System Not Initialized !", "Error !");
+
+            if (bgMusic != null && bgMusic.IsPlaying)
+            {
+                bgMusic.Pause();
+            }
+        }
+
+        /// <summary>
+        /// Resume Background Music
+        /// </summary>
+        public void ResumeBgMusic()
+        {
+            if (!isInitialized)
+                MessageBox.Show("Audio System Not Initialized !", "Error !");
+
+            if (bgMusic != null && bgMusic.IsPaused)
+            {
+                bgMusic.Resume();
+            }
+        }
+
+        /// <summary>
+        /// Stop Background Music
+        /// </summary>
+        /// <param name="stopOptions"></param>
+        public void StopBgMusic(AudioStopOptions stopOptions)
+        {
+            if (!isInitialized)
+                MessageBox.Show("Audio System Not Initialized !", "Error !");
+
+            if (bgMusic != null)
+            {
+                bgMusic.Stop(stopOptions);
+            }
         }
 
         /// <summary>
@@ -540,7 +589,7 @@ namespace StiLib.Core
         /// Sets the volume of a catagory
         /// </summary>
         /// <param name="categoryName"></param>
-        /// <param name="volume">0-1</param>
+        /// <param name="volume">[0, 1]</param>
         public void SetVolume(string categoryName, float volume)
         {
             if (!isInitialized)
@@ -548,7 +597,7 @@ namespace StiLib.Core
 
             AudioCategory category = GetCategory(categoryName);
 
-            categories.pDictionary[categoryName] = volume;
+            categories[categoryName] = volume;
             category.SetVolume(volume * globalVolume);
         }
 
@@ -636,6 +685,7 @@ namespace StiLib.Core
                 Cues[i].Dispose();
             }
         }
+
     }
 
     /// <summary>
@@ -651,6 +701,8 @@ namespace StiLib.Core
         /// The value of the variable.
         /// </summary>
         public float Value;
+
+
         /// <summary>
         /// Applies the value of the variable to the specified cue instance.
         /// </summary>
@@ -659,5 +711,7 @@ namespace StiLib.Core
         {
             cue.SetVariable(Name, Value);
         }
+
     }
+
 }

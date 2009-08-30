@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // SLExperiment.cs
 //
-// StiLib Experiment Type
+// StiLib Experiment Service.
 // Copyright (c) Zhang Li. 2009-02-22.
 //-----------------------------------------------------------------------------
 #endregion
@@ -32,7 +32,7 @@ namespace StiLib.Core
         /// </summary>
         public List<SLKeyValuePair<string, int, SLInterpolation>> Cond;
         /// <summary>
-        /// All Real Conditions --- First Dim:Which Condition, Second Dim:Condition Level
+        /// All Real Conditions Values --- First Dim: Which Condition, Second Dim: Condition Level
         /// </summary>
         public float[][] CondTable;
         /// <summary>
@@ -42,7 +42,7 @@ namespace StiLib.Core
         /// <summary>
         /// Experiment Design Parameters
         /// </summary>
-        public ExDesign Expara;
+        public ExDesign Exdesign;
         /// <summary>
         /// Flow Control Service
         /// </summary>
@@ -60,26 +60,29 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Init to default
+        /// Init with default -- Exdesign: Default(1), Random Sequence Length: 2000
         /// </summary>
         public SLExperiment()
-            : this(ExDesign.Default, 2000)
+            : this(ExDesign.Default(1), 2000)
         {
         }
 
         /// <summary>
-        /// Init with empty Experiment Type and Conditions
+        /// Init with custom experiment design
         /// </summary>
         /// <param name="design"></param>
         /// <param name="length"></param>
         public SLExperiment(ExDesign design, int length)
-            : this(design.block, design.trial, design.stimuli, design.brestT, design.trestT, design.srestT, design.preT, design.durT, design.posT, design.bgcolor, length)
+            : this(design.exType, design.exPara, design.condition, design.block, design.trial, design.stimuli, design.brestT, design.trestT, design.srestT, design.preT, design.durT, design.posT, design.bgcolor, length)
         {
         }
 
         /// <summary>
-        /// Init with empty Experiment Type and Conditions
+        /// Init with custom experiment design parameters
         /// </summary>
+        /// <param name="extype"></param>
+        /// <param name="expara"></param>
+        /// <param name="cond"></param>
         /// <param name="block"></param>
         /// <param name="trial"></param>
         /// <param name="stimuli"></param>
@@ -91,11 +94,12 @@ namespace StiLib.Core
         /// <param name="posT"></param>
         /// <param name="bgcolor"></param>
         /// <param name="length"></param>
-        public SLExperiment(int block, int trial, int[] stimuli, float brestT, float trestT, float srestT, float preT, float durT, float posT, Color bgcolor, int length)
+        public SLExperiment(ExType[] extype, ExPara[] expara, SLInterpolation[] cond, int block, int trial, int[] stimuli, float brestT, float trestT, float srestT, float preT, float durT, float posT, Color bgcolor, int length)
         {
             Extype = new List<KeyValuePair<string, int>>();
             Cond = new List<SLKeyValuePair<string, int, SLInterpolation>>();
-            Expara = new ExDesign(new ExType[] { ExType.None }, new ExPara[] { ExPara.None }, new SLInterpolation[] { SLInterpolation.Default(ExPara.None, 4) }, block, trial, stimuli, brestT, trestT, srestT, preT, durT, posT, bgcolor);
+
+            Exdesign = new ExDesign(extype, expara, cond, block, trial, stimuli, brestT, trestT, srestT, preT, durT, posT, bgcolor);
             Flow = new FlowControl();
             PPort = new ParallelPort();
             Rand = new SLRandom(length);
@@ -168,7 +172,7 @@ namespace StiLib.Core
 
 
         /// <summary>
-        /// Construct CondTable and StiTable According to Experiment Design
+        /// Construct CondTable and StiTable According to Internal Experiment Design Condition List
         /// </summary>
         public void InitEx()
         {
@@ -180,7 +184,7 @@ namespace StiLib.Core
                 ortho[i] = Cond[i].VALUE.ValueN;
             }
             StiTable = SLAlgorithm.OrthoTable(ortho);
-            Expara.stimuli[0] = StiTable.Length;
+            Exdesign.stimuli[0] = StiTable.Length;
         }
 
         /// <summary>
@@ -220,103 +224,4 @@ namespace StiLib.Core
 
     }
 
-    /// <summary>
-    /// Interpolation Parameters
-    /// </summary>
-    public struct SLInterpolation
-    {
-        /// <summary>
-        /// Init a custom SLInterpolation Structure
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="n"></param>
-        /// <param name="method"></param>
-        public SLInterpolation(float start, float end, int n, Interpolation method)
-        {
-            StartValue = start;
-            EndValue = end;
-            ValueN = n;
-            Method = method;
-        }
-
-        /// <summary>
-        /// Set Interpolation Parameters
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="n"></param>
-        /// <param name="method"></param>
-        public void SetPara(float start, float end, int n, Interpolation method)
-        {
-            StartValue = start;
-            EndValue = end;
-            ValueN = n;
-            Method = method;
-        }
-
-        /// <summary>
-        /// Get Default SLInterpolation according to Pre-Definded Experiment Parameters
-        /// </summary>
-        /// <param name="expara"></param>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public static SLInterpolation Default(ExPara expara, int n)
-        {
-            switch (expara)
-            {
-                default:
-                    return new SLInterpolation(0.0f, 360.0f, n, Interpolation.Linear);
-                case ExPara.Orientation:
-                    return new SLInterpolation(0.0f, 180.0f, n, Interpolation.Linear);
-                case ExPara.Speed:
-                    return new SLInterpolation(0.0f, 50.0f, n, Interpolation.Linear);
-                case ExPara.Luminance:
-                    return new SLInterpolation(0.0f, 0.5f, n, Interpolation.Linear);
-                case ExPara.Contrast:
-                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
-                case ExPara.SpatialFreq:
-                    return new SLInterpolation(0.1f, 3.2f, n, Interpolation.Log2);
-                case ExPara.SpatialPhase:
-                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
-                case ExPara.TemporalFreq:
-                    return new SLInterpolation(1.0f, 32.0f, n, Interpolation.Log2);
-                case ExPara.TemporalPhase:
-                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
-                case ExPara.Color:
-                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
-                case ExPara.Disparity:
-                    return new SLInterpolation(-1.0f, 1.0f, n, Interpolation.Linear);
-                case ExPara.Size:
-                    return new SLInterpolation(0.5f, 20.0f, n, Interpolation.Linear);
-            }
-        }
-
-        /// <summary>
-        /// Interpolate a Sequence according to Internal Parameters
-        /// </summary>
-        /// <returns></returns>
-        public float[] Interpolate()
-        {
-            return SLAlgorithm.Interpolate(StartValue, EndValue, ValueN, Method);
-        }
-
-
-        /// <summary>
-        /// Interpolation Start Value
-        /// </summary>
-        public float StartValue;
-        /// <summary>
-        /// Interpolation End Value
-        /// </summary>
-        public float EndValue;
-        /// <summary>
-        /// Interpolation Value Numbers
-        /// </summary>
-        public int ValueN;
-        /// <summary>
-        /// Interpolation Method
-        /// </summary>
-        public Interpolation Method;
-    }
 }

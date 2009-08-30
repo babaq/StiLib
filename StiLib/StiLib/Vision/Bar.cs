@@ -27,31 +27,52 @@ namespace StiLib.Vision
         /// Bar Parameters
         /// </summary>
         public BarPara Para;
-        /// <summary>
-        /// Bar Vertex Array
-        /// </summary>
-        public VertexPositionColor[] barvertex;
-        VertexDeclaration barvdec;
-        BasicEffect basiceffect;
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Bar Basic Effect
+        /// Bar Basic Parameters
         /// </summary>
-        public BasicEffect Effect
+        public override vsBasePara BasePara
         {
-            get { return basiceffect; }
-            set { basiceffect = value; }
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
+        }
+
+        /// <summary>
+        /// Bar Center
+        /// </summary>
+        public override Vector3 Center
+        {
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Bar Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Bar Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
         }
 
         #endregion
 
 
         /// <summary>
-        /// Set bar parameters to default before Init()
+        /// Set Default BarPara, need Init()
         /// </summary>
         public Bar()
         {
@@ -59,22 +80,56 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Init Bar to default
+        /// Init Bar with Default BarPara
         /// </summary>
         /// <param name="gd"></param>
-        public Bar(GraphicsDevice gd) : this()
+        public Bar(GraphicsDevice gd)
+            : base(gd)
         {
+            Para = BarPara.Default;
             Init(gd);
         }
 
         /// <summary>
-        /// Init Bar to custom settings
+        /// Init Bar with Custom BarPara
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="barpara"></param>
-        public Bar(GraphicsDevice gd, BarPara barpara) : base(gd)
+        public Bar(GraphicsDevice gd, BarPara barpara)
+            : base(gd)
         {
-            Init(gd, barpara);
+            Para = barpara;
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init Bar with Custom BarPara and StiLib Configuration File
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="barpara"></param>
+        public Bar(GraphicsDevice gd, AssemblySettings slconfig, BarPara barpara)
+            : base(gd, slconfig)
+        {
+            Para = barpara;
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init Bar with Custom BarPara and Configuration
+        /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        /// <param name="gd"></param>
+        /// <param name="barpara"></param>
+        public Bar(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, BarPara barpara)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = barpara;
+            Init(gd);
         }
 
 
@@ -86,34 +141,45 @@ namespace StiLib.Vision
         {
             InitVS(gd);
 
-            // Get Vertex Ready
-            barvdec = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
-            barvertex = new VertexPositionColor[4];
-            barvertex[0].Position = new Vector3(-Para.width / 2f, -Para.height / 2f, 0);
-            barvertex[0].Color = Para.BasePara.color;
-            barvertex[1].Position = new Vector3(-Para.width / 2f, Para.height / 2f, 0);
-            barvertex[1].Color = Para.BasePara.color;
-            barvertex[2].Position = new Vector3(Para.width / 2f, Para.height / 2f, 0);
-            barvertex[2].Color = Para.BasePara.color;
-            barvertex[3].Position = new Vector3(Para.width / 2f, -Para.height / 2f, 0);
-            barvertex[3].Color = Para.BasePara.color;
+            // Fill Vertex and Index Array
+            vertexDeclaration = new VertexDeclaration(gd, VertexPositionColor.VertexElements);
+            VertexArray = new VertexPositionColor[4];
+            vertexArray[0].Position = new Vector3(-Para.width / 2f, -Para.height / 2f, 0);
+            vertexArray[0].Color = Para.BasePara.color;
+            vertexArray[1].Position = new Vector3(-Para.width / 2f, Para.height / 2f, 0);
+            vertexArray[1].Color = Para.BasePara.color;
+            vertexArray[2].Position = new Vector3(Para.width / 2f, Para.height / 2f, 0);
+            vertexArray[2].Color = Para.BasePara.color;
+            vertexArray[3].Position = new Vector3(Para.width / 2f, -Para.height / 2f, 0);
+            vertexArray[3].Color = Para.BasePara.color;
+            indexArray = new int[4];
+            indexArray[0] = 0;
+            indexArray[1] = 1;
+            indexArray[2] = 2;
+            indexArray[3] = 3;
 
-            // Get BasicEffect ready
-            basiceffect = new BasicEffect(gd, null);
-            basiceffect.VertexColorEnabled = true;
+            // Fill Vertex and Index Buffer
+            SetVertexBuffer(gd);
+            SetIndexBuffer(gd);
 
-            basiceffect.World = Matrix.CreateRotationZ(Para.BasePara.orientation * (float)SLConstant.RadpDeg) * Matrix.CreateTranslation(Para.BasePara.center);
-            basiceffect.View = GlobalView();
-            basiceffect.Projection = GlobalProj();
+            // Get BasicEffect Ready
+            basicEffect = new BasicEffect(gd, null);
+            basicEffect.VertexColorEnabled = true;
+
+            ori3DMatrix = Matrix.CreateRotationZ(Para.BasePara.orientation * (float)SLConstant.Rad_p_Deg);
+            worldMatrix = Matrix.CreateTranslation(Para.BasePara.center);
+            ViewMatrix = ViewMatrix;
+            ProjectionMatrix = ProjectionMatrix;
         }
 
         /// <summary>
-        /// Init Bar according to barpara
+        /// Init According to Custom BarPara
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="barpara"></param>
         public void Init(GraphicsDevice gd, BarPara barpara)
         {
+            barpara.BasePara.contentname = Para.BasePara.contentname;
             Para = barpara;
             Init(gd);
         }
@@ -126,52 +192,20 @@ namespace StiLib.Vision
         {
             if (Para.BasePara.visible)
             {
-                gd.VertexDeclaration = barvdec;
+                gd.VertexDeclaration = vertexDeclaration;
+                gd.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionColor.SizeInBytes);
+                gd.Indices = indexBuffer;
+                gd.RenderState.CullMode = CullMode.None;
+                basicEffect.World = ori3DMatrix * worldMatrix;
 
-                basiceffect.Begin();
-                basiceffect.CurrentTechnique.Passes[0].Begin();
-                gd.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleFan, barvertex, 0, 2);
-                basiceffect.CurrentTechnique.Passes[0].End();
-                basiceffect.End();
+                basicEffect.Begin();
+                basicEffect.CurrentTechnique.Passes[0].Begin();
+                gd.DrawIndexedPrimitives(PrimitiveType.TriangleFan, 0, 0, 4, 0, 2);
+                basicEffect.CurrentTechnique.Passes[0].End();
+                basicEffect.End();
             }
         }
 
-
-        /// <summary>
-        /// Set effect world matrix
-        /// </summary>
-        /// <param name="world"></param>
-        public override void SetWorld(Matrix world)
-        {
-            basiceffect.World = world;
-        }
-
-        /// <summary>
-        /// Set effect view matrix
-        /// </summary>
-        /// <param name="view"></param>
-        public override void SetView(Matrix view)
-        {
-            basiceffect.View = view;
-        }
-
-        /// <summary>
-        /// Set effect projection matrix
-        /// </summary>
-        /// <param name="proj"></param>
-        public override void SetProjection(Matrix proj)
-        {
-            basiceffect.Projection = proj;
-        }
-
-        /// <summary>
-        /// Set visible state
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            Para.BasePara.visible = isvisible;
-        }
 
         /// <summary>
         /// Scale Bar Size
@@ -183,8 +217,9 @@ namespace StiLib.Vision
             Para.width *= x;
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Position *= x;
+                vertexArray[i].Position *= x;
             }
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -196,8 +231,9 @@ namespace StiLib.Vision
             Para.width *= x;
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Position.X *= x;
+                vertexArray[i].Position.X *= x;
             }
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -209,8 +245,9 @@ namespace StiLib.Vision
             Para.height *= x;
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Position.Y *= x;
+                vertexArray[i].Position.Y *= x;
             }
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -222,10 +259,11 @@ namespace StiLib.Vision
         {
             Para.height = height;
             Para.width = width;
-            barvertex[0].Position = new Vector3(-width / 2f, -height / 2f, 0);
-            barvertex[1].Position = new Vector3(-width / 2f, height / 2f, 0);
-            barvertex[2].Position = new Vector3(width / 2f, height / 2f, 0);
-            barvertex[3].Position = new Vector3(width / 2f, -height / 2f, 0);
+            vertexArray[0].Position = new Vector3(-width / 2f, -height / 2f, 0);
+            vertexArray[1].Position = new Vector3(-width / 2f, height / 2f, 0);
+            vertexArray[2].Position = new Vector3(width / 2f, height / 2f, 0);
+            vertexArray[3].Position = new Vector3(width / 2f, -height / 2f, 0);
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -237,14 +275,15 @@ namespace StiLib.Vision
         /// <param name="R_B">Right_Bottom Vertex Color</param>
         public void SetColor(Color L_T, Color R_T, Color L_B, Color R_B)
         {
-            barvertex[0].Color = L_B;
-            barvertex[1].Color = L_T;
-            barvertex[2].Color = R_T;
-            barvertex[3].Color = R_B;
+            vertexArray[0].Color = L_B;
+            vertexArray[1].Color = L_T;
+            vertexArray[2].Color = R_T;
+            vertexArray[3].Color = R_B;
+            SetVertexBuffer();
         }
 
         /// <summary>
-        /// Set Bar a Uniform Color
+        /// Set Bar to Uniform Color
         /// </summary>
         /// <param name="color"></param>
         public void SetColor(Color color)
@@ -252,8 +291,9 @@ namespace StiLib.Vision
             Para.BasePara.color = color;
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Color = color;
+                vertexArray[i].Color = color;
             }
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -264,8 +304,14 @@ namespace StiLib.Vision
         {
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Color = new Color(new Vector4(x) + barvertex[i].Color.ToVector4());
+                var cv = vertexArray[i].Color.ToVector4();
+                cv.X += x;
+                cv.Y += x;
+                cv.Z += x;
+                cv.W += x;
+                vertexArray[i].Color = new Color(cv);
             }
+            SetVertexBuffer();
         }
 
         /// <summary>
@@ -275,7 +321,25 @@ namespace StiLib.Vision
         {
             for (int i = 0; i < 4; i++)
             {
-                barvertex[i].Color = new Color(new Vector4(1.0f) - barvertex[i].Color.ToVector4());
+                vertexArray[i].Color = new Color(new Vector4(1.0f) - vertexArray[i].Color.ToVector4());
+            }
+            SetVertexBuffer();
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
+        {
+            if (gdRef != null)
+            {
+                return new Bar(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, Para);
+            }
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
             }
         }
 

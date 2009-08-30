@@ -28,12 +28,10 @@ namespace StiLib.Core
         /// Mouse State
         /// </summary>
         static MouseState mouseState, mouseStateLast;
-
         /// <summary>
         /// Keyboard State
         /// </summary>
         static KeyboardState keyboardState, keyboardStateLast;
-
         /// <summary>
         /// GamePad State
         /// </summary>
@@ -50,7 +48,6 @@ namespace StiLib.Core
         {
             get { return keyboardState; }
         }
-
         /// <summary>
         /// Get Mouse State
         /// </summary>
@@ -58,7 +55,6 @@ namespace StiLib.Core
         {
             get { return mouseState; }
         }
-
         /// <summary>
         /// Get GamePad State
         /// </summary>
@@ -66,7 +62,6 @@ namespace StiLib.Core
         {
             get { return gamepadState; }
         }
-
         /// <summary>
         /// Get Last KeyBoard State
         /// </summary>
@@ -74,7 +69,6 @@ namespace StiLib.Core
         {
             get { return keyboardStateLast; }
         }
-
         /// <summary>
         /// Get Last Mouse State
         /// </summary>
@@ -82,7 +76,6 @@ namespace StiLib.Core
         {
             get { return mouseStateLast; }
         }
-
         /// <summary>
         /// Get Last GamePad State
         /// </summary>
@@ -108,8 +101,9 @@ namespace StiLib.Core
             gamepadState = gamepadStateLast;
         }
 
+
         /// <summary>
-        /// Updata All the Input Devices States
+        /// Update All the Input Devices States
         /// </summary>
         public virtual void Update()
         {
@@ -123,6 +117,7 @@ namespace StiLib.Core
             mouseState = Mouse.GetState();
             gamepadState = GamePad.GetState(PlayerIndex.One);
         }
+
 
         # region Input Events
 
@@ -368,6 +363,5 @@ namespace StiLib.Core
         }
 
         #endregion
-
     }
 }

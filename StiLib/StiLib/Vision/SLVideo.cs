@@ -14,98 +14,202 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
 using System.Windows.Forms;
+using StiLib.Core;
 #endregion
 
 namespace StiLib.Vision
 {
+    using MediaState = Microsoft.Xna.Framework.Media.MediaState;
     /// <summary>
     /// StiLib Video
     /// </summary>
     public class SLVideo : VisionStimulus
     {
+        #region Fields
+
         /// <summary>
-        /// Sprite Batch
+        /// SLVideo Parameters
         /// </summary>
-        public SpriteBatch SpriteBatch;
+        public VideoPara Para;
         /// <summary>
-        /// Basic Parameters
+        /// Video Frame Texture
         /// </summary>
-        public BasePara BasePara;
+        public Texture2D texture;
         /// <summary>
-        /// Content Manager
+        /// Loaded Video
         /// </summary>
-        public ContentManager ContentManager;
+        public Video video;
+        VideoPlayer videoplayer;
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
-        /// Video Texture
-        /// </summary>
-        public Texture2D Texture;
-        Video video;
-        VideoPlayer vplayer;
-        /// <summary>
-        /// Get the Video Player
+        /// Gets the Video Player
         /// </summary>
         public VideoPlayer Player
         {
-            get { return vplayer; }
+            get { return videoplayer; }
         }
+
+        /// <summary>
+        /// Gets Video State
+        /// </summary>
+        public MediaState MediaState
+        {
+            get { return videoplayer.State; }
+        }
+
+        /// <summary>
+        /// Basic Parameters
+        /// </summary>
+        public override vsBasePara BasePara
+        {
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
+        }
+
+        /// <summary>
+        /// Center
+        /// </summary>
+        public override Vector3 Center
+        {
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
+        }
+
+        #endregion
 
 
         /// <summary>
-        /// Set Video parameters to default, 
-        /// before LoadContent() and Init()
+        /// Sets Default VideoPara, need LoadContent() and Init()
         /// </summary>
         public SLVideo()
         {
-            BasePara = BasePara.Default;
+            Para = new VideoPara("");
         }
 
         /// <summary>
-        /// Init to default
+        /// Init with Default VideoPara and Custom Video Name
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
         /// <param name="videoname"></param>
         public SLVideo(GraphicsDevice gd, IServiceProvider service, string path, string videoname)
-            : this()
+            : base(gd)
         {
+            Para = new VideoPara(videoname);
             LoadContent(service, path, videoname);
             Init(gd);
         }
 
         /// <summary>
-        /// Init to custom base parameters
+        /// Init with Custom VideoPara
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="videopara"></param>
+        public SLVideo(GraphicsDevice gd, IServiceProvider service, string path, VideoPara videopara)
+            : base(gd)
+        {
+            Para = videopara;
+            LoadContent(service, path, videopara.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom VideoPara and Configuration
+        /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="videopara"></param>
+        public SLVideo(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, IServiceProvider service, string path, VideoPara videopara)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = videopara;
+            LoadContent(service, path, videopara.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom VideoPara and StiLib Configuration File
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="videopara"></param>
+        public SLVideo(GraphicsDevice gd, AssemblySettings slconfig, IServiceProvider service, string path, VideoPara videopara)
+            : base(gd, slconfig)
+        {
+            Para = videopara;
+            LoadContent(service, path, videopara.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init with Custom VideoPara and Video Name
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
         /// <param name="videoname"></param>
-        /// <param name="bpara"></param>
-        public SLVideo(GraphicsDevice gd, IServiceProvider service, string path, string videoname, BasePara bpara)
+        /// <param name="videopara"></param>
+        public SLVideo(GraphicsDevice gd, IServiceProvider service, string path, string videoname, VideoPara videopara)
             : base(gd)
         {
+            Para = videopara;
             LoadContent(service, path, videoname);
-            Init(gd, bpara);
+            Init(gd);
         }
 
 
         /// <summary>
-        /// Load Compiled Video.xnb File using Content Manager
+        /// Load the Video
         /// </summary>
         /// <param name="service"></param>
         /// <param name="path"></param>
         /// <param name="videoname"></param>
-        public void LoadContent(IServiceProvider service, string path, string videoname)
+        public override void LoadContent(IServiceProvider service, string path, string videoname)
         {
-            ContentManager = new ContentManager(service, path);
+            contentManager = new ContentManager(service, path);
             try
             {
-                video = ContentManager.Load<Video>(videoname);
+                video = contentManager.Load<Video>(videoname);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error !");
             }
+
+            Para.BasePara.contentname = videoname;
         }
 
         /// <summary>
@@ -114,28 +218,153 @@ namespace StiLib.Vision
         /// <param name="gd"></param>
         public override void Init(GraphicsDevice gd)
         {
-            SpriteBatch = new SpriteBatch(gd);
-            vplayer = new VideoPlayer();
             InitVS(gd);
+            spriteBatch = new SpriteBatch(gd);
+            videoplayer = new VideoPlayer();
         }
 
         /// <summary>
-        /// Init according to custom base parameters
+        /// Init with Custom VideoPara
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="bpara"></param>
-        public void Init(GraphicsDevice gd, BasePara bpara)
+        /// <param name="videopara"></param>
+        public void Init(GraphicsDevice gd, VideoPara videopara)
         {
-            BasePara = bpara;
+            videopara.BasePara.contentname = Para.BasePara.contentname;
+            Para = videopara;
             Init(gd);
         }
+
+        /// <summary>
+        /// Draw Video
+        /// </summary>
+        /// <param name="gd"></param>
+        public override void Draw(GraphicsDevice gd)
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State == MediaState.Stopped)
+                    videoplayer.Play(video);
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, new Vector2(Center.X * unitFactor + gd.Viewport.Width / 2 - video.Width / 2, gd.Viewport.Height / 2 - Center.Y * unitFactor - video.Height / 2), Para.BasePara.color);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw Video at Position: (5, 5) in Screen Coordinate
+        /// </summary>
+        public override void Draw()
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, new Vector2(5, 5), Para.BasePara.color);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw Custom Position and Tinted Video
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        public void Draw(Vector2 position, Color color)
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, position, color);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw Tinted Video to Custom Rectangle
+        /// </summary>
+        /// <param name="destrect"></param>
+        /// <param name="color"></param>
+        public void Draw(Rectangle destrect, Color color)
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, destrect, color);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw Part of Tinted Video to Custom Rectangle
+        /// </summary>
+        /// <param name="destrect"></param>
+        /// <param name="sourrect"></param>
+        /// <param name="color"></param>
+        public void Draw(Rectangle destrect, Rectangle sourrect, Color color)
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, destrect, sourrect, color);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw Rotated Part of Tinted Video to Custom Rectangle
+        /// </summary>
+        /// <param name="destrect"></param>
+        /// <param name="sourrect"></param>
+        /// <param name="color"></param>
+        /// <param name="rotate"></param>
+        /// <param name="origin"></param>
+        public void Draw(Rectangle destrect, Rectangle sourrect, Color color, float rotate, Vector2 origin)
+        {
+            if (Para.BasePara.visible)
+            {
+                if (videoplayer.State != MediaState.Stopped)
+                    texture = videoplayer.GetTexture();
+                if (texture != null)
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(texture, destrect, sourrect, color, rotate, origin, SpriteEffects.None, 0.0f);
+                    spriteBatch.End();
+                }
+            }
+        }
+
 
         /// <summary>
         /// Play Video
         /// </summary>
         public void Play()
         {
-            vplayer.Play(video);
+            videoplayer.Play(video);
         }
 
         /// <summary>
@@ -143,7 +372,7 @@ namespace StiLib.Vision
         /// </summary>
         public void Stop()
         {
-            vplayer.Stop();
+            videoplayer.Stop();
         }
 
         /// <summary>
@@ -151,7 +380,7 @@ namespace StiLib.Vision
         /// </summary>
         public void Pause()
         {
-            vplayer.Pause();
+            videoplayer.Pause();
         }
 
         /// <summary>
@@ -159,95 +388,25 @@ namespace StiLib.Vision
         /// </summary>
         public void Resume()
         {
-            vplayer.Resume();
+            videoplayer.Resume();
         }
 
         /// <summary>
-        /// Draw Video at Position:(5,5)
+        /// Creates a new object that is a copy of the current instance
         /// </summary>
-        public void Draw()
+        /// <returns></returns>
+        public override object Clone()
         {
-            if (BasePara.visible)
+            if (gdRef != null)
             {
-                if (vplayer.State != MediaState.Stopped)
-                    Texture = vplayer.GetTexture();
-                if (Texture != null)
-                {
-                    SpriteBatch.Begin();
-                    SpriteBatch.Draw(Texture, new Vector2(5, 5), BasePara.color);
-                    SpriteBatch.End();
-                }
+                return new SLVideo(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, contentManager.ServiceProvider, contentManager.RootDirectory, Para);
             }
-        }
-
-        /// <summary>
-        /// Draw custom position and tinted Video
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="color"></param>
-        public void Draw(Vector2 position, Color color)
-        {
-            if (BasePara.visible)
+            else
             {
-                if (vplayer.State != MediaState.Stopped)
-                    Texture = vplayer.GetTexture();
-                if (Texture != null)
-                {
-                    SpriteBatch.Begin();
-                    SpriteBatch.Draw(Texture, position, color);
-                    SpriteBatch.End();
-                }
+                MessageBox.Show("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
             }
-        }
 
-        /// <summary>
-        /// Draw tinted Video to custom rectangle
-        /// </summary>
-        /// <param name="destrect"></param>
-        /// <param name="color"></param>
-        public void Draw(Rectangle destrect, Color color)
-        {
-            if (BasePara.visible)
-            {
-                if (vplayer.State != MediaState.Stopped)
-                    Texture = vplayer.GetTexture();
-                if (Texture != null)
-                {
-                    SpriteBatch.Begin();
-                    SpriteBatch.Draw(Texture, destrect, color);
-                    SpriteBatch.End();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Draw part of tinted Video to custom rectangle
-        /// </summary>
-        /// <param name="destrect"></param>
-        /// <param name="sourrect"></param>
-        /// <param name="color"></param>
-        public void Draw(Rectangle destrect, Rectangle sourrect, Color color)
-        {
-            if (BasePara.visible)
-            {
-                if (vplayer.State != MediaState.Stopped)
-                    Texture = vplayer.GetTexture();
-                if (Texture != null)
-                {
-                    SpriteBatch.Begin();
-                    SpriteBatch.Draw(Texture, destrect, sourrect, color);
-                    SpriteBatch.End();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Set Visible State
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            BasePara.visible = isvisible;
         }
 
     }

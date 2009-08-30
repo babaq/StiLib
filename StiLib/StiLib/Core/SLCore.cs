@@ -2,13 +2,14 @@
 //-----------------------------------------------------------------------------
 // SLCore.cs
 //
-// StiLib Core Service
+// StiLib Core Services.
 // Copyright (c) Zhang Li. 2009-02-22.
 //-----------------------------------------------------------------------------
 #endregion
 
 #region Using Statements
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,69 +22,12 @@ using dnAnalytics.Statistics;
 using System.Reflection;
 using System.Xml;
 using System.Configuration;
+using System.Text;
 #endregion
 
 namespace StiLib.Core
 {
-    /// <summary>
-    /// StiLib Two Keys/One Value Pair Structure
-    /// </summary>
-    public struct SLKeyValuePair<primaryKey, SecondaryKey, Value>
-    {
-        primaryKey pKey;
-        SecondaryKey sKey;
-        Value val;
-
-
-        /// <summary>
-        /// Create a new 2Keys/1Value Pair
-        /// </summary>
-        /// <param name="pK"></param>
-        /// <param name="sK"></param>
-        /// <param name="v"></param>
-        public SLKeyValuePair(primaryKey pK, SecondaryKey sK, Value v)
-        {
-            pKey = pK;
-            sKey = sK;
-            val = v;
-        }
-
-        /// <summary>
-        /// Primary Key
-        /// </summary>
-        public primaryKey PKEY
-        {
-            get { return pKey; }
-            set { pKey = value; }
-        }
-
-        /// <summary>
-        /// Secondary Key
-        /// </summary>
-        public SecondaryKey SKEY
-        {
-            get { return sKey; }
-            set { sKey = value; }
-        }
-
-        /// <summary>
-        /// Value
-        /// </summary>
-        public Value VALUE
-        {
-            get { return val; }
-            set { val = value; }
-        }
-
-        /// <summary>
-        /// Returns a string representation of the SLKeyValuePair.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return "[" + pKey.ToString() + ", " + sKey.ToString() + ", " + val.ToString() + "]";
-        }
-    }
+    #region Core Class
 
     /// <summary>
     /// StiLib Randomization Service
@@ -107,41 +51,84 @@ namespace StiLib.Core
 
         #endregion
 
-        /// <summary>
-        /// Seed to Generate Random Sequence
-        /// </summary>
-        public int RSeed;
-        /// <summary>
-        /// Random Sequence
-        /// </summary>
-        public int[] RSequence;
+        int seed;
+        int[] sequence;
         Random random;
         RandomMethod method;
 
         /// <summary>
-        /// Get Current Random Method
+        /// Seed to Generate Random Sequence
+        /// </summary>
+        public int Seed
+        {
+            get { return seed; }
+            set
+            {
+                seed = value;
+                random = new Random(value);
+                srand((uint)value);
+            }
+        }
+
+        /// <summary>
+        /// Random Sequence
+        /// </summary>
+        public int[] Sequence
+        {
+            get { return sequence; }
+            set { sequence = value; }
+        }
+
+        /// <summary>
+        /// Random Method
         /// </summary>
         public RandomMethod RandomMethod
         {
             get { return method; }
+            set { method = value; }
         }
 
+
         /// <summary>
-        /// Init to default random sequence length: 2000
+        /// Init with default -- seed: time-dependent 0-199, random sequence length: 2000, random method: C runtime library method
         /// </summary>
         public SLRandom()
-            : this(2000)
+            : this(2000, RandomMethod.C)
         {
         }
 
         /// <summary>
-        /// Init with custom Random Sequence Length
+        /// Init with default -- seed: time-dependent 0-199, random method: C runtime library method
         /// </summary>
-        /// <param name="length"></param>
-        public SLRandom(int length)
+        /// <param name="sequencelength"></param>
+        public SLRandom(int sequencelength)
+            : this(sequencelength, RandomMethod.C)
         {
-            SetSequenceLength(length);
-            method = RandomMethod.None;
+        }
+
+        /// <summary>
+        /// Init with custom settings and default -- seed: time-dependent 0-199
+        /// </summary>
+        /// <param name="sequencelength"></param>
+        /// <param name="method"></param>
+        public SLRandom(int sequencelength, RandomMethod method)
+        {
+            Seed = GenerateRandomSeed(200);
+            SetSequenceLength(sequencelength);
+            this.method = method;
+        }
+
+        /// <summary>
+        /// Init with custom settings
+        /// </summary>
+        /// <param name="seed"></param>
+        /// <param name="sequencelength"></param>
+        /// <param name="method"></param>
+        public SLRandom(int seed, int sequencelength, RandomMethod method)
+        {
+            Seed = seed;
+            SetSequenceLength(sequencelength);
+            this.method = method;
         }
 
 
@@ -151,32 +138,31 @@ namespace StiLib.Core
         /// <param name="Length"></param>
         public void SetSequenceLength(int Length)
         {
-            RSequence = new int[Length];
+            sequence = new int[Length];
         }
 
         /// <summary>
-        /// Get time-dependent randomized seed(0-199) to generate random sequence
+        /// Gets a time-dependent random seed in [0, maxseed)
         /// </summary>
-        public void RandomizeSeed()
+        /// <param name="maxseed"></param>
+        /// <returns></returns>
+        public int GenerateRandomSeed(int maxseed)
         {
             Random rand = new Random();
-            RSeed = rand.Next(200);
-
-            random = new Random(RSeed);
-            srand((uint)RSeed);
+            return rand.Next(maxseed);
         }
 
         /// <summary>
-        /// Use RSeed and C Library rand() method to generate a shuffled 0-N sequence
+        /// Shuffle N length internal sequence using internal random method
         /// </summary>
         /// <param name="N"></param>
         public void RandomizeSequence(int N)
         {
-            RandomizeSequence(RandomMethod.C, N);
+            RandomizeSequence(method, N);
         }
 
         /// <summary>
-        /// Use RSeed and custom method to generate a shuffled 0-N sequence
+        /// Shuffle N length internal sequence using custom random method
         /// </summary>
         /// <param name="method"></param>
         /// <param name="N"></param>
@@ -188,19 +174,19 @@ namespace StiLib.Core
                     method = RandomMethod.C;
                     Randomize_C(N);
                     break;
-                case RandomMethod.dotNET:
-                    method = RandomMethod.dotNET;
+                case RandomMethod.DotNet:
+                    method = RandomMethod.DotNet;
                     Randomize_NET(N);
                     break;
                 case RandomMethod.None:
                     method = RandomMethod.None;
-                    MessageBox.Show("Randomize Seed First !", "Warning !");
+                    MessageBox.Show("No Random Method !", "Warning !");
                     break;
             }
         }
 
         /// <summary>
-        /// generate a shuffled 0-N sequence using C Library rand() method
+        /// Shuffle N length internal sequence using C Library rand() method
         /// </summary>
         /// <param name="N"></param>
         public void Randomize_C(int N)
@@ -208,7 +194,7 @@ namespace StiLib.Core
             int i, j;
             for (i = 0; i < N; i++)
             {
-                RSequence[i] = -1;
+                sequence[i] = -1;
             }
             for (i = 0; i < N; i++)
             {
@@ -216,13 +202,13 @@ namespace StiLib.Core
                 {
                     j = rand() % N;
                 }
-                while (RSequence[j] >= 0);
-                RSequence[j] = i;
+                while (sequence[j] >= 0);
+                sequence[j] = i;
             }
         }
 
         /// <summary>
-        /// generate a shuffled 0-N sequence using .NET Random Class
+        /// Shuffle N length internal sequence using .NET Random Class
         /// </summary>
         /// <param name="N"></param>
         public void Randomize_NET(int N)
@@ -230,7 +216,7 @@ namespace StiLib.Core
             int i, j;
             for (i = 0; i < N; i++)
             {
-                RSequence[i] = -1;
+                sequence[i] = -1;
             }
             for (i = 0; i < N; i++)
             {
@@ -238,9 +224,119 @@ namespace StiLib.Core
                 {
                     j = random.Next(N);
                 }
-                while (RSequence[j] >= 0);
-                RSequence[j] = i;
+                while (sequence[j] >= 0);
+                sequence[j] = i;
             }
+        }
+
+        /// <summary>
+        /// Generate a shuffled N length sequence using C Library rand() method
+        /// </summary>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        public int[] RandomSequence_C(int N)
+        {
+            int[] seq = new int[N];
+
+            int i, j;
+            for (i = 0; i < N; i++)
+            {
+                seq[i] = -1;
+            }
+            for (i = 0; i < N; i++)
+            {
+                do
+                {
+                    j = rand() % N;
+                }
+                while (seq[j] >= 0);
+                seq[j] = i;
+            }
+
+            return seq;
+        }
+
+        /// <summary>
+        /// Generate a shuffled N length sequence using .NET Random Class
+        /// </summary>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        public int[] RandomSequence_NET(int N)
+        {
+            int[] seq = new int[N];
+
+            int i, j;
+            for (i = 0; i < N; i++)
+            {
+                seq[i] = -1;
+            }
+            for (i = 0; i < N; i++)
+            {
+                do
+                {
+                    j = random.Next(N);
+                }
+                while (seq[j] >= 0);
+                seq[j] = i;
+            }
+
+            return seq;
+        }
+
+        /// <summary>
+        /// Generate a ascending N length sequence
+        /// </summary>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        public int[] AscendSequence(int N)
+        {
+            int[] seq = new int[N];
+
+            int i;
+            for (i = 0; i < N; i++)
+            {
+                seq[i] = i;
+            }
+
+            return seq;
+        }
+
+        /// <summary>
+        /// Generate a descending N length sequence
+        /// </summary>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        public int[] DescendSequence(int N)
+        {
+            int[] seq = new int[N];
+
+            int i;
+            for (i = 0; i < N; i++)
+            {
+                seq[i] = (N - 1) - i;
+            }
+
+            return seq;
+        }
+
+        /// <summary>
+        /// Generate a sequence of random 3D position coordinates(-1:1, -1:1, -1:1)
+        /// </summary>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        public Vector3[] RandomPosition(int N)
+        {
+            var pos = new Vector3[N];
+
+            for (int i = 0; i < N; i++)
+            {
+                pos[i] = new Vector3();
+                pos[i].X = (float)random.NextDouble() * 2 - 1;
+                pos[i].Y = (float)random.NextDouble() * 2 - 1;
+                pos[i].Z = (float)random.NextDouble() * 2 - 1;
+            }
+
+            return pos;
         }
 
     }
@@ -251,7 +347,7 @@ namespace StiLib.Core
     public class SLTimer : Stopwatch
     {
         /// <summary>
-        /// Get Total Seconds Elapsed since last Start()
+        /// Gets Total Seconds Elapsed since last Start()
         /// </summary>
         public double ElapsedSeconds
         {
@@ -261,7 +357,7 @@ namespace StiLib.Core
         /// <summary>
         /// Do nothing but Rest a Precise Time Interval
         /// </summary>
-        /// <param name="restT">rest time in second</param>
+        /// <param name="restT">rest time in seconds</param>
         public void Rest(double restT)
         {
             if (!IsRunning)
@@ -278,40 +374,66 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Stop, Reset and Start
+        /// Stop, Reset and Start Timing
         /// </summary>
         public void ReStart()
         {
             Reset();
             Start();
         }
+
     }
 
     /// <summary>
-    /// Direct Access to I/O Port and Physical Memory Using WinIo Library
+    /// Direct Access to I/O Port and Physical Memory Using WinIO Library
     /// </summary>
     public class SLIO
     {
         bool isWINIOinitialized;
-
         /// <summary>
-        /// If WinIO OK
+        /// If WinIO Initialized
         /// </summary>
         public bool IsWinIOok
         {
             get { return isWINIOinitialized; }
         }
 
+
+        /// <summary>
+        /// Init WinIO Library
+        /// </summary>
+        public SLIO()
+        {
+            try
+            {
+                isWINIOinitialized = InitializeWinIo();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "WinIO Initialization Failed !");
+            }
+        }
+
+        /// <summary>
+        /// Shutdown WinIO Library
+        /// </summary>
+        ~SLIO()
+        {
+            if (isWINIOinitialized)
+                ShutdownWinIo();
+        }
+
+
         #region WinIO Driver Functions
 
         /// <summary>
-        /// The InitializeWinIo must be called first
+        /// The InitializeWinIo must be called first.
         /// </summary>
         /// <returns>true -- succeed, false -- failed</returns>
         [DllImport("WinIo.dll")]
         public static extern bool InitializeWinIo();
         /// <summary>
-        /// The ShutdownWinIo must be called at end
+        /// The ShutdownWinIo must be called at end.
         /// </summary>
         [DllImport("WinIo.dll")]
         public static extern void ShutdownWinIo();
@@ -336,44 +458,6 @@ namespace StiLib.Core
 
         #endregion
 
-
-        /// <summary>
-        /// Init WinIo Library
-        /// </summary>
-        public SLIO()
-        {
-            try
-            {
-                isWINIOinitialized = InitializeWinIo();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message.ToString(), "WinIO Initialization Failed !");
-            }
-        }
-
-        /// <summary>
-        /// Shutdown WinIo
-        /// </summary>
-        ~SLIO()
-        {
-            if (isWINIOinitialized)
-                ShutdownWinIo();
-        }
-
-        /// <summary>
-        /// IO Port TTL
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        public bool TTL(Int16 port)
-        {
-            if (!isWINIOinitialized)
-                return false;
-
-            return SetPortVal(port, 0x10, 1);
-        }
-
     }
 
     /// <summary>
@@ -381,64 +465,200 @@ namespace StiLib.Core
     /// </summary>
     public class ParallelPort : SLIO
     {
+        SLTimer timer;
         /// <summary>
         /// Timer
         /// </summary>
-        public SLTimer timer;
+        public SLTimer Timer
+        {
+            get { return timer; }
+        }
+        /// <summary>
+        /// Port Address
+        /// </summary>
+        public Int16 Port;
+        /// <summary>
+        /// Pin Number
+        /// </summary>
+        public int Pin;
+        /// <summary>
+        /// Pulse Time
+        /// </summary>
+        public double PulseTime;
+        /// <summary>
+        /// TTL Coding Time Base
+        /// </summary>
+        public double CodeTime;
 
 
         /// <summary>
-        /// Init
+        /// Init with default -- port address: 0x378, pin number: 6, pulsetime: 0.001(sec), codetime: 0.005(sec)
         /// </summary>
         public ParallelPort()
+            : this((Int16)0x378, 6, 0.001, 0.005)
         {
-            timer = new SLTimer();
         }
 
         /// <summary>
-        /// A 'time' ms TTL Pulse on 'port'
+        /// Init with custom settings
         /// </summary>
         /// <param name="port"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public bool Trigger(short port, double time)
+        /// <param name="pin"></param>
+        /// <param name="pulsetime"></param>
+        /// <param name="codetime"></param>
+        public ParallelPort(short port, int pin, double pulsetime, double codetime)
+        {
+            this.Port = port;
+            this.Pin = pin;
+            this.PulseTime = pulsetime;
+            this.CodeTime = codetime;
+            timer = new SLTimer();
+        }
+
+
+        /// <summary>
+        /// Set Parallel Port Pin State using internal port address and pin number
+        /// </summary>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool SetPinState(bool state)
+        {
+            return SetPinState(Port, Pin, state);
+        }
+
+        /// <summary>
+        /// Set Parallel Port Pin State using internal port address
+        /// </summary>
+        /// <param name="pin">pin number (D0:D7 -- Pin2:Pin9)</param>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool SetPinState(int pin, bool state)
+        {
+            return SetPinState(Port, pin, state);
+        }
+
+        /// <summary>
+        /// Set Parallel Port Pin State
+        /// </summary>
+        /// <param name="port">port address</param>
+        /// <param name="pin">pin number (D0:D7 -- Pin2:Pin9)</param>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool SetPinState(short port, int pin, bool state)
         {
             if (!IsWinIOok)
                 return false;
 
-            if (!SetPortVal(port, 0x10, 1))
+            int value;
+            if (state)
+            {
+                value = (int)Math.Pow(2.0, pin - 2);
+            }
+            else
+            {
+                value = 0;
+            }
+
+            return SetPortVal(port, value, 1);
+        }
+
+        /// <summary>
+        /// Get Parallel Port Pin State using internal port address and pin number
+        /// </summary>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool GetPinState(out bool state)
+        {
+            return GetPinState(Port, Pin, out state);
+        }
+
+        /// <summary>
+        /// Get Parallel Port Pin State using internal port address
+        /// </summary>
+        /// <param name="pin">pin number (D0:D7 -- Pin2:Pin9)</param>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool GetPinState(int pin, out bool state)
+        {
+            return GetPinState(Port, pin, out state);
+        }
+
+        /// <summary>
+        /// Get Parallel Port Pin State
+        /// </summary>
+        /// <param name="port">port address</param>
+        /// <param name="pin">pin number (D0:D7 -- Pin2:Pin9)</param>
+        /// <param name="state">high state: true, low state: false</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool GetPinState(short port, int pin, out bool state)
+        {
+            bool hr = false;
+            state = false;
+
+            if (!IsWinIOok)
+                return hr;
+
+            int value;
+            hr = GetPortVal(port, out value, 1);
+            string v = Convert.ToString(value, 2).PadLeft(8, '0');
+            if (v[7 - (pin - 2)] == '1')
+            {
+                state = true;
+            }
+
+            return hr;
+        }
+
+        /// <summary>
+        /// A 'pulsetime' TTL Pulse on internal port address and pin number
+        /// </summary>
+        /// <param name="pulsetime">Pulse Time (sec)</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public bool Trigger(double pulsetime)
+        {
+            if (!SetPinState(true))
                 return false;
 
-            timer.Rest(time);
+            timer.Rest(pulsetime);
 
-            return SetPortVal(port, 0x00, 1);
+            return SetPinState(false);
         }
 
         /// <summary>
-        /// A 1ms TTL Pulse on parallel port 0x378
+        /// A 'pulsetime' TTL Pulse on internal port address, pin number and pulse time
         /// </summary>
-        /// <returns></returns>
+        /// <returns>true -- succeed, false -- failed</returns>
         public bool Trigger()
         {
-            return Trigger((Int16)0x378, 0.001);
+            return Trigger(PulseTime);
         }
 
         /// <summary>
-        /// Two Trigger to encode a number based on 5ms interval
+        /// Two Trigger's Interval to encode a number based on 'codetime'
         /// </summary>
         /// <param name="N"></param>
-        public void Marker(int N)
+        /// <param name="codetime"></param>
+        public void Marker(int N, double codetime)
         {
             Trigger();
             if (N == 0)
             {
-                timer.Rest(0.001);
+                timer.Rest(codetime * 0.2);
             }
             else
             {
-                timer.Rest(0.005 * N);
+                timer.Rest(codetime * N);
             }
             Trigger();
+        }
+
+        /// <summary>
+        /// Two Trigger's Interval to encode a number based on internal codetime
+        /// </summary>
+        /// <param name="N"></param>
+        public void Marker(int N)
+        {
+            Marker(N, CodeTime);
         }
 
         /// <summary>
@@ -448,23 +668,23 @@ namespace StiLib.Core
         public void MarkerEncode(int N)
         {
             // First Digit
-            Marker((int)Math.Floor(N / 4096.0));
+            Marker(Convert.ToInt32(Math.Floor(N / 4096.0)));
             int t = N % 4096;
             timer.Rest(0.002);
             // Second Digit
-            Marker((int)Math.Floor(t / 256.0));
+            Marker(Convert.ToInt32(Math.Floor(t / 256.0)));
             t = t % 256;
             timer.Rest(0.002);
             // Third Digit
-            Marker((int)Math.Floor(t / 16.0));
+            Marker(Convert.ToInt32(Math.Floor(t / 16.0)));
             timer.Rest(0.002);
             // Fourth Digit
-            Marker((int)(t % 16));
+            Marker(t % 16);
             timer.Rest(0.002);
         }
 
         /// <summary>
-        /// Encode(0, 0, 16, 0) seperate different groups of keywords
+        /// Encode(0, 0, 16, 0) to seperate different groups of keywords
         /// </summary>
         public void MarkerSeparatorEncode()
         {
@@ -479,7 +699,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Encode(0, 0, 0, 16) the end of MarkerEncode
+        /// Encode(0, 0, 0, 16) to end the MarkerEncode
         /// </summary>
         public void MarkerEndEncode()
         {
@@ -494,38 +714,38 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Transfer a Binary Stream
+        /// Transfer a Binary Stream according to internal codetime and pulsetime
         /// </summary>
         /// <param name="bins"></param>
         public void BinaryEncode(string bins)
         {
-            // Start Flag(<5ms Pulse Interval)
+            // Start Flag(<CodeTime Pulse Interval)
             Trigger();
-            timer.Rest(0.001);
+            timer.Rest(CodeTime * 0.2);
             Trigger();
-            timer.Rest(0.004);
+            timer.Rest(CodeTime - PulseTime);
             // Binary Stream
             for (int i = 0; i < bins.Length; i++)
             {
                 if (bins[i] == '1')
                 {
                     Trigger();
-                    timer.Rest(0.004);
+                    timer.Rest(CodeTime - PulseTime);
                 }
                 else
                 {
-                    timer.Rest(0.005);
+                    timer.Rest(CodeTime);
                 }
             }
-            // End Flag(<5ms Pulse Interval)
+            // End Flag(<CodeTime Pulse Interval)
             Trigger();
-            timer.Rest(0.001);
+            timer.Rest(CodeTime * 0.2);
             Trigger();
-            timer.Rest(0.004);
+            timer.Rest(CodeTime - PulseTime);
         }
 
         /// <summary>
-        /// Decode a Pulse Train to Binary Stream
+        /// Decode a Pulse Train to Binary Stream according to internal codetime
         /// </summary>
         /// <param name="plusetime"></param>
         /// <returns></returns>
@@ -536,7 +756,7 @@ namespace StiLib.Core
             bool end = true;
             for (int i = 0; i < plusetime.Length - 1; i++)
             {
-                var digit = (int)Math.Floor((plusetime[i + 1] - plusetime[i]) / 0.005);
+                var digit = (int)Math.Floor((plusetime[i + 1] - plusetime[i]) / CodeTime);
                 if (digit == 0)
                 {
                     begin = i;
@@ -552,108 +772,12 @@ namespace StiLib.Core
     }
 
     /// <summary>
-    /// Experiment Flow Control
-    /// </summary>
-    public struct FlowControl
-    {
-        /// <summary>
-        /// If To Begin a Stimulus
-        /// </summary>
-        public bool IsStiOn
-        { get; set; }
-        /// <summary>
-        /// If Pre-Stimulus Operation has done
-        /// </summary>
-        public bool IsPred
-        { get; set; }
-        /// <summary>
-        /// If Rest Operation has done
-        /// </summary>
-        public bool IsRested
-        { get; set; }
-        /// <summary>
-        /// If Blank Operation has done
-        /// </summary>
-        public bool IsBlanked
-        { get; set; }
-        /// <summary>
-        /// PreTime + DurTime
-        /// </summary>
-        public float PreDurTime
-        { get; set; }
-        /// <summary>
-        /// Total Time of a Stimulus
-        /// </summary>
-        public float StiTime
-        { get; set; }
-        /// <summary>
-        /// Stimulus Lasting Time
-        /// </summary>
-        public double LastTime
-        { get; set; }
-        /// <summary>
-        /// Counter of Block
-        /// </summary>
-        public int BCount
-        { get; set; }
-        /// <summary>
-        /// Counter of Trial
-        /// </summary>
-        public int TCount
-        { get; set; }
-        /// <summary>
-        /// Counter of Stimulus
-        /// </summary>
-        public int SCount
-        { get; set; }
-        /// <summary>
-        /// Counter of Rows
-        /// </summary>
-        public int RCount
-        { get; set; }
-        /// <summary>
-        /// Counter of Columns
-        /// </summary>
-        public int CCount
-        { get; set; }
-        /// <summary>
-        /// Index of Stimulus
-        /// </summary>
-        public int Which
-        { get; set; }
-        /// <summary>
-        /// Rotate Matrix
-        /// </summary>
-        public Matrix Rotate
-        { get; set; }
-        /// <summary>
-        /// Scale Matrix
-        /// </summary>
-        public Matrix Scale
-        { get; set; }
-        /// <summary>
-        /// Translate Matrix
-        /// </summary>
-        public Matrix Translate
-        { get; set; }
-        /// <summary>
-        /// Experiment Information
-        /// </summary>
-        public string Info
-        { get; set; }
-        /// <summary>
-        /// Location of Stimulus
-        /// </summary>
-        public Vector3 Location
-        { get; set; }
-    }
-
-    /// <summary>
     /// StiLib Service Container
     /// </summary>
     public class ServiceContainer : IServiceProvider
     {
         Dictionary<Type, object> s = new Dictionary<Type, object>();
+
 
         /// <summary>
         /// Add a new service to the services collection
@@ -678,11 +802,18 @@ namespace StiLib.Core
     }
 
     /// <summary>
-    /// Assembly Configuration
+    /// Assembly Configurations
     /// </summary>
     public class AssemblySettings
     {
         IDictionary settings;
+        /// <summary>
+        /// Gets Internal Assembly Settings
+        /// </summary>
+        public IDictionary Settings
+        {
+            get { return settings; }
+        }
 
 
         /// <summary>
@@ -699,11 +830,21 @@ namespace StiLib.Core
         /// <param name="asm"></param>
         public AssemblySettings(Assembly asm)
         {
-            settings = GetConfig(asm);
+            settings = ReadConfig(asm);
         }
 
         /// <summary>
-        /// Get Setting Value according to Key
+        /// Init Settings from Configuration File
+        /// </summary>
+        /// <param name="configfile"></param>
+        public AssemblySettings(string configfile)
+        {
+            settings = ReadConfig(configfile);
+        }
+
+
+        /// <summary>
+        /// Gets/Sets Setting Value According to Key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -712,13 +853,18 @@ namespace StiLib.Core
             get
             {
                 string settingValue = "";
-
                 if (settings != null)
                 {
                     settingValue = settings[key] as string;
                 }
-
                 return settingValue;
+            }
+            set
+            {
+                if (settings != null)
+                {
+                    settings[key] = value;
+                }
             }
         }
 
@@ -726,9 +872,9 @@ namespace StiLib.Core
         /// Get Calling Assembly Settings
         /// </summary>
         /// <returns></returns>
-        public static IDictionary GetConfig()
+        public static IDictionary ReadConfig()
         {
-            return GetConfig(Assembly.GetCallingAssembly());
+            return ReadConfig(Assembly.GetCallingAssembly());
         }
 
         /// <summary>
@@ -736,13 +882,23 @@ namespace StiLib.Core
         /// </summary>
         /// <param name="asm"></param>
         /// <returns></returns>
-        public static IDictionary GetConfig(Assembly asm)
+        public static IDictionary ReadConfig(Assembly asm)
+        {
+            string cfgFile = asm.CodeBase + ".config";
+            return ReadConfig(cfgFile);
+        }
+
+        /// <summary>
+        /// Get Settings from Configuration File
+        /// </summary>
+        /// <param name="configfile"></param>
+        /// <returns></returns>
+        public static IDictionary ReadConfig(string configfile)
         {
             try
             {
-                string cfgFile = asm.CodeBase + ".config";
                 XmlDocument doc = new XmlDocument();
-                doc.Load(new XmlTextReader(cfgFile));
+                doc.Load(new XmlTextReader(configfile));
                 XmlNodeList nodes = doc.GetElementsByTagName(SLConstant.AsmCfgNode);
 
                 foreach (XmlNode node in nodes)
@@ -756,20 +912,175 @@ namespace StiLib.Core
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                SLConstant.ShowException(e);
             }
 
-            return (null);
+            return null;
         }
+
+        /// <summary>
+        /// Save Internal Settings to CallingAssembly Configuration File
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveAs()
+        {
+            return SaveConfig(settings);
+        }
+
+        /// <summary>
+        /// Save Internal Settings to Assembly Configuration File
+        /// </summary>
+        /// <param name="asm"></param>
+        /// <returns></returns>
+        public bool SaveAs(Assembly asm)
+        {
+            return SaveConfig(settings, asm);
+        }
+
+        /// <summary>
+        /// Save Internal Settings to Configuration File
+        /// </summary>
+        /// <param name="configfile"></param>
+        /// <returns></returns>
+        public bool SaveAs(string configfile)
+        {
+            return SaveConfig(settings, configfile);
+        }
+
+        /// <summary>
+        /// Save Custom Settings to CallingAssembly Configuration File
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static bool SaveConfig(IDictionary settings)
+        {
+            return SaveConfig(settings, Assembly.GetCallingAssembly());
+        }
+
+        /// <summary>
+        /// Save Custom Settings to Assembly Configuration File
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="asm"></param>
+        /// <returns></returns>
+        public static bool SaveConfig(IDictionary settings, Assembly asm)
+        {
+            string cfgFile = asm.CodeBase + ".config";
+            return SaveConfig(settings, cfgFile);
+        }
+
+        /// <summary>
+        /// Save Custom Settings to Configuration File
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="configfile"></param>
+        /// <returns></returns>
+        public static bool SaveConfig(IDictionary settings, string configfile)
+        {
+            bool hr = false;
+
+            try
+            {
+                // Modify Existing Configuration File
+                if (File.Exists(configfile))
+                {
+                    if (settings != null)
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(configfile);
+                        XmlNode node = doc.DocumentElement.SelectSingleNode(SLConstant.AsmCfgNode);
+                        bool iscfgexist = false;
+
+                        foreach (string key in settings.Keys)
+                        {
+                            iscfgexist = false;
+                            foreach (XmlNode subnode in node.ChildNodes)
+                            {
+                                if ((subnode.Name == "add") && (subnode.Attributes.GetNamedItem("key").Value == key))
+                                {
+                                    iscfgexist = true;
+                                    subnode.Attributes.GetNamedItem("value").Value = settings[key] as string;
+                                    break;
+                                }
+                            }
+                            if (!iscfgexist)
+                            {
+                                XmlAttribute newkey = doc.CreateAttribute("key");
+                                newkey.Value = key;
+                                XmlAttribute newvalue = doc.CreateAttribute("value");
+                                newvalue.Value = settings[key] as string;
+
+                                XmlNode newnode = doc.CreateNode(XmlNodeType.Element, "add", "");
+                                newnode.Attributes.Append(newkey);
+                                newnode.Attributes.Append(newvalue);
+                                node.AppendChild(newnode);
+                            }
+                        }
+
+                        XmlTextWriter writer = new XmlTextWriter(configfile, Encoding.UTF8);
+                        writer.Formatting = Formatting.Indented;
+                        doc.PreserveWhitespace = true;
+                        doc.Save(writer);
+
+                        hr = true;
+                    }
+                    else
+                    {
+                        SLConstant.ShowMessage("No Configuration Settings to Save !");
+                    }
+                }
+                else // Create New Configuration File
+                {
+                    if (settings != null)
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        XmlNode cfg = doc.CreateNode(XmlNodeType.Element, "configuration", "");
+                        XmlNode asm = doc.CreateNode(XmlNodeType.Element, SLConstant.AsmCfgNode, "");
+
+                        foreach (string key in settings.Keys)
+                        {
+                            XmlAttribute newkey = doc.CreateAttribute("key");
+                            newkey.Value = key;
+                            XmlAttribute newvalue = doc.CreateAttribute("value");
+                            newvalue.Value = settings[key] as string;
+
+                            XmlNode newnode = doc.CreateNode(XmlNodeType.Element, "add", "");
+                            newnode.Attributes.Append(newkey);
+                            newnode.Attributes.Append(newvalue);
+                            asm.AppendChild(newnode);
+                        }
+                        cfg.AppendChild(asm);
+                        doc.AppendChild(cfg);
+
+                        XmlTextWriter writer = new XmlTextWriter(configfile, Encoding.UTF8);
+                        writer.Formatting = Formatting.Indented;
+                        doc.PreserveWhitespace = true;
+                        doc.Save(writer);
+
+                        hr = true;
+                    }
+                    else
+                    {
+                        SLConstant.ShowMessage("No Configuration Settings to Save !");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                SLConstant.ShowException(e);
+            }
+
+            return hr;
+        }
+
     }
 
     /// <summary>
-    /// Get System Information
+    /// System Informations
     /// </summary>
     public class SystemInfo
     {
         Process currentprocess;
-
 
         /// <summary>
         /// Current Process Priority
@@ -797,7 +1108,7 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Get current main module
+        /// Get current process main module
         /// </summary>
         public ProcessModule MainModule
         {
@@ -824,7 +1135,7 @@ namespace StiLib.Core
     }
 
     /// <summary>
-    /// Monitor Frame Information
+    /// Frame Informations
     /// </summary>
     public class FrameInfo
     {
@@ -833,6 +1144,9 @@ namespace StiLib.Core
         Stopwatch timer;
         List<double> ifi;
         double framestamp;
+        double fpsresettime;
+        int fpsframecount;
+        double fps;
 
         #endregion
 
@@ -851,7 +1165,7 @@ namespace StiLib.Core
         /// </summary>
         public int TotalFrames
         {
-            get { return ifi.Count + 1; }
+            get { return ifi.Count; }
         }
 
         /// <summary>
@@ -897,7 +1211,7 @@ namespace StiLib.Core
         /// <summary>
         /// Get Instant Frame Rate per Second
         /// </summary>
-        public double FPS
+        public double InstantFPS
         {
             get
             {
@@ -912,6 +1226,17 @@ namespace StiLib.Core
             }
         }
 
+        /// <summary>
+        /// Get Frame Rate per Second
+        /// </summary>
+        public double FPS
+        {
+            get
+            {
+                return Math.Round(fps, 1);
+            }
+        }
+
         #endregion
 
 
@@ -922,8 +1247,8 @@ namespace StiLib.Core
         {
             timer = new Stopwatch();
             ifi = new List<double>();
-            framestamp = 0.0;
         }
+
 
         /// <summary>
         /// Update Frame Information
@@ -944,6 +1269,15 @@ namespace StiLib.Core
                 double temp = timer.Elapsed.TotalSeconds;
                 ifi.Add(temp - framestamp);
                 framestamp = temp;
+
+                temp = framestamp - fpsresettime;
+                fpsframecount += 1;
+                if (temp >= 1.0)
+                {
+                    fps = fpsframecount / temp;
+                    fpsresettime = framestamp;
+                    fpsframecount = 0;
+                }
             }
         }
 
@@ -955,9 +1289,15 @@ namespace StiLib.Core
             timer.Reset();
             ifi.Clear();
             framestamp = 0.0;
+            fpsresettime = 0.0;
+            fpsframecount = 0;
         }
 
     }
+
+    #endregion
+
+    #region Parameter Structure
 
     /// <summary>
     /// Experiment Design Parameters
@@ -965,14 +1305,14 @@ namespace StiLib.Core
     public struct ExDesign
     {
         /// <summary>
-        /// Init to custom experiment design
+        /// Init with custom experiment design
         /// </summary>
-        /// <param name="extype">Experiment Type</param>
-        /// <param name="expara">Condition Parameters</param>
+        /// <param name="extype">Experiment Types</param>
+        /// <param name="expara">Experiment Conditions</param>
         /// <param name="cond">Conditions Interpolation Parameters</param>
         /// <param name="block">Experiment Block Number</param>
-        /// <param name="trial">Experiment Trials</param>
-        /// <param name="stimuli">Stimulus Numbers</param>
+        /// <param name="trial">Experiment Trial Number</param>
+        /// <param name="stimuli">Size of Each Stimulus Set</param>
         /// <param name="brestT">Rest Time Between Blocks</param>
         /// <param name="trestT">Rest Time Between Trials</param>
         /// <param name="srestT">Rest Time Between Stimulus</param>
@@ -998,14 +1338,14 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Set to custom experiment design
+        /// Set custom experiment design parameters
         /// </summary>
-        /// <param name="extype">Experiment Type</param>
-        /// <param name="expara">Condition Parameters</param>
+        /// <param name="extype">Experiment Types</param>
+        /// <param name="expara">Experiment Conditions</param>
         /// <param name="cond">Conditions Interpolation Parameters</param>
         /// <param name="block">Experiment Block Number</param>
-        /// <param name="trial">Experiment Trials</param>
-        /// <param name="stimuli">Stimulus Numbers</param>
+        /// <param name="trial">Experiment Trial Number</param>
+        /// <param name="stimuli">Size of Each Stimulus Set</param>
         /// <param name="brestT">Rest Time Between Blocks</param>
         /// <param name="trestT">Rest Time Between Trials</param>
         /// <param name="srestT">Rest Time Between Stimulus</param>
@@ -1031,35 +1371,34 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Get default experiment design -- all default with array size:10
+        /// Get default experiment design -- all set to None/Zero
         /// </summary>
-        public static ExDesign Default
+        /// <param name="n">multiple number of extype and condition</param>
+        /// <returns></returns>
+        public static ExDesign Default(int n)
         {
-            get
+            ExType[] exType = new ExType[n];
+            ExPara[] exPara = new ExPara[n];
+            SLInterpolation[] condition = new SLInterpolation[n];
+            int[] stimuli = new int[n];
+            for (int i = 0; i < n; i++)
             {
-                ExType[] exType = new ExType[10];
-                ExPara[] exPara = new ExPara[10];
-                SLInterpolation[] condition = new SLInterpolation[10];
-                int[] stimuli = new int[10];
-                for (int i = 0; i < 10; i++)
-                {
-                    exType[i] = ExType.None;
-                    exPara[i] = ExPara.None;
-                    condition[i] = SLInterpolation.Default(ExPara.None, 4);
-                    stimuli[i] = 0;
-                }
-
-                return new ExDesign(exType, exPara, condition, 0, 0, stimuli, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, Color.Black);
+                exType[i] = ExType.None;
+                exPara[i] = ExPara.None;
+                condition[i] = SLInterpolation.Default(ExPara.None, 4);
+                stimuli[i] = 0;
             }
+
+            return new ExDesign(exType, exPara, condition, 0, 0, stimuli, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, Color.Black);
         }
 
 
         /// <summary>
-        /// Experiment Type
+        /// Experiment Types
         /// </summary>
         public ExType[] exType;
         /// <summary>
-        /// Experiment Condition Parameters
+        /// Experiment Conditions
         /// </summary>
         public ExPara[] exPara;
         /// <summary>
@@ -1075,7 +1414,7 @@ namespace StiLib.Core
         /// </summary>
         public int trial;
         /// <summary>
-        /// Stimulus Numbers
+        /// Number of Element of Each Stimulus Set
         /// </summary>
         public int[] stimuli;
         /// <summary>
@@ -1091,7 +1430,7 @@ namespace StiLib.Core
         /// </summary>
         public float srestT;
         /// <summary>
-        /// Stimulus Pre-duration Time
+        /// Stimulus Pre-Duration Time
         /// </summary>
         public float preT;
         /// <summary>
@@ -1099,7 +1438,7 @@ namespace StiLib.Core
         /// </summary>
         public float durT;
         /// <summary>
-        /// Stimulus Post-duration Time
+        /// Stimulus Post-Duration Time
         /// </summary>
         public float posT;
         /// <summary>
@@ -1107,6 +1446,304 @@ namespace StiLib.Core
         /// </summary>
         public Color bgcolor;
     }
+
+    /// <summary>
+    /// Experiment Flow Control Parameters
+    /// </summary>
+    public struct FlowControl
+    {
+        /// <summary>
+        /// If Stimulus Begins Drawing
+        /// </summary>
+        public bool IsStiOn
+        { get; set; }
+        /// <summary>
+        /// If Stimulus Ends Drawing
+        /// </summary>
+        public bool IsStiOff
+        { get; set; }
+        /// <summary>
+        /// If Pre-Stimulus Operation Has Done
+        /// </summary>
+        public bool IsPred
+        { get; set; }
+        /// <summary>
+        /// If Rest Operation Has Done
+        /// </summary>
+        public bool IsRested
+        { get; set; }
+        /// <summary>
+        /// If Blank Operation Has Done
+        /// </summary>
+        public bool IsBlanked
+        { get; set; }
+        /// <summary>
+        /// PreTime + DurTime
+        /// </summary>
+        public float PreDurTime
+        { get; set; }
+        /// <summary>
+        /// Total Time of a Stimulus
+        /// </summary>
+        public float StiTime
+        { get; set; }
+        /// <summary>
+        /// Stimulus Lasting Time
+        /// </summary>
+        public double LastingTime
+        { get; set; }
+        /// <summary>
+        /// Counter of Block
+        /// </summary>
+        public int BlockCount
+        { get; set; }
+        /// <summary>
+        /// Counter of Trial
+        /// </summary>
+        public int TrialCount
+        { get; set; }
+        /// <summary>
+        /// Counter of Stimulus
+        /// </summary>
+        public int StiCount
+        { get; set; }
+        /// <summary>
+        /// Counter of Rows
+        /// </summary>
+        public int RowCount
+        { get; set; }
+        /// <summary>
+        /// Counter of Columns
+        /// </summary>
+        public int ColumnCount
+        { get; set; }
+        /// <summary>
+        /// Counter of Slices
+        /// </summary>
+        public int SliceCount
+        { get; set; }
+        /// <summary>
+        /// Rotate Matrix
+        /// </summary>
+        public Matrix Rotate
+        { get; set; }
+        /// <summary>
+        /// Orientation Rotate Matrix
+        /// </summary>
+        public Matrix RotateOri
+        { get; set; }
+        /// <summary>
+        /// Direction Rotate Matrix
+        /// </summary>
+        public Matrix RotateDir
+        { get; set; }
+        /// <summary>
+        /// Scale Matrix
+        /// </summary>
+        public Matrix Scale
+        { get; set; }
+        /// <summary>
+        /// Translate Matrix
+        /// </summary>
+        public Matrix Translate
+        { get; set; }
+        /// <summary>
+        /// Center Translate Matrix
+        /// </summary>
+        public Matrix TranslateCenter
+        { get; set; }
+        /// <summary>
+        /// Experiment Information
+        /// </summary>
+        public string Info
+        { get; set; }
+        /// <summary>
+        /// Location of Stimulus
+        /// </summary>
+        public Vector3 Location
+        { get; set; }
+        /// <summary>
+        /// Step of Conditions
+        /// </summary>
+        public float[] CondStep
+        { get; set; }
+        /// <summary>
+        /// Current Orientation
+        /// </summary>
+        public float Orientation
+        { get; set; }
+        /// <summary>
+        /// Current Direction
+        /// </summary>
+        public float Direction
+        { get; set; }
+    }
+
+    /// <summary>
+    /// StiLib Two Keys/One Value Pair Structure
+    /// </summary>
+    public struct SLKeyValuePair<PrimaryKey, SecondaryKey, Value>
+    {
+        PrimaryKey pKey;
+        SecondaryKey sKey;
+        Value val;
+
+
+        /// <summary>
+        /// Create a new 2Keys/1Value Pair
+        /// </summary>
+        /// <param name="pK"></param>
+        /// <param name="sK"></param>
+        /// <param name="v"></param>
+        public SLKeyValuePair(PrimaryKey pK, SecondaryKey sK, Value v)
+        {
+            pKey = pK;
+            sKey = sK;
+            val = v;
+        }
+
+
+        /// <summary>
+        /// Primary Key
+        /// </summary>
+        public PrimaryKey PKEY
+        {
+            get { return pKey; }
+            set { pKey = value; }
+        }
+
+        /// <summary>
+        /// Secondary Key
+        /// </summary>
+        public SecondaryKey SKEY
+        {
+            get { return sKey; }
+            set { sKey = value; }
+        }
+
+        /// <summary>
+        /// Value
+        /// </summary>
+        public Value VALUE
+        {
+            get { return val; }
+            set { val = value; }
+        }
+
+        /// <summary>
+        /// Returns a string representation of the SLKeyValuePair.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return "[" + pKey.ToString() + ", " + sKey.ToString() + ", " + val.ToString() + "]";
+        }
+
+    }
+
+    /// <summary>
+    /// Interpolation Parameters
+    /// </summary>
+    public struct SLInterpolation
+    {
+        /// <summary>
+        /// Init with Custom Settings
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="n"></param>
+        /// <param name="method"></param>
+        public SLInterpolation(float start, float end, int n, Interpolation method)
+        {
+            StartValue = start;
+            EndValue = end;
+            ValueN = n;
+            Method = method;
+        }
+
+        /// <summary>
+        /// Set Interpolation Parameters
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="n"></param>
+        /// <param name="method"></param>
+        public void SetPara(float start, float end, int n, Interpolation method)
+        {
+            StartValue = start;
+            EndValue = end;
+            ValueN = n;
+            Method = method;
+        }
+
+        /// <summary>
+        /// Get Default SLInterpolation according to Pre-Definded Experiment Parameters
+        /// </summary>
+        /// <param name="expara"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static SLInterpolation Default(ExPara expara, int n)
+        {
+            switch (expara)
+            {
+                case ExPara.Orientation:
+                    return new SLInterpolation(0.0f, 180.0f, n, Interpolation.Linear);
+                case ExPara.Speed:
+                    return new SLInterpolation(0.0f, 50.0f, n, Interpolation.Linear);
+                case ExPara.Luminance:
+                    return new SLInterpolation(0.0f, 0.5f, n, Interpolation.Linear);
+                case ExPara.Contrast:
+                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
+                case ExPara.SpatialFreq:
+                    return new SLInterpolation(0.1f, 3.2f, n, Interpolation.Log2);
+                case ExPara.SpatialPhase:
+                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
+                case ExPara.TemporalFreq:
+                    return new SLInterpolation(1.0f, 32.0f, n, Interpolation.Log2);
+                case ExPara.TemporalPhase:
+                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
+                case ExPara.Color:
+                    return new SLInterpolation(0.0f, 1.0f, n, Interpolation.Linear);
+                case ExPara.Disparity:
+                    return new SLInterpolation(-1.0f, 1.0f, n, Interpolation.Linear);
+                case ExPara.Size:
+                    return new SLInterpolation(0.5f, 20.0f, n, Interpolation.Linear);
+                default:
+                    return new SLInterpolation(0.0f, 360.0f, n, Interpolation.Linear);
+            }
+        }
+
+        /// <summary>
+        /// Generate a Interpolation Sequence according to Internal Parameters
+        /// </summary>
+        /// <returns></returns>
+        public float[] Interpolate()
+        {
+            return SLAlgorithm.Interpolate(StartValue, EndValue, ValueN, Method);
+        }
+
+
+        /// <summary>
+        /// Interpolation Start Value
+        /// </summary>
+        public float StartValue;
+        /// <summary>
+        /// Interpolation End Value
+        /// </summary>
+        public float EndValue;
+        /// <summary>
+        /// Number of Interpolation
+        /// </summary>
+        public int ValueN;
+        /// <summary>
+        /// Interpolation Method
+        /// </summary>
+        public Interpolation Method;
+    }
+
+    #endregion
+
+    #region Type Enum
 
     /// <summary>
     /// Pre-Defined Experiment Types
@@ -1166,7 +1803,7 @@ namespace StiLib.Core
         /// </summary>
         Two_fBar,
         /// <summary>
-        /// Two Flashing Gratings with angle between their orientations
+        /// Two Standing Gratings with angle between their orientations
         /// </summary>
         Two_fGrating,
         /// <summary>
@@ -1193,23 +1830,23 @@ namespace StiLib.Core
         /// </summary>
         Orientation,
         /// <summary>
-        /// Moving Direction Condition
+        /// Direction Condition
         /// </summary>
         Direction,
         /// <summary>
-        /// Moving Speed Condition
+        /// Speed Condition
         /// </summary>
         Speed,
         /// <summary>
-        /// Uniform Luminance Condition
+        /// Uniform/Average Luminance Condition
         /// </summary>
         Luminance,
         /// <summary>
-        /// Uniform Contrast Condition
+        /// Uniform/Average Contrast Condition
         /// </summary>
         Contrast,
         /// <summary>
-        /// Spatial Change Frequency Condition
+        /// Spatial Frequency Condition
         /// </summary>
         SpatialFreq,
         /// <summary>
@@ -1217,7 +1854,7 @@ namespace StiLib.Core
         /// </summary>
         SpatialPhase,
         /// <summary>
-        /// Temporal Change Frequency Condition
+        /// Temporal Frequency Condition
         /// </summary>
         TemporalFreq,
         /// <summary>
@@ -1243,7 +1880,7 @@ namespace StiLib.Core
     }
 
     /// <summary>
-    /// Pre-Defined Method to generate random number
+    /// Pre-Defined Method to Generate Random Number
     /// </summary>
     public enum RandomMethod
     {
@@ -1252,17 +1889,17 @@ namespace StiLib.Core
         /// </summary>
         None,
         /// <summary>
-        /// C srand() and rand() Library in msvcrt.dll
+        /// Using C Runtime Library(msvcrt.dll) Functions -- srand() and rand()
         /// </summary>
         C,
         /// <summary>
         /// .NET Random Class
         /// </summary>
-        dotNET
+        DotNet
     }
 
     /// <summary>
-    /// Interpolation Method
+    /// Pre-Defined Interpolation Method
     /// </summary>
     public enum Interpolation
     {
@@ -1280,6 +1917,10 @@ namespace StiLib.Core
         Log10
     }
 
+    #endregion
+
+    #region Static Method
+
     /// <summary>
     /// StiLib Constants
     /// </summary>
@@ -1296,24 +1937,60 @@ namespace StiLib.Core
         public const string MarkHead = "Transfering Marker Header . . .";
 
         /// <summary>
-        /// Assembly Settings Root Node Name
+        /// Standard Assembly Settings Root Node Name
         /// </summary>
         public const string AsmCfgNode = "assemblySettings";
 
         /// <summary>
         /// Radian per Degree
         /// </summary>
-        public const double RadpDeg = Math.PI / 180.0;
+        public const double Rad_p_Deg = Math.PI / 180.0;
 
         /// <summary>
         /// Degree per Radian
         /// </summary>
-        public const double DegpRad = 180.0 / Math.PI;
+        public const double Deg_p_Rad = 180.0 / Math.PI;
 
         /// <summary>
         /// MilliMeter per Inch
         /// </summary>
-        public const double MMpInch = 25.4;
+        public const double MM_p_Inch = 25.4;
+
+        /// <summary>
+        /// General Display Dot Pitch(mm)
+        /// </summary>
+        public const double DotPitch = 0.22;
+
+        /// <summary>
+        /// Size of Float Vector4
+        /// </summary>
+        public const int SizeOfVector4 = sizeof(float) * 4;
+
+        /// <summary>
+        /// Size of 4*4 Float Matrix
+        /// </summary>
+        public const int SizeOfMatrix = sizeof(float) * 16;
+
+        /// <summary>
+        /// Display a message that describes the exception.
+        /// </summary>
+        /// <param name="e"></param>
+        public static void ShowException(Exception e)
+        {
+            MessageBox.Show("Module: " + e.Source +
+                                        ".\nMethod: " + e.TargetSite.Name +
+                                        ".\nException: " + e.Message, "Exception !");
+        }
+
+        /// <summary>
+        /// Display Custom Message
+        /// </summary>
+        /// <param name="msg"></param>
+        public static void ShowMessage(string msg)
+        {
+            MessageBox.Show(msg, "Message !");
+        }
+
     }
 
     /// <summary>
@@ -1351,7 +2028,7 @@ namespace StiLib.Core
             float[] sequence = new float[n];
             switch (method)
             {
-                default:
+                default: // Linear
                     float step = (end - start) / n;
                     for (int i = 0; i < n; i++)
                     {
@@ -1376,7 +2053,7 @@ namespace StiLib.Core
         /// <summary>
         /// Map a Sequence to Orthogonal Table Index
         /// </summary>
-        /// <param name="ortho"></param>
+        /// <param name="ortho">size of each orthogonal table dimentions</param>
         /// <returns></returns>
         public static int[][] OrthoTable(int[] ortho)
         {
@@ -1398,6 +2075,48 @@ namespace StiLib.Core
             }
             return table;
         }
+
+        /// <summary>
+        /// Gets GammaRamp for Linearization According to Current Gamma Values
+        /// </summary>
+        /// <param name="gamma"></param>
+        /// <returns></returns>
+        public static GammaRamp GetGamma(Vector3 gamma)
+        {
+            GammaRamp gr = new GammaRamp();
+            short[] ramp = new short[256];
+            double g = 1.0 / gamma.X;
+            for (int i = 0; i < 256; i++)
+            {
+                ramp[i] = unchecked((short)Math.Round((Math.Pow((i / 255.0), g) * 65535)));
+            }
+            gr.SetRed(ramp);
+
+            if (gamma.Y != gamma.X)
+            {
+                g = 1.0 / gamma.Y;
+                for (int i = 0; i < 256; i++)
+                {
+                    ramp[i] = unchecked((short)Math.Round((Math.Pow((i / 255.0), g) * 65535)));
+                }
+            }
+            gr.SetGreen(ramp);
+
+            if (gamma.Z != gamma.Y)
+            {
+                g = 1.0 / gamma.Z;
+                for (int i = 0; i < 256; i++)
+                {
+                    ramp[i] = unchecked((short)Math.Round((Math.Pow((i / 255.0), g) * 65535)));
+                }
+            }
+            gr.SetBlue(ramp);
+
+            return gr;
+        }
+
     }
+
+    #endregion
 
 }

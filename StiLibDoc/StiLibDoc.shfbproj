@@ -23,11 +23,10 @@
     <FrameworkVersion>3.5</FrameworkVersion>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
-      <NamespaceSummaryItem name="StiLib.Core" isDocumented="True">Core Service</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="StiLib.Vision" isDocumented="True">Basic Vision Stimulus Service</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="StiLib.Vision.Stimuli" isDocumented="True">Advanced Vision Stimulus Diagram</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="StiLib.Hearing" isDocumented="True">Basic Hearing Stimulus Service</NamespaceSummaryItem>
-    </NamespaceSummaries>
+<NamespaceSummaryItem name="StiLib.Core" isDocumented="True">Core Services</NamespaceSummaryItem>
+<NamespaceSummaryItem name="StiLib.Vision" isDocumented="True">Basic Vision Stimulus Service</NamespaceSummaryItem>
+<NamespaceSummaryItem name="StiLib.Vision.Stimuli" isDocumented="True">Advanced Vision Stimulus Diagram</NamespaceSummaryItem>
+<NamespaceSummaryItem name="StiLib.Hearing" isDocumented="True">Basic Hearing Stimulus Service</NamespaceSummaryItem></NamespaceSummaries>
     <ProjectSummary>The StiLib class library is a library of classes, interfaces, and value types that are supported in StiLib. This library provides access to StiLib functionality and is designed to be the foundation on which custom components, stimulus and experiments are built.</ProjectSummary>
     <CopyrightText>Copyright &amp;#169%3b 2008-2009, Zhang Li, All rights reserved</CopyrightText>
     <FeedbackEMailAddress>fff008%40gmail.com</FeedbackEMailAddress>
@@ -37,7 +36,7 @@
     <IndentHtml>True</IndentHtml>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>Class Library Reference</RootNamespaceTitle>
-    <HelpFileVersion>1.0.6.5</HelpFileVersion>
+    <HelpFileVersion>1.0.7.0</HelpFileVersion>
     <CopyrightHref>http://stilib.codeplex.com</CopyrightHref>
     <ComponentConfigurations>
       <ComponentConfig id="Cached MSDN URL References" enabled="True" xmlns="">

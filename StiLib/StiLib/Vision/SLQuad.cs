@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System.Windows.Forms;
+using StiLib.Core;
 #endregion
 
 namespace StiLib.Vision
@@ -25,41 +26,68 @@ namespace StiLib.Vision
         #region Fields
 
         /// <summary>
-        /// Quad Structure
+        /// Quad Parameters
         /// </summary>
         public Quad Para;
-        VertexDeclaration qvdec;
-        BasicEffect basiceffect;
-        ContentManager cm;
-        Texture2D texture;
+        /// <summary>
+        /// Quad Texture
+        /// </summary>
+        public Texture2D texture;
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// SLQuad Basic Effect
+        /// Basic Parameters
         /// </summary>
-        public BasicEffect Effect
+        public override vsBasePara BasePara
         {
-            get { return basiceffect; }
-            set { basiceffect = value; }
+            get { return Para.BasePara; }
+            set { Para.BasePara = value; }
         }
 
         /// <summary>
-        /// SLQuad Content Manager
+        /// Center
         /// </summary>
-        public ContentManager Content
+        public override Vector3 Center
         {
-            get { return cm; }
-            set { cm = value; }
+            get { return Para.BasePara.center; }
+            set { Para.BasePara.center = value; }
+        }
+
+        /// <summary>
+        /// Speed3D
+        /// </summary>
+        public override Vector3 Speed3D
+        {
+            get { return Para.BasePara.speed3D; }
+            set { Para.BasePara.speed3D = value; }
+        }
+
+        /// <summary>
+        /// Visible State
+        /// </summary>
+        public override bool Visible
+        {
+            get { return Para.BasePara.visible; }
+            set { Para.BasePara.visible = value; }
+        }
+
+        /// <summary>
+        /// Index Array
+        /// </summary>
+        public override int[] IndexArray
+        {
+            get { return Para.indices; }
+            set { Para.indices = value; }
         }
 
         #endregion
 
 
         /// <summary>
-        /// Set Quad parameters to default before LoadContent() and Init()
+        /// Sets Default Quad, need LoadContent() and Init()
         /// </summary>
         public SLQuad()
         {
@@ -67,30 +95,85 @@ namespace StiLib.Vision
         }
 
         /// <summary>
-        /// Init SLQuad to default
+        /// Init SLQuad with Default Quad Parameters and Custom Texture
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="tex"></param>
-        public SLQuad(GraphicsDevice gd, IServiceProvider service, string path, string tex) : this()
+        /// <param name="texture"></param>
+        public SLQuad(GraphicsDevice gd, IServiceProvider service, string path, string texture)
+            : base(gd)
         {
-            LoadContent(service, path, tex);
+            Para = Quad.Default;
+            LoadContent(service, path, texture);
             Init(gd);
         }
 
         /// <summary>
-        /// Init SLQuad to custom settings
+        /// Init SLQuad with Custom Quad Parameters
         /// </summary>
         /// <param name="gd"></param>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="tex"></param>
-        /// <param name="q"></param>
-        public SLQuad(GraphicsDevice gd, IServiceProvider service, string path, string tex, Quad q) : base(gd)
+        /// <param name="quad"></param>
+        public SLQuad(GraphicsDevice gd, IServiceProvider service, string path, Quad quad)
+            : base(gd)
         {
-            LoadContent(service, path, tex);
-            Init(gd, q);
+            Para = quad;
+            LoadContent(service, path, quad.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init SLQuad with Custom Quad Parameters and Configuration
+        /// </summary>
+        /// <param name="distance2display"></param>
+        /// <param name="displayratio"></param>
+        /// <param name="displaysize"></param>
+        /// <param name="camera"></param>
+        /// <param name="unit"></param>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="quad"></param>
+        public SLQuad(float distance2display, float displayratio, float displaysize, SLCamera camera, Unit unit, GraphicsDevice gd, IServiceProvider service, string path, Quad quad)
+            : base(distance2display, displayratio, displaysize, gd, camera, unit)
+        {
+            Para = quad;
+            LoadContent(service, path, quad.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init SLQuad with Custom Quad Parameters and StiLib Configuration File
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="slconfig"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="quad"></param>
+        public SLQuad(GraphicsDevice gd, AssemblySettings slconfig, IServiceProvider service, string path, Quad quad)
+            : base(gd, slconfig)
+        {
+            Para = quad;
+            LoadContent(service, path, quad.BasePara.contentname);
+            Init(gd);
+        }
+
+        /// <summary>
+        /// Init SLQuad with Custom Quad Parameters and Texture
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="service"></param>
+        /// <param name="path"></param>
+        /// <param name="texture"></param>
+        /// <param name="quad"></param>
+        public SLQuad(GraphicsDevice gd, IServiceProvider service, string path, string texture, Quad quad)
+            : base(gd)
+        {
+            Para = quad;
+            LoadContent(service, path, texture);
+            Init(gd);
         }
 
 
@@ -99,18 +182,20 @@ namespace StiLib.Vision
         /// </summary>
         /// <param name="service"></param>
         /// <param name="path"></param>
-        /// <param name="tex"></param>
-        public void LoadContent(IServiceProvider service, string path, string tex)
+        /// <param name="texture"></param>
+        public override void LoadContent(IServiceProvider service, string path, string texture)
         {
-            cm = new ContentManager(service, path);
+            contentManager = new ContentManager(service, path);
             try
             {
-                texture = cm.Load<Texture2D>(tex);
+                this.texture = contentManager.Load<Texture2D>(texture);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error !");
             }
+
+            Para.BasePara.contentname = texture;
         }
 
         /// <summary>
@@ -121,27 +206,29 @@ namespace StiLib.Vision
         {
             InitVS(gd);
 
-            qvdec = new VertexDeclaration(gd, VertexPositionNormalTexture.VertexElements);
+            vertexDeclaration = new VertexDeclaration(gd, VertexPositionNormalTexture.VertexElements);
+            SetVertexBuffer(gd);
+            SetIndexBuffer(gd);
 
-            basiceffect = new BasicEffect(gd, null);
-            basiceffect.Texture = texture;
-            basiceffect.TextureEnabled = true;
+            basicEffect = new BasicEffect(gd, null);
+            basicEffect.Texture = texture;
+            basicEffect.TextureEnabled = true;
 
-            basiceffect.World = Matrix.CreateFromYawPitchRoll(Para.BasePara.orientation3d.Y,
-                                                                                        Para.BasePara.orientation3d.X,
-                                                                                        Para.BasePara.orientation3d.Z) * Matrix.CreateTranslation(Para.BasePara.center);
-            basiceffect.View = GlobalView();
-            basiceffect.Projection = GlobalProj();
+            ori3DMatrix = GetOri3DMatrix(Para.BasePara.orientation3D);
+            worldMatrix = Matrix.CreateTranslation(Para.BasePara.center);
+            ViewMatrix = ViewMatrix;
+            ProjectionMatrix = ProjectionMatrix;
         }
 
         /// <summary>
-        /// Init SLQuad according to custom quad
+        /// Init SLQuad with Custom Quad Parameters
         /// </summary>
         /// <param name="gd"></param>
-        /// <param name="q"></param>
-        public void Init(GraphicsDevice gd, Quad q)
+        /// <param name="quad"></param>
+        public void Init(GraphicsDevice gd, Quad quad)
         {
-            Para = q;
+            quad.BasePara.contentname = Para.BasePara.contentname;
+            Para = quad;
             Init(gd);
         }
 
@@ -153,186 +240,61 @@ namespace StiLib.Vision
         {
             if (Para.BasePara.visible)
             {
-                gd.VertexDeclaration = qvdec;
+                gd.VertexDeclaration = vertexDeclaration;
+                gd.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
+                gd.Indices = indexBuffer;
+                gd.RenderState.CullMode = CullMode.None;
                 gd.RenderState.AlphaBlendEnable = true;
                 gd.RenderState.AlphaTestEnable = true;
                 gd.RenderState.AlphaFunction = CompareFunction.Greater;
 
-                basiceffect.Begin();
-                basiceffect.CurrentTechnique.Passes[0].Begin();
-                gd.DrawUserIndexedPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, Para.Vertices, 0, 4, Para.Indices, 0, 2);
-                basiceffect.CurrentTechnique.Passes[0].End();
-                basiceffect.End();
+                basicEffect.World = ori3DMatrix * worldMatrix;
+
+                basicEffect.Begin();
+                basicEffect.CurrentTechnique.Passes[0].Begin();
+                gd.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
+                basicEffect.CurrentTechnique.Passes[0].End();
+                basicEffect.End();
             }
         }
 
-
         /// <summary>
-        /// Set effect world matrix
+        /// Sets Quad Vertex Buffer
         /// </summary>
-        /// <param name="world"></param>
-        public override void SetWorld(Matrix world)
+        /// <param name="gd"></param>
+        public override void SetVertexBuffer(GraphicsDevice gd)
         {
-            basiceffect.World = world;
-        }
-
-        /// <summary>
-        /// Set effect view matrix
-        /// </summary>
-        /// <param name="view"></param>
-        public override void SetView(Matrix view)
-        {
-            basiceffect.View = view;
-        }
-
-        /// <summary>
-        /// Set effect projection matrix
-        /// </summary>
-        /// <param name="proj"></param>
-        public override void SetProjection(Matrix proj)
-        {
-            basiceffect.Projection = proj;
-        }
-
-        /// <summary>
-        /// Set visible state
-        /// </summary>
-        /// <param name="isvisible"></param>
-        public override void SetVisible(bool isvisible)
-        {
-            Para.BasePara.visible = isvisible;
-        }
-
-    }
-
-    /// <summary>
-    /// Quad Structure
-    /// </summary>
-    public struct Quad
-    {
-        /// <summary>
-        /// Basic Parameter
-        /// </summary>
-        public BasePara BasePara;
-        /// <summary>
-        /// UpperLeft
-        /// </summary>
-        public Vector3 UpperLeft;
-        /// <summary>
-        /// LowerLeft
-        /// </summary>
-        public Vector3 LowerLeft;
-        /// <summary>
-        /// UpperRight
-        /// </summary>
-        public Vector3 UpperRight;
-        /// <summary>
-        /// LowerRight
-        /// </summary>
-        public Vector3 LowerRight;
-        /// <summary>
-        /// Normal
-        /// </summary>
-        public Vector3 Normal;
-        /// <summary>
-        /// Up
-        /// </summary>
-        public Vector3 Up;
-        /// <summary>
-        /// Left
-        /// </summary>
-        public Vector3 Left;
-        /// <summary>
-        /// Vertex Array
-        /// </summary>
-        public VertexPositionNormalTexture[] Vertices;
-        /// <summary>
-        /// Index Array
-        /// </summary>
-        public int[] Indices;
-
-
-        /// <summary>
-        /// Init to default -- Center:(0,0,0), Normal:(0,0,1), Up:(0,1,0)
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public Quad(float width, float height)
-            : this(Vector3.Zero, Vector3.Backward, Vector3.Up, width, height)
-        {
-        }
-
-        /// <summary>
-        /// Init to custom settings
-        /// </summary>
-        /// <param name="center"></param>
-        /// <param name="normal"></param>
-        /// <param name="up"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public Quad(Vector3 center, Vector3 normal, Vector3 up, float width, float height)
-        {
-            BasePara = BasePara.Default;
-            Vertices = new VertexPositionNormalTexture[4];
-            Indices = new int[6];
-            BasePara.center = center;
-            Normal = normal;
-            Up = up;
-
-            // Calculate the quad corners
-            Left = Vector3.Cross(normal, Up);
-            Vector3 uppercenter = (Up * height / 2) + center;
-            UpperLeft = uppercenter + (Left * width / 2);
-            UpperRight = uppercenter - (Left * width / 2);
-            LowerLeft = UpperLeft - (Up * height);
-            LowerRight = UpperRight - (Up * height);
-
-            FillVertices();
-        }
-
-        /// <summary>
-        /// Get a default quad -- Width:15, Height:5
-        /// </summary>
-        public static Quad Default
-        {
-            get
+            int temp = Para.vertices.Length * VertexPositionNormalTexture.SizeInBytes;
+            if (vertexBuffer == null)
             {
-                return new Quad(15, 5);
+                vertexBuffer = new VertexBuffer(gd, temp, BufferUsage.None);
             }
+            else
+            {
+                if (temp > vertexBuffer.SizeInBytes)
+                {
+                    vertexBuffer.Dispose();
+                    vertexBuffer = new VertexBuffer(gd, temp, BufferUsage.None);
+                }
+            }
+            vertexBuffer.SetData<VertexPositionNormalTexture>(Para.vertices);
         }
 
-
-        private void FillVertices()
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
         {
-            // Fill in texture coordinates to display full texture on quad
-            Vector2 textureUpperLeft = new Vector2(0.0f, 0.0f);
-            Vector2 textureUpperRight = new Vector2(1.0f, 0.0f);
-            Vector2 textureLowerLeft = new Vector2(0.0f, 1.0f);
-            Vector2 textureLowerRight = new Vector2(1.0f, 1.0f);
-
-            // Provide a normal for each vertex
-            for (int i = 0; i < Vertices.Length; i++)
+            if (gdRef != null)
             {
-                Vertices[i].Normal = Normal;
+                return new SLQuad(distance2Display, displayRatio, displaySize, globalCamera, unit, gdRef, contentManager.ServiceProvider, contentManager.RootDirectory, Para);
             }
-
-            // Set the position and texture coordinate for each vertex
-            Vertices[0].Position = LowerLeft;
-            Vertices[0].TextureCoordinate = textureLowerLeft;
-            Vertices[1].Position = UpperLeft;
-            Vertices[1].TextureCoordinate = textureUpperLeft;
-            Vertices[2].Position = LowerRight;
-            Vertices[2].TextureCoordinate = textureLowerRight;
-            Vertices[3].Position = UpperRight;
-            Vertices[3].TextureCoordinate = textureUpperRight;
-
-            // Set the index buffer for each vertex, using clockwise winding
-            Indices[0] = 0;
-            Indices[1] = 1;
-            Indices[2] = 2;
-            Indices[3] = 2;
-            Indices[4] = 1;
-            Indices[5] = 3;
+            else
+            {
+                SLConstant.ShowMessage("No Internal GraphicsDevice Reference, Please InitVS(GraphicsDevice gd) First !");
+                return "No gdRef";
+            }
         }
 
     }

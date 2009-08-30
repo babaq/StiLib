@@ -15,6 +15,7 @@ namespace ExClient
     {
         ExService.ExServiceClient proxy;
 
+
         public MainForm()
         {
             InitializeComponent();
@@ -30,7 +31,6 @@ namespace ExClient
 
             exlist.Items.AddRange(proxy.GetEx());
         }
-
         ~MainForm()
         {
             proxy.Close();
@@ -38,7 +38,7 @@ namespace ExClient
 
         private void exlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string hresult = proxy.Run(exlist.SelectedItem.ToString());
+            string hresult = proxy.Invoke(exlist.SelectedItem.ToString());
             if (hresult != null)
             {
                 MessageBox.Show(hresult);
@@ -59,16 +59,16 @@ namespace ExClient
 
             openfileDialog.InitialDirectory = exPath;
             openfileDialog.Title = "Load Script";
-            openfileDialog.Filter = "F# Script (*.fsx)|*.fsx|" +
-                                "IronPython Script (*.py)|*.py|" +
-                                "All Files (*.*)|*.*";
+            openfileDialog.Filter = "All Files (*.*)|*.*|" +
+                                "F# Script (*.fsx)|*.fsx|" +
+                                "IronPython Script (*.py)|*.py";
 
             if (openfileDialog.ShowDialog() == DialogResult.OK)
             {
                 StreamReader reader = new StreamReader(openfileDialog.FileName);
 
                 string ex = openfileDialog.FileName.Substring(openfileDialog.FileName.LastIndexOf("\\") + 1);
-                string hresult = proxy.RunScript(ex, reader.ReadToEnd());
+                string hresult = proxy.InvokeScript(ex, reader.ReadToEnd());
                 if (hresult != null)
                 {
                     MessageBox.Show(hresult);

@@ -5,7 +5,7 @@
     <ddue:linkUri>http://www.microsoft.com/NET</ddue:linkUri>
     <ddue:linkTarget>_blank</ddue:linkTarget>
 </ddue:externalLink></item>
-  <item id="BuildDate">{@BuildDate:Jule 19, 2009}</item>
+  <item id="BuildDate">{@BuildDate:Augest 29, 2009}</item>
   <item id="F#"><ddue:externalLink xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5">
     <ddue:linkText>F#</ddue:linkText>
     <ddue:linkUri>http://msdn.microsoft.com/fsharp</ddue:linkUri>

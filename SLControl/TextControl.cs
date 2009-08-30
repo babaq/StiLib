@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System.Reflection;
 using StiLib.Core;
 
 namespace SLControl
@@ -17,6 +18,8 @@ namespace SLControl
         ContentManager content;
         SpriteBatch spriteBatch;
         SpriteFont font;
+        AssemblySettings config;
+
 
         /// <summary>
         /// Initializes the control, creating the ContentManager
@@ -24,7 +27,8 @@ namespace SLControl
         /// </summary>
         protected override void Initialize()
         {
-            content = new ContentManager(Services, "Content");
+            config = new AssemblySettings(Assembly.GetAssembly(typeof(AssemblySettings)));
+            content = new ContentManager(Services, config["content"]);
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = content.Load<SpriteFont>("Arial");
         }

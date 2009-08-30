@@ -31,7 +31,7 @@
   while there is no event message to deal with.</para>
   </listItem>
   <listItem><para>SLForm -- inherited from standard .NET windows Forms class, except the same gaming loop of SLGame as default, can be 
-  customized to user render loop(RF_fBar(Fast) demo for example).</para>
+  customized to user render loop(RF_fBar(Custom_Loop) demo for example).</para>
   </listItem>
 </list>
            <para>To create your experiment window, you need to define your own class derived from either of two windowing model.
@@ -113,8 +113,6 @@
                 /// &lt;/summary&gt;
                 static void Main(string[] args)
                 {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MyEx());
                 }
                 </code>

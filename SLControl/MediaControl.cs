@@ -25,12 +25,12 @@ namespace SLControl
         Media MFPlayer;
         bool g_bRepaintClient = true;
 
+
         public MediaControl()
         {
             InitializeComponent();
             MFPlayer = new Media(this.Handle, this.Handle);
         }
-
         ~MediaControl()
         {
             Cursor.Current = Cursors.Default;
@@ -72,7 +72,7 @@ namespace SLControl
                     break;
 
                 case WM_APP_ERROR:
-                    NotifyError(m.HWnd, "An Error Occurred.", (int)m.WParam);
+                    NotifyError(m.HWnd, "An Error Occurred !", (int)m.WParam);
                     UpdateUI(m.HWnd, MediaState.Ready);
                     break;
 
@@ -176,7 +176,7 @@ namespace SLControl
         {
             int hr = 0;
 
-            openFileDialog.Filter = "Windows Media|*.wmv;*.wma;*.asf|Wave|*.wav|MP3|*.mp3|All files|*.*";
+            openFileDialog.Filter = "All files|*.*|Windows Media|*.wmv;*.wma;*.asf|Wave|*.wav|MP3|*.mp3";
 
             // File dialog windows must be on STA threads.  ByteStream handlers are happier if
             // they are opened on MTA.  So, the application stays MTA and we call OpenFileDialog
@@ -195,7 +195,7 @@ namespace SLControl
                 }
                 else
                 {
-                    NotifyError(this.Handle, "Could Not Open the File.", hr);
+                    NotifyError(this.Handle, "Could Not Open The File.", hr);
                     UpdateUI(this.Handle, MediaState.Ready);
                 }
             }
@@ -234,6 +234,7 @@ namespace SLControl
         private DialogResult m_InvokeResult;
         private Thread m_InvokeThread;
 
+
         // Constructor is passed the dialog to use
         public Invoker(OpenFileDialog Dialog)
         {
@@ -251,6 +252,7 @@ namespace SLControl
                 m_InvokeThread = null;
             }
         }
+
 
         // Start the thread and get the result
         public DialogResult Invoke()
@@ -273,5 +275,7 @@ namespace SLControl
         {
             m_InvokeResult = m_Dialog.ShowDialog();
         }
+
     }
+
 }
