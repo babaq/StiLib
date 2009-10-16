@@ -136,4 +136,5 @@ type MyEx = class
 end
 
 let MyExperiment = new MyEx(Text = "Multiple Viewports and Stimuli")
+using(MyExperiment)
 Application.Run(MyExperiment)

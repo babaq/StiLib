@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Windows.Forms;
 using System.ServiceModel;
-using StiLib.Core;
 
 namespace ExServer
 {
-    class Program
+    static class Program
     {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         static void Main(string[] args)
         {
-            ServiceHost host = new ServiceHost(typeof(ExService));
+            var service = new Server();
+            
+            ServiceHost host = new ServiceHost(service);
             host.Open();
 
-            Console.WriteLine("StiLib Experiment Server Started !\n\n");
-            Console.ReadLine();
+            Application.Run(service);
 
             host.Close();
         }
     }
 }
+

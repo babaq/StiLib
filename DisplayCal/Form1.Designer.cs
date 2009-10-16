@@ -17,6 +17,11 @@
             {
                 components.Dispose();
             }
+            if(CRSDevice!=null)
+            {
+                CRSDevice.Dispose();
+                CRSDevice = null;
+            }
             base.Dispose(disposing);
         }
 

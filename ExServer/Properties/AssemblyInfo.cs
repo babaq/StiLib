@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ExServer")]
-[assembly: AssemblyDescription("StiLib Experiment Server")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Alex-Joyce")]
 [assembly: AssemblyProduct("ExServer")]
+[assembly: AssemblyDescription("StiLib Experiment Server")]
+[assembly: AssemblyCompany("Alex-Joyce")]
+
 [assembly: AssemblyCopyright("Copyright ©  2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,8 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0d0c73bb-e1c0-41fc-8570-d57866a1ed67")]
+[assembly: Guid("44473abf-f5dd-4d30-85c0-574b02bbe559")]
+
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,8 +30,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.7.0")]
-[assembly: AssemblyFileVersion("1.0.7.0")]
+[assembly: AssemblyVersion("1.0.8.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.8")]

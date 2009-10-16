@@ -30,8 +30,8 @@ type MyEx = class
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Thames")
         this.ex <- new SLExperiment()
         this.ex.AddExType(ExType.Context)
-        this.ex.AddCondition(ExPara.Orientation, 2)
-        this.ex.AddCondition(ExPara.Orientation, 2)
+        this.ex.AddCondition(ExPara.Orientation, 8)
+        this.ex.AddCondition(ExPara.Orientation, 4)
         this.ex.Exdesign.trial <- 2
         this.ex.Exdesign.srestT <- 0.4f
         this.ex.Exdesign.trestT <- 0.4f
@@ -40,17 +40,17 @@ type MyEx = class
         
         let mutable gpara = GratingPara.Default
         gpara.tf <- 0.0f
-        gpara.sf <- 0.5f
+        gpara.sf <- 0.8f
         gpara.sphase <- 0.0f
-        gpara.BasePara.diameter <- 3.0f
-        gpara.BasePara.center <- new Vector3(4.0f, 0.0f, 0.0f)
+        gpara.BasePara.diameter <- 3.0f // Center Size
+        gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // Center Center
         this.cgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
         this.cmask <- new Primitive(this.GraphicsDevice, PrimitivePara.Circle(gpara.BasePara.diameter, this.ex.Exdesign.bgcolor, gpara.BasePara.center, 100, true))
         this.cmask.Visible <- false
         
-        gpara.BasePara.diameter <- 4.0f
-        gpara.BasePara.center <- new Vector3(4.0f, 0.0f, 0.0f)
+        gpara.BasePara.diameter <- 5.0f // Surround Size
+        gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // Surround Center
         this.sgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
     override this.SetFlow() = 

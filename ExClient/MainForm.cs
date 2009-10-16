@@ -8,10 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using System.ServiceModel;
 
 namespace ExClient
 {
-    public partial class MainForm : Form
+    [CallbackBehavior(UseSynchronizationContext = false)]
+    public partial class MainForm : Form, ExService.IExServiceCallback
     {
         ExService.ExServiceClient proxy;
 
@@ -22,32 +24,48 @@ namespace ExClient
 
             try
             {
-                proxy = new ExClient.ExService.ExServiceClient();
+                proxy = new ExClient.ExService.ExServiceClient(new InstanceContext(this));
+                proxy.Subscribe(true);
+                exlist.Items.AddRange(proxy.GetEx());
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
 
-            exlist.Items.AddRange(proxy.GetEx());
-        }
-        ~MainForm()
-        {
-            proxy.Close();
         }
 
-        private void exlist_SelectedIndexChanged(object sender, EventArgs e)
+
+        public string OnRunStop(bool runstop)
         {
-            string hresult = proxy.Invoke(exlist.SelectedItem.ToString());
-            if (hresult != null)
+            try
             {
-                MessageBox.Show(hresult);
+                string hr = "";
+                if (this.InvokeRequired)
+                {
+                    this.Invoke((MethodInvoker) delegate
+                                                    {
+                                                        this.info.Text = "Server has changed its Run/Stop state to " +
+                                                                         runstop.ToString();
+                                                        hr = this.Text + " has Done.";
+                                                    });
+                }
+                else
+                {
+                    this.info.Text = "Server has changed its Run/Stop state to " + runstop.ToString();
+                    hr = this.Text + " has Done.";
+                }
+                return hr;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
             }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            this.Close();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -75,6 +93,70 @@ namespace ExClient
                 }
                 reader.Close();
             }
+        }
+
+        private void invoke_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string hresult = proxy.Invoke(exlist.SelectedItem.ToString());
+                if(string.IsNullOrEmpty(hresult))
+                {
+                    this.info.Text = exlist.SelectedItem.ToString() + " has invoked in server.";
+                }
+                else
+                {
+                    this.info.Text = hresult;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.info.Text = ex.Message;
+            }
+        }
+
+        private void terminate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string hr = proxy.Terminate(exlist.SelectedItem.ToString());
+                if (string.IsNullOrEmpty(hr))
+                {
+                    this.info.Text = exlist.SelectedItem.ToString() + " has terminated in server.";
+                }
+                else
+                {
+                    this.info.Text = hr;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.info.Text = ex.Message;
+            }
+        }
+
+        private void run_Click(object sender, EventArgs e)
+        {
+            if(!proxy.get_RunStop())
+            {
+                proxy.set_RunStop(true);
+                refresh_Click(sender,e);
+            }
+        }
+
+        private void stop_Click(object sender, EventArgs e)
+        {
+            if(proxy.get_RunStop())
+            {
+                proxy.set_RunStop(false);
+                refresh_Click(sender, e);
+            }
+        }
+
+        private void refresh_Click(object sender, EventArgs e)
+        {
+            string hr = proxy.get_RunStop().ToString();
+            this.info.Text = "Server Run/Stop State is " + hr;
         }
 
     }

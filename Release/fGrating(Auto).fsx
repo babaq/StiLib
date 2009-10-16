@@ -31,14 +31,14 @@ type MyEx = class
         this.ex.AddCondition(ExPara.Orientation, 8)
         this.ex.AddCondition(ExPara.SpatialFreq, 5)
         this.ex.AddCondition(ExPara.SpatialPhase, 4)
-        this.ex.Exdesign.trial <- 3
+        this.ex.Exdesign.trial <- 2
         this.ex.Exdesign.durT <- 0.030f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.InitEx()
         
         let mutable gpara = GratingPara.Default
-        gpara.BasePara.diameter <- 6.0f
-        gpara.BasePara.center <- new Vector3(4.0f, 0.0f, 0.0f)
+        gpara.BasePara.diameter <- 2.5f
+        gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f)
         this.grating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
     override this.SetFlow() = 

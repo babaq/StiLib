@@ -17,6 +17,12 @@
             {
                 components.Dispose();
             }
+            if (proxy != null)
+            {
+                proxy.Subscribe(false);
+                proxy.Close();
+                proxy = null;
+            }
             base.Dispose(disposing);
         }
 
@@ -34,6 +40,12 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maintab = new System.Windows.Forms.TabControl();
             this.extab = new System.Windows.Forms.TabPage();
+            this.info = new System.Windows.Forms.Label();
+            this.refresh = new System.Windows.Forms.Button();
+            this.stop = new System.Windows.Forms.Button();
+            this.run = new System.Windows.Forms.Button();
+            this.terminate = new System.Windows.Forms.Button();
+            this.invoke = new System.Windows.Forms.Button();
             this.exlist = new System.Windows.Forms.ComboBox();
             this.mainmenu.SuspendLayout();
             this.maintab.SuspendLayout();
@@ -62,14 +74,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -86,6 +98,12 @@
             // extab
             // 
             this.extab.BackColor = System.Drawing.Color.Gainsboro;
+            this.extab.Controls.Add(this.info);
+            this.extab.Controls.Add(this.refresh);
+            this.extab.Controls.Add(this.stop);
+            this.extab.Controls.Add(this.run);
+            this.extab.Controls.Add(this.terminate);
+            this.extab.Controls.Add(this.invoke);
             this.extab.Controls.Add(this.exlist);
             this.extab.Location = new System.Drawing.Point(4, 22);
             this.extab.Name = "extab";
@@ -94,17 +112,77 @@
             this.extab.TabIndex = 0;
             this.extab.Text = "Experiment";
             // 
+            // info
+            // 
+            this.info.AutoSize = true;
+            this.info.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.info.ForeColor = System.Drawing.Color.Navy;
+            this.info.Location = new System.Drawing.Point(20, 246);
+            this.info.Name = "info";
+            this.info.Size = new System.Drawing.Size(0, 19);
+            this.info.TabIndex = 8;
+            this.info.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // refresh
+            // 
+            this.refresh.Location = new System.Drawing.Point(78, 173);
+            this.refresh.Name = "refresh";
+            this.refresh.Size = new System.Drawing.Size(81, 29);
+            this.refresh.TabIndex = 7;
+            this.refresh.Text = "Refresh";
+            this.refresh.UseVisualStyleBackColor = true;
+            this.refresh.Click += new System.EventHandler(this.refresh_Click);
+            // 
+            // stop
+            // 
+            this.stop.Location = new System.Drawing.Point(133, 123);
+            this.stop.Name = "stop";
+            this.stop.Size = new System.Drawing.Size(81, 29);
+            this.stop.TabIndex = 6;
+            this.stop.Text = "Stop";
+            this.stop.UseVisualStyleBackColor = true;
+            this.stop.Click += new System.EventHandler(this.stop_Click);
+            // 
+            // run
+            // 
+            this.run.Location = new System.Drawing.Point(22, 123);
+            this.run.Name = "run";
+            this.run.Size = new System.Drawing.Size(81, 29);
+            this.run.TabIndex = 5;
+            this.run.Text = "Run";
+            this.run.UseVisualStyleBackColor = true;
+            this.run.Click += new System.EventHandler(this.run_Click);
+            // 
+            // terminate
+            // 
+            this.terminate.Location = new System.Drawing.Point(133, 74);
+            this.terminate.Name = "terminate";
+            this.terminate.Size = new System.Drawing.Size(81, 29);
+            this.terminate.TabIndex = 4;
+            this.terminate.Text = "Terminate";
+            this.terminate.UseVisualStyleBackColor = true;
+            this.terminate.Click += new System.EventHandler(this.terminate_Click);
+            // 
+            // invoke
+            // 
+            this.invoke.Location = new System.Drawing.Point(22, 74);
+            this.invoke.Name = "invoke";
+            this.invoke.Size = new System.Drawing.Size(81, 29);
+            this.invoke.TabIndex = 3;
+            this.invoke.Text = "Invoke";
+            this.invoke.UseVisualStyleBackColor = true;
+            this.invoke.Click += new System.EventHandler(this.invoke_Click);
+            // 
             // exlist
             // 
             this.exlist.Font = new System.Drawing.Font("Microsoft YaHei", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.exlist.ForeColor = System.Drawing.Color.Red;
             this.exlist.FormattingEnabled = true;
-            this.exlist.Location = new System.Drawing.Point(18, 18);
+            this.exlist.Location = new System.Drawing.Point(37, 27);
             this.exlist.Name = "exlist";
             this.exlist.Size = new System.Drawing.Size(166, 28);
             this.exlist.TabIndex = 2;
             this.exlist.Text = "Select Experiment !";
-            this.exlist.SelectedIndexChanged += new System.EventHandler(this.exlist_SelectedIndexChanged);
             // 
             // MainForm
             // 
@@ -120,6 +198,7 @@
             this.mainmenu.PerformLayout();
             this.maintab.ResumeLayout(false);
             this.extab.ResumeLayout(false);
+            this.extab.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,6 +213,12 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Button terminate;
+        private System.Windows.Forms.Button invoke;
+        private System.Windows.Forms.Button refresh;
+        private System.Windows.Forms.Button stop;
+        private System.Windows.Forms.Button run;
+        private System.Windows.Forms.Label info;
     }
 }
 

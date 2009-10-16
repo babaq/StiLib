@@ -25,24 +25,24 @@ type ExRF_fBar() = class
         
         self.ex.AddExType(ExType.RF_fBar)
         self.ex.AddCondition(ExPara.Orientation, 0)
-        self.ex.Exdesign.trial <- 5
+        self.ex.Exdesign.trial <- 2
         self.ex.Exdesign.durT <- 0.030f
         self.ex.Exdesign.bgcolor <- Color.Gray
         
         let mutable bpara = BarPara.Default
         bpara.width <- 0.5f
-        bpara.height <- 1.5f
+        bpara.height <- 0.8f
         bpara.BasePara.orientation <- 0.0f
-        bpara.BasePara.space <- 8.0f
-        bpara.BasePara.center <- new Vector3(3.0f, 3.0f, 0.0f)
+        bpara.BasePara.space <- 4.0f
+        bpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f)
         bpara.BasePara.color <- Color.Black
         self.bars.[0].Init(self.GraphicsDevice, bpara)
         
         bpara.BasePara.color <- Color.White
         self.bars.[1].Init(self.GraphicsDevice, bpara)
         
-        self.Rstep <- 1.5f
-        self.Cstep <- 1.5f
+        self.Rstep <- 0.3f
+        self.Cstep <- 0.6f
         self.InitGrid()
         
 end

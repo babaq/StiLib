@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="ExService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="Server" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsp:Policy wsu:Id="NetTcpBinding_IExService_policy">
     <wsp:ExactlyOne>
       <wsp:All>
@@ -35,6 +35,36 @@
   <wsdl:message name="IExService_GetEx_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetExResponse" />
   </wsdl:message>
+  <wsdl:message name="IExService_Terminate_InputMessage">
+    <wsdl:part name="parameters" element="tns:Terminate" />
+  </wsdl:message>
+  <wsdl:message name="IExService_Terminate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:TerminateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IExService_get_RunStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:get_RunStop" />
+  </wsdl:message>
+  <wsdl:message name="IExService_get_RunStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:get_RunStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IExService_set_RunStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:set_RunStop" />
+  </wsdl:message>
+  <wsdl:message name="IExService_set_RunStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:set_RunStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IExService_Subscribe_InputMessage">
+    <wsdl:part name="parameters" element="tns:Subscribe" />
+  </wsdl:message>
+  <wsdl:message name="IExService_Subscribe_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IExService_OnRunStop_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnRunStop" />
+  </wsdl:message>
+  <wsdl:message name="IExService_OnRunStop_InputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnRunStopResponse" />
+  </wsdl:message>
   <wsdl:portType name="IExService">
     <wsdl:operation name="Invoke">
       <wsdl:input wsaw:Action="http://tempuri.org/IExService/Invoke" message="tns:IExService_Invoke_InputMessage" />
@@ -47,6 +77,26 @@
     <wsdl:operation name="GetEx">
       <wsdl:input wsaw:Action="http://tempuri.org/IExService/GetEx" message="tns:IExService_GetEx_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IExService/GetExResponse" message="tns:IExService_GetEx_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Terminate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/Terminate" message="tns:IExService_Terminate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/TerminateResponse" message="tns:IExService_Terminate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="get_RunStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/get_RunStop" message="tns:IExService_get_RunStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/get_RunStopResponse" message="tns:IExService_get_RunStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="set_RunStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/set_RunStop" message="tns:IExService_set_RunStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/set_RunStopResponse" message="tns:IExService_set_RunStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/Subscribe" message="tns:IExService_Subscribe_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/SubscribeResponse" message="tns:IExService_Subscribe_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnRunStop">
+      <wsdl:output wsaw:Action="http://tempuri.org/IExService/OnRunStop" message="tns:IExService_OnRunStop_OutputCallbackMessage" />
+      <wsdl:input wsaw:Action="http://tempuri.org/IExService/OnRunStopResponse" message="tns:IExService_OnRunStop_InputCallbackMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="NetTcpBinding_IExService" type="tns:IExService">
@@ -80,8 +130,53 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="Terminate">
+      <soap12:operation soapAction="http://tempuri.org/IExService/Terminate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_RunStop">
+      <soap12:operation soapAction="http://tempuri.org/IExService/get_RunStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="set_RunStop">
+      <soap12:operation soapAction="http://tempuri.org/IExService/set_RunStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <soap12:operation soapAction="http://tempuri.org/IExService/Subscribe" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OnRunStop">
+      <soap12:operation soapAction="http://tempuri.org/IExService/OnRunStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="ExService">
+  <wsdl:service name="Server">
     <wsdl:port name="NetTcpBinding_IExService" binding="tns:NetTcpBinding_IExService">
       <soap12:address location="net.tcp://zhangli:8080/ExServer" />
       <wsa10:EndpointReference>

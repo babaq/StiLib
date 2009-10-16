@@ -30,8 +30,8 @@ type MyEx = class
         this.ex.AddExType(ExType.RF)
         this.ex.AddCondition(ExPara.Size, new SLInterpolation(0.0f, 10.0f, 21, Interpolation.Linear))
         this.ex.Exdesign.trial <- 2
-        this.ex.Exdesign.srestT <- 0.5f
-        this.ex.Exdesign.trestT <- 0.5f
+        this.ex.Exdesign.srestT <- 0.4f
+        this.ex.Exdesign.trestT <- 0.4f
         this.ex.Exdesign.durT <- 1.0f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.InitEx()
@@ -39,7 +39,7 @@ type MyEx = class
         let mutable gpara = GratingPara.Default
         gpara.tf <- 0.0f
         gpara.sf <- 0.8f
-        gpara.sphase <- 0.25f
+        gpara.sphase <- 0.0f
         gpara.BasePara.direction <- 90.0f
         gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f)
         this.grating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)

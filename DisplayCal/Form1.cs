@@ -25,10 +25,6 @@ namespace DisplayCal
             CRSDevice = new CRSCalDevice(CalDevice.ColorCal_USB);
             InitGraph();
         }
-        ~Form1()
-        {
-            CRSDevice.Close();
-        }
 
 
         void InitGraph()

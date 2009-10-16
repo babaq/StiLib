@@ -18,7 +18,7 @@ using Microsoft.Xna.Framework.Storage;
 using StiLib.Core;
 using StiLib.Vision;
 
-namespace StiLibTest
+namespace StiLibTest_01
 {
     public partial class Form1 : SLForm
     {
@@ -91,11 +91,11 @@ namespace StiLibTest
             video = new SLVideo(GraphicsDevice, Services, "Content", "Butterfly");
 
             point = new Primitive(GraphicsDevice, PrimitivePara.Default);
-            circle = new Primitive(GraphicsDevice, PrimitivePara.Circle(5f, Color.Azure, Vector3.Zero, 100, false));
-            disk = new Primitive(GraphicsDevice, PrimitivePara.Circle(0.3f, Color.DarkBlue, 4 * Vector3.UnitY, 100, true));
+            circle = new Primitive(GraphicsDevice, PrimitivePara.Circle(5f, Color.Azure, false));
+            disk = new Primitive(GraphicsDevice, PrimitivePara.Circle(0.3f, Color.DarkBlue, 4 * Vector3.UnitY,Color.DarkBlue, 100, true));
             cross = new Primitive(GraphicsDevice, PrimitivePara.Cross(3f, Color.Green, 4 * Vector3.UnitX));
             arrow = new Primitive(GraphicsDevice, PrimitivePara.Arrow(4f, Color.Red, -4 * Vector3.UnitX, 60f, 1f));
-            radialcircle = new Primitive(GraphicsDevice, PrimitivePara.RadialCircle(5f, new Color(0f, 0f, 0f, 0f), new Color(0f, 0f, 0f, 0.5f)));
+            radialcircle = new Primitive(GraphicsDevice, PrimitivePara.Circle(5f, new Color(0f, 0f, 0f, 0.5f),Vector3.Zero, new Color(0f, 0f, 0f, 0.0f),100,true));
             gaussian = new Primitive(GraphicsDevice, PrimitivePara.Gaussian(10, 1.5f, Color.Gray, Vector3.Zero));
 
             disk.Para.BasePara.space = 10;

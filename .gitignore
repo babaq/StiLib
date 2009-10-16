@@ -1,4 +1,7 @@
 bin
 obj
 *.cachefile
+cachefile*.txt
 *.ini
+*.user
+_ReSharper.*

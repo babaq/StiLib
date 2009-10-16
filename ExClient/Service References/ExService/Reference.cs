@@ -12,7 +12,7 @@ namespace ExClient.ExService {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ExService.IExService")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ExService.IExService", CallbackContract=typeof(ExClient.ExService.IExServiceCallback))]
     public interface IExService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Invoke", ReplyAction="http://tempuri.org/IExService/InvokeResponse")]
@@ -23,6 +23,25 @@ namespace ExClient.ExService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetEx", ReplyAction="http://tempuri.org/IExService/GetExResponse")]
         string[] GetEx();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Terminate", ReplyAction="http://tempuri.org/IExService/TerminateResponse")]
+        string Terminate(string ex);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/get_RunStop", ReplyAction="http://tempuri.org/IExService/get_RunStopResponse")]
+        bool get_RunStop();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/set_RunStop", ReplyAction="http://tempuri.org/IExService/set_RunStopResponse")]
+        void set_RunStop(bool value);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Subscribe", ReplyAction="http://tempuri.org/IExService/SubscribeResponse")]
+        string Subscribe(bool sub_unsub);
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
+    public interface IExServiceCallback {
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/OnRunStop", ReplyAction="http://tempuri.org/IExService/OnRunStopResponse")]
+        string OnRunStop(bool runstop);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -31,25 +50,26 @@ namespace ExClient.ExService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class ExServiceClient : System.ServiceModel.ClientBase<ExClient.ExService.IExService>, ExClient.ExService.IExService {
+    public partial class ExServiceClient : System.ServiceModel.DuplexClientBase<ExClient.ExService.IExService>, ExClient.ExService.IExService {
         
-        public ExServiceClient() {
+        public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance) : 
+                base(callbackInstance) {
         }
         
-        public ExServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
+        public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName) : 
+                base(callbackInstance, endpointConfigurationName) {
         }
         
-        public ExServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+        public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName, string remoteAddress) : 
+                base(callbackInstance, endpointConfigurationName, remoteAddress) {
         }
         
-        public ExServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+        public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(callbackInstance, endpointConfigurationName, remoteAddress) {
         }
         
-        public ExServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(binding, remoteAddress) {
+        public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance, System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(callbackInstance, binding, remoteAddress) {
         }
         
         public string Invoke(string ex) {
@@ -62,6 +82,22 @@ namespace ExClient.ExService {
         
         public string[] GetEx() {
             return base.Channel.GetEx();
+        }
+        
+        public string Terminate(string ex) {
+            return base.Channel.Terminate(ex);
+        }
+        
+        public bool get_RunStop() {
+            return base.Channel.get_RunStop();
+        }
+        
+        public void set_RunStop(bool value) {
+            base.Channel.set_RunStop(value);
+        }
+        
+        public string Subscribe(bool sub_unsub) {
+            return base.Channel.Subscribe(sub_unsub);
         }
     }
 }

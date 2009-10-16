@@ -1,6 +1,6 @@
 // F# Script File : RF_Surround_2.fsx
 //
-// Mapping Receptive Field Surround Use Drift Grating(two marker)
+// Mapping Receptive Field Surround Using Drift Grating(two marker)
 //
 // Copyright (c) 2009-07-21 Zhang Li
 
@@ -38,19 +38,19 @@ type MyEx = class
         this.ex.Exdesign.bgcolor <- Color.Gray
         
         let mutable gpara = GratingPara.Default
-        gpara.tf <- 4.0f
+        gpara.BasePara.direction <- 90.0f
+        gpara.tf <- 3.0f
         gpara.sf <- 0.8f
         gpara.sphase <- 0.0f
-        gpara.BasePara.diameter <- 2.0f
         gpara.BasePara.space <- 10.0f
-        gpara.BasePara.direction <- 90.0f
+        gpara.BasePara.diameter <- 2.0f // CRF Size
         gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // CRF Center
-        this.grating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
-        
-        gpara.BasePara.diameter <- 3.0f // CRF Size
         this.cgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
-        this.step <- 3.0f
+        gpara.BasePara.diameter <- 2.0f // Probe Grating Size
+        this.grating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
+        
+        this.step <- 2.0f
         this.InitGrid()
         
     member this.InitGrid() = 
@@ -65,7 +65,6 @@ type MyEx = class
         this.ex.Flow.IsPred <- false
         this.ex.Flow.IsRested <- false
         
-        this.ex.Flow.RotateDir <- Matrix.CreateRotationZ(this.grating.Para.BasePara.direction * float32 SLConstant.Rad_p_Deg)
         this.ex.Flow.TranslateCenter <- Matrix.CreateTranslation(this.grating.Para.BasePara.center)
         
     override this.MarkHead() = 
@@ -124,8 +123,7 @@ type MyEx = class
                 
                 let Xgrid = -float32(this.ex.Cond.[0].VALUE.ValueN - 1) * this.step / 2.0f + this.step * float32(CCount)
                 let Ygrid = float32(this.ex.Cond.[0].VALUE.ValueN - 1) * this.step / 2.0f - this.step * float32(RCount)
-                this.grating.Ori3DMatrix <- Matrix.CreateTranslation(Xgrid, Ygrid, 0.0f) * this.ex.Flow.RotateDir
-                this.grating.WorldMatrix <- this.ex.Flow.TranslateCenter
+                this.grating.WorldMatrix <- Matrix.CreateTranslation(Xgrid, Ygrid, 0.0f) * this.ex.Flow.TranslateCenter
                 this.grating.Visible <- true
                 this.cgrating.Visible <- true
                 
