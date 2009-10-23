@@ -1,4 +1,6 @@
-﻿namespace ExClient
+﻿using System;
+
+namespace ExClient
 {
     partial class MainForm
     {
@@ -19,8 +21,14 @@
             }
             if (proxy != null)
             {
-                proxy.Subscribe(false);
-                proxy.Close();
+                try
+                {
+                    proxy.Subscribe(false);
+                    proxy.Close();
+                }
+                catch (Exception)
+                {
+                }
                 proxy = null;
             }
             base.Dispose(disposing);

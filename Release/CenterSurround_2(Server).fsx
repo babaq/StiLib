@@ -1,11 +1,12 @@
-// F# Script File : CenterSurround_2.fsx
+// F# Script File : CenterSurround_2(Server).fsx
 //
-// Center-Surround Experiment(two marker)
+// Center-Surround Experiment(two marker) Server Version
 //
-// Copyright (c) 2009-05-16 Zhang Li
+// Copyright (c) 2009-10-19 Zhang Li
 
 #r @"StiLib.dll"
 #r @"Microsoft.Xna.Framework.dll"
+#r @"System.ServiceModel"
 
 open System
 open System.Windows.Forms
@@ -13,10 +14,13 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open StiLib.Core
 open StiLib.Vision
+open System.ServiceModel
+open System.ServiceModel.Description
 
-// Our Custom Experiment is inherited from StiLib.Core.SLForm
+// Our Custom Experiment is inherited from StiLib.Core.ExService
+[<ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)>]
 type MyEx = class
-    inherit SLForm
+    inherit ExService
     
     val mutable text: Text
     val mutable ex: SLExperiment
@@ -25,7 +29,7 @@ type MyEx = class
     val mutable cmask: Primitive
     
     new() as this = 
-        { inherit SLForm(null); cgrating = null; text = null; ex = null; sgrating = null; cmask = null }
+        { inherit ExService(null); cgrating = null; text = null; ex = null; sgrating = null; cmask = null }
         then
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Thames")
         this.ex <- new SLExperiment()
@@ -53,7 +57,7 @@ type MyEx = class
         gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // Surround Center
         this.sgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
-    override this.SetFlow() = 
+    override this.SetFlow() =         
         this.ex.Flow.TrialCount <- 0
         this.ex.Flow.StiCount <- 0
         this.ex.Flow.IsPred <- false
@@ -105,6 +109,8 @@ type MyEx = class
             this.ex.Flow.IsStiOff <- false
             if this.ex.Flow.TrialCount - this.ex.Exdesign.trial = -1 && this.ex.Flow.StiCount - this.ex.Exdesign.stimuli.[0] = -1 then
                 this.GO_OVER <- false
+                // Notify Service Client that one experiment block has stoped.
+                this.OnRunStop(this.GO_OVER)
                 ()
         if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT then
             if this.ex.Flow.IsPred = false then
@@ -166,5 +172,18 @@ type MyEx = class
         
 end
 
-let MyExperiment = new MyEx(Text = "F# Scripting CenterSurround_2")
+let MyExperiment = new MyEx(Text = "F# Scripting CenterSurround_2(Server)")
+
+// Server Hosting
+let Host = new ServiceHost(MyExperiment, new Uri("net.tcp://zhangli:8080/ExServer"))
+Host.AddServiceEndpoint(typeof<IExService>, new NetTcpBinding(SecurityMode.None), "")
+
+let mutable metabehavior = new ServiceMetadataBehavior()
+metabehavior.HttpGetEnabled <- false
+Host.Description.Behaviors.Add(metabehavior)
+Host.AddServiceEndpoint(typeof<IMetadataExchange>, MetadataExchangeBindings.CreateMexTcpBinding(), "mex")
+
+// Run Host
+Host.Open()
 Application.Run(MyExperiment)
+Host.Close()
