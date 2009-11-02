@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="46d68cff-18d7-4262-bc18-9b24b3accefb" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="433a79ff-cc69-4789-b638-b31f7737647a" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <EnableDataBinding>true</EnableDataBinding>
@@ -17,13 +17,17 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="net.tcp://zhangli:8080/ExServer/mex" Protocol="mex" SourceId="1" />
+    <MetadataSource Address="net.tcp://zhangli:8081/ExServer/mex" Protocol="mex" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="3fb30a49-c7f2-4980-8dc0-de74b253f47a" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
-    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="3cd6c3a6-9657-4035-a064-4610f2252385" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
-    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="143d3c38-f319-4394-bdfe-6b1455257c01" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
-    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="d1029e65-e2d1-4911-8d44-8e6a29876d92" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="9c058ab2-e1f8-4d39-8d07-c69e7658a6f9" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="8e296fe8-0474-4e0a-b8bc-b5145faaa7e2" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="b260e351-f02b-4ba8-a8f2-20b837d59d5c" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="71f48bc1-db7d-4ced-a2da-1ab988717230" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="StiLib.Core.xsd" MetadataType="Schema" ID="eadf07e0-112a-4403-9ffb-765df1a1b6e8" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="Microsoft.Xna.Framework.Graphics.xsd" MetadataType="Schema" ID="19c868b3-73c3-42ee-9c1d-795c76d0e63f" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="StiLib.Vision.xsd" MetadataType="Schema" ID="851e674b-0c55-494b-b6a7-40ba6f46812b" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
+    <MetadataFile FileName="Microsoft.Xna.Framework.xsd" MetadataType="Schema" ID="8b3143ab-9ce6-48ce-ab88-8976bec67988" SourceId="1" SourceUrl="net.tcp://zhangli:8081/ExServer/mex" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -45,18 +45,27 @@ type MyEx = class
         let mutable gpara = GratingPara.Default
         gpara.tf <- 0.0f
         gpara.sf <- 0.8f
-        gpara.sphase <- 0.25f
+        gpara.sphase <- 0.0f
         gpara.BasePara.diameter <- 2.0f // Center Size
-        gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // Center Center
+        gpara.BasePara.center <- new Vector3(0.0f, 0.5f, 0.0f) // Center Center
         this.cgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
         this.cmask <- new Primitive(this.GraphicsDevice, PrimitivePara.Circle(gpara.BasePara.diameter, this.ex.Exdesign.bgcolor, gpara.BasePara.center, this.ex.Exdesign.bgcolor, 100, true))
         this.cmask.Visible <- false
         
         gpara.BasePara.diameter <- 5.0f // Surround Size
-        gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f) // Surround Center
+        gpara.BasePara.center <- new Vector3(0.0f, 0.5f, 0.0f) // Surround Center
         this.sgrating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
+    override this.GetExType() = 
+        "CenterSurround_2"
+        
+    override this.GetGrating(index) = 
+        if index=0 then
+            this.cgrating.Para
+        else
+            this.sgrating.Para
+            
     override this.SetFlow() =         
         this.ex.Flow.TrialCount <- 0
         this.ex.Flow.StiCount <- 0
@@ -109,7 +118,10 @@ type MyEx = class
             this.ex.Flow.IsStiOff <- false
             if this.ex.Flow.TrialCount - this.ex.Exdesign.trial = -1 && this.ex.Flow.StiCount - this.ex.Exdesign.stimuli.[0] = -1 then
                 this.GO_OVER <- false
-                // Notify Service Client that one experiment block has stoped.
+                // Delayed Notification of Service Client that one experiment block has stoped.
+                this.Draw()
+                this.GraphicsDevice.Present()
+                this.ex.PPort.Timer.Rest(1.0)
                 this.OnRunStop(this.GO_OVER)
                 ()
         if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT then
@@ -175,7 +187,7 @@ end
 let MyExperiment = new MyEx(Text = "F# Scripting CenterSurround_2(Server)")
 
 // Server Hosting
-let Host = new ServiceHost(MyExperiment, new Uri("net.tcp://zhangli:8080/ExServer"))
+let Host = new ServiceHost(MyExperiment, new Uri("net.tcp://" + MyExperiment.SLConfig.["localhost"] + ":8081/ExServer"))
 Host.AddServiceEndpoint(typeof<IExService>, new NetTcpBinding(SecurityMode.None), "")
 
 let mutable metabehavior = new ServiceMetadataBehavior()

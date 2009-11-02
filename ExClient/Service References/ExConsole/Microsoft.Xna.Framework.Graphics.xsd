@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" />
+  <xs:complexType name="Color">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="packedValue" type="xs:unsignedInt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Color" nillable="true" type="tns:Color" />
+  <xs:simpleType name="PrimitiveType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PointList">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="LineList">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="LineStrip">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">3</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TriangleList">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">4</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TriangleFan">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">6</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TriangleStrip" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="PrimitiveType" nillable="true" type="tns:PrimitiveType" />
+  <xs:complexType name="ArrayOfVertexPositionColor">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VertexPositionColor" type="tns:VertexPositionColor" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVertexPositionColor" nillable="true" type="tns:ArrayOfVertexPositionColor" />
+  <xs:complexType name="VertexPositionColor">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Color" type="tns:Color" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" name="Position" type="q1:Vector3" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VertexPositionColor" nillable="true" type="tns:VertexPositionColor" />
+</xs:schema>

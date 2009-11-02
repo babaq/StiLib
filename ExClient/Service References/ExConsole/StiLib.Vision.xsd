@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/StiLib.Vision" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/StiLib.Vision" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="BarPara">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BasePara" type="tns:vsBasePara" />
+      <xs:element minOccurs="0" name="height" type="xs:float" />
+      <xs:element minOccurs="0" name="width" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BarPara" nillable="true" type="tns:BarPara" />
+  <xs:complexType name="vsBasePara">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" minOccurs="0" name="center" type="q1:Vector3" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="color" type="q2:Color" />
+      <xs:element minOccurs="0" name="contentname" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="diameter" type="xs:float" />
+      <xs:element minOccurs="0" name="direction" type="xs:float" />
+      <xs:element minOccurs="0" name="lifetime" type="xs:double" />
+      <xs:element minOccurs="0" name="orientation" type="xs:float" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" minOccurs="0" name="orientation3D" type="q3:Vector3" />
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="primitivetype" type="q4:PrimitiveType" />
+      <xs:element minOccurs="0" name="rotationspeed" type="xs:float" />
+      <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" minOccurs="0" name="rotationspeed3D" type="q5:Vector3" />
+      <xs:element minOccurs="0" name="space" type="xs:float" />
+      <xs:element minOccurs="0" name="speed" type="xs:float" />
+      <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework" minOccurs="0" name="speed3D" type="q6:Vector3" />
+      <xs:element minOccurs="0" name="visible" type="xs:boolean" />
+      <xs:element minOccurs="0" name="vstype" type="tns:VSType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="vsBasePara" nillable="true" type="tns:vsBasePara" />
+  <xs:simpleType name="VSType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Bar" />
+      <xs:enumeration value="Grating" />
+      <xs:enumeration value="Image" />
+      <xs:enumeration value="Primitive" />
+      <xs:enumeration value="SLModel" />
+      <xs:enumeration value="SLQuad" />
+      <xs:enumeration value="SLVideo" />
+      <xs:enumeration value="Text" />
+      <xs:enumeration value="VSCollection" />
+      <xs:enumeration value="Mask" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="VSType" nillable="true" type="tns:VSType" />
+  <xs:complexType name="GratingPara">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BasePara" type="tns:vsBasePara" />
+      <xs:element minOccurs="0" name="contrast" type="xs:float" />
+      <xs:element minOccurs="0" name="gratingtype" type="tns:GratingType" />
+      <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="lhcolor" type="q7:Color" />
+      <xs:element minOccurs="0" name="luminance" type="xs:float" />
+      <xs:element minOccurs="0" name="maskpara" type="tns:MaskPara" />
+      <xs:element minOccurs="0" name="movetype" type="tns:MoveType" />
+      <xs:element minOccurs="0" name="resolution" type="xs:int" />
+      <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="rlcolor" type="q8:Color" />
+      <xs:element minOccurs="0" name="sf" type="xs:float" />
+      <xs:element minOccurs="0" name="shape" type="tns:Shape" />
+      <xs:element minOccurs="0" name="sphase" type="xs:float" />
+      <xs:element minOccurs="0" name="tf" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GratingPara" nillable="true" type="tns:GratingPara" />
+  <xs:simpleType name="GratingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Sinusoidal" />
+      <xs:enumeration value="Linear" />
+      <xs:enumeration value="Square" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="GratingType" nillable="true" type="tns:GratingType" />
+  <xs:complexType name="MaskPara">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BasePara" type="tns:vsBasePara" />
+      <xs:element minOccurs="0" name="masktype" type="tns:MaskType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MaskPara" nillable="true" type="tns:MaskPara" />
+  <xs:simpleType name="MaskType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Gaussian" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="MaskType" nillable="true" type="tns:MaskType" />
+  <xs:simpleType name="MoveType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Drifting" />
+      <xs:enumeration value="Standing" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="MoveType" nillable="true" type="tns:MoveType" />
+  <xs:simpleType name="Shape">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Custom" />
+      <xs:enumeration value="Point" />
+      <xs:enumeration value="Line" />
+      <xs:enumeration value="Curve" />
+      <xs:enumeration value="Triangle" />
+      <xs:enumeration value="Rectangle" />
+      <xs:enumeration value="Quadrate" />
+      <xs:enumeration value="Cuboid" />
+      <xs:enumeration value="Cube" />
+      <xs:enumeration value="Ellipse" />
+      <xs:enumeration value="Circle" />
+      <xs:enumeration value="Ellipsoid" />
+      <xs:enumeration value="Sphere" />
+      <xs:enumeration value="Cone" />
+      <xs:enumeration value="Cylinder" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Shape" nillable="true" type="tns:Shape" />
+  <xs:complexType name="PrimitivePara">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BasePara" type="tns:vsBasePara" />
+      <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="indices" nillable="true" type="q9:ArrayOfint" />
+      <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="vertices" nillable="true" type="q10:ArrayOfVertexPositionColor" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PrimitivePara" nillable="true" type="tns:PrimitivePara" />
+</xs:schema>

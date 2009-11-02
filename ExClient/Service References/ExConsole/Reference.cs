@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ExClient.ExService {
+namespace ExClient.ExConsole {
     using System.Runtime.Serialization;
     using System;
     
@@ -23,7 +23,7 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Color bgcolorField;
+        private ExClient.ExConsole.Color bgcolorField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private int blockField;
@@ -32,16 +32,16 @@ namespace ExClient.ExService {
         private float brestTField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.SLInterpolation[] conditionField;
+        private ExClient.ExConsole.SLInterpolation[] conditionField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float durTField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.ExPara[] exParaField;
+        private ExClient.ExConsole.ExPara[] exParaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.ExType[] exTypeField;
+        private ExClient.ExConsole.ExType[] exTypeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float posTField;
@@ -71,7 +71,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Color bgcolor {
+        public ExClient.ExConsole.Color bgcolor {
             get {
                 return this.bgcolorField;
             }
@@ -110,7 +110,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.SLInterpolation[] condition {
+        public ExClient.ExConsole.SLInterpolation[] condition {
             get {
                 return this.conditionField;
             }
@@ -136,7 +136,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.ExPara[] exPara {
+        public ExClient.ExConsole.ExPara[] exPara {
             get {
                 return this.exParaField;
             }
@@ -149,7 +149,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.ExType[] exType {
+        public ExClient.ExConsole.ExType[] exType {
             get {
                 return this.exTypeField;
             }
@@ -305,7 +305,7 @@ namespace ExClient.ExService {
         private float EndValueField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Interpolation MethodField;
+        private ExClient.ExConsole.Interpolation MethodField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float StartValueField;
@@ -336,7 +336,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Interpolation Method {
+        public ExClient.ExConsole.Interpolation Method {
             get {
                 return this.MethodField;
             }
@@ -530,9 +530,9 @@ namespace ExClient.ExService {
         [System.NonSerializedAttribute()]
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
-        private ExClient.ExService.Color ColorField;
+        private ExClient.ExConsole.Color ColorField;
         
-        private ExClient.ExService.Vector3 PositionField;
+        private ExClient.ExConsole.Vector3 PositionField;
         
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -544,7 +544,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public ExClient.ExService.Color Color {
+        public ExClient.ExConsole.Color Color {
             get {
                 return this.ColorField;
             }
@@ -557,7 +557,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public ExClient.ExService.Vector3 Position {
+        public ExClient.ExConsole.Vector3 Position {
             get {
                 return this.PositionField;
             }
@@ -662,7 +662,7 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.vsBasePara BaseParaField;
+        private ExClient.ExConsole.vsBasePara BaseParaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float heightField;
@@ -680,7 +680,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.vsBasePara BasePara {
+        public ExClient.ExConsole.vsBasePara BasePara {
             get {
                 return this.BaseParaField;
             }
@@ -738,10 +738,10 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Vector3 centerField;
+        private ExClient.ExConsole.Vector3 centerField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Color colorField;
+        private ExClient.ExConsole.Color colorField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string contentnameField;
@@ -759,16 +759,16 @@ namespace ExClient.ExService {
         private float orientationField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Vector3 orientation3DField;
+        private ExClient.ExConsole.Vector3 orientation3DField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.PrimitiveType primitivetypeField;
+        private ExClient.ExConsole.PrimitiveType primitivetypeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float rotationspeedField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Vector3 rotationspeed3DField;
+        private ExClient.ExConsole.Vector3 rotationspeed3DField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float spaceField;
@@ -777,13 +777,13 @@ namespace ExClient.ExService {
         private float speedField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Vector3 speed3DField;
+        private ExClient.ExConsole.Vector3 speed3DField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool visibleField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.VSType vstypeField;
+        private ExClient.ExConsole.VSType vstypeField;
         
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -795,7 +795,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Vector3 center {
+        public ExClient.ExConsole.Vector3 center {
             get {
                 return this.centerField;
             }
@@ -808,7 +808,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Color color {
+        public ExClient.ExConsole.Color color {
             get {
                 return this.colorField;
             }
@@ -886,7 +886,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Vector3 orientation3D {
+        public ExClient.ExConsole.Vector3 orientation3D {
             get {
                 return this.orientation3DField;
             }
@@ -899,7 +899,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.PrimitiveType primitivetype {
+        public ExClient.ExConsole.PrimitiveType primitivetype {
             get {
                 return this.primitivetypeField;
             }
@@ -925,7 +925,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Vector3 rotationspeed3D {
+        public ExClient.ExConsole.Vector3 rotationspeed3D {
             get {
                 return this.rotationspeed3DField;
             }
@@ -964,7 +964,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Vector3 speed3D {
+        public ExClient.ExConsole.Vector3 speed3D {
             get {
                 return this.speed3DField;
             }
@@ -990,7 +990,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.VSType vstype {
+        public ExClient.ExConsole.VSType vstype {
             get {
                 return this.vstypeField;
             }
@@ -1060,37 +1060,37 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.vsBasePara BaseParaField;
+        private ExClient.ExConsole.vsBasePara BaseParaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float contrastField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.GratingType gratingtypeField;
+        private ExClient.ExConsole.GratingType gratingtypeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Color lhcolorField;
+        private ExClient.ExConsole.Color lhcolorField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float luminanceField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.MaskPara maskparaField;
+        private ExClient.ExConsole.MaskPara maskparaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.MoveType movetypeField;
+        private ExClient.ExConsole.MoveType movetypeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private int resolutionField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Color rlcolorField;
+        private ExClient.ExConsole.Color rlcolorField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float sfField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.Shape shapeField;
+        private ExClient.ExConsole.Shape shapeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float sphaseField;
@@ -1108,7 +1108,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.vsBasePara BasePara {
+        public ExClient.ExConsole.vsBasePara BasePara {
             get {
                 return this.BaseParaField;
             }
@@ -1134,7 +1134,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.GratingType gratingtype {
+        public ExClient.ExConsole.GratingType gratingtype {
             get {
                 return this.gratingtypeField;
             }
@@ -1147,7 +1147,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Color lhcolor {
+        public ExClient.ExConsole.Color lhcolor {
             get {
                 return this.lhcolorField;
             }
@@ -1173,7 +1173,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.MaskPara maskpara {
+        public ExClient.ExConsole.MaskPara maskpara {
             get {
                 return this.maskparaField;
             }
@@ -1186,7 +1186,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.MoveType movetype {
+        public ExClient.ExConsole.MoveType movetype {
             get {
                 return this.movetypeField;
             }
@@ -1212,7 +1212,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Color rlcolor {
+        public ExClient.ExConsole.Color rlcolor {
             get {
                 return this.rlcolorField;
             }
@@ -1238,7 +1238,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.Shape shape {
+        public ExClient.ExConsole.Shape shape {
             get {
                 return this.shapeField;
             }
@@ -1296,10 +1296,10 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.vsBasePara BaseParaField;
+        private ExClient.ExConsole.vsBasePara BaseParaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.MaskType masktypeField;
+        private ExClient.ExConsole.MaskType masktypeField;
         
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -1311,7 +1311,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.vsBasePara BasePara {
+        public ExClient.ExConsole.vsBasePara BasePara {
             get {
                 return this.BaseParaField;
             }
@@ -1324,7 +1324,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.MaskType masktype {
+        public ExClient.ExConsole.MaskType masktype {
             get {
                 return this.masktypeField;
             }
@@ -1442,13 +1442,13 @@ namespace ExClient.ExService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.vsBasePara BaseParaField;
+        private ExClient.ExConsole.vsBasePara BaseParaField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private int[] indicesField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private ExClient.ExService.VertexPositionColor[] verticesField;
+        private ExClient.ExConsole.VertexPositionColor[] verticesField;
         
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -1460,7 +1460,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.vsBasePara BasePara {
+        public ExClient.ExConsole.vsBasePara BasePara {
             get {
                 return this.BaseParaField;
             }
@@ -1486,7 +1486,7 @@ namespace ExClient.ExService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public ExClient.ExService.VertexPositionColor[] vertices {
+        public ExClient.ExConsole.VertexPositionColor[] vertices {
             get {
                 return this.verticesField;
             }
@@ -1509,7 +1509,7 @@ namespace ExClient.ExService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ExService.IExService", CallbackContract=typeof(ExClient.ExService.IExServiceCallback))]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ExConsole.IExService", CallbackContract=typeof(ExClient.ExConsole.IExServiceCallback))]
     public interface IExService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Invoke", ReplyAction="http://tempuri.org/IExService/InvokeResponse")]
@@ -1540,141 +1540,141 @@ namespace ExClient.ExService {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(object[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(int[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExDesign))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Interpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Color))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitiveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.BarPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.vsBasePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VSType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MoveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Shape))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitivePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Vector3))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExDesign))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Interpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Color))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitiveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.BarPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.vsBasePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VSType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MoveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Shape))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitivePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Vector3))]
         string Set(string target, string property, object value);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/SetMany", ReplyAction="http://tempuri.org/IExService/SetManyResponse")]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(object[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(int[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExDesign))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Interpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Color))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitiveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.BarPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.vsBasePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VSType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MoveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Shape))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitivePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Vector3))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExDesign))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Interpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Color))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitiveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.BarPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.vsBasePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VSType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MoveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Shape))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitivePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Vector3))]
         string SetMany(string target, object[] propertyvaluepairs);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/Get", ReplyAction="http://tempuri.org/IExService/GetResponse")]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(object[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(int[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExDesign))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Interpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Color))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitiveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.BarPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.vsBasePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VSType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MoveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Shape))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitivePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Vector3))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExDesign))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Interpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Color))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitiveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.BarPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.vsBasePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VSType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MoveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Shape))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitivePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Vector3))]
         object Get(string target, string property);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetMany", ReplyAction="http://tempuri.org/IExService/GetManyResponse")]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(object[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(int[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExDesign))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.SLInterpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Interpolation))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.ExType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Color))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitiveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VertexPositionColor))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.BarPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.vsBasePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.VSType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.GratingType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskPara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MaskType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.MoveType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Shape))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.PrimitivePara))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExService.Vector3))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExDesign))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.SLInterpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Interpolation))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.ExType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Color))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitiveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VertexPositionColor))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.BarPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.vsBasePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.VSType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.GratingType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskPara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MaskType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.MoveType))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Shape))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.PrimitivePara))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(ExClient.ExConsole.Vector3))]
         object[] GetMany(string target, string[] properties);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/SetExDesign", ReplyAction="http://tempuri.org/IExService/SetExDesignResponse")]
-        string SetExDesign(int index, ExClient.ExService.ExDesign exdesign);
+        string SetExDesign(int index, ExClient.ExConsole.ExDesign exdesign);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetExDesign", ReplyAction="http://tempuri.org/IExService/GetExDesignResponse")]
-        ExClient.ExService.ExDesign GetExDesign(int index);
+        ExClient.ExConsole.ExDesign GetExDesign(int index);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/SetBar", ReplyAction="http://tempuri.org/IExService/SetBarResponse")]
-        string SetBar(int index, ExClient.ExService.BarPara barpara);
+        string SetBar(int index, ExClient.ExConsole.BarPara barpara);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetBar", ReplyAction="http://tempuri.org/IExService/GetBarResponse")]
-        ExClient.ExService.BarPara GetBar(int index);
+        ExClient.ExConsole.BarPara GetBar(int index);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/SetGrating", ReplyAction="http://tempuri.org/IExService/SetGratingResponse")]
-        string SetGrating(int index, ExClient.ExService.GratingPara gratingpara);
+        string SetGrating(int index, ExClient.ExConsole.GratingPara gratingpara);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetGrating", ReplyAction="http://tempuri.org/IExService/GetGratingResponse")]
-        ExClient.ExService.GratingPara GetGrating(int index);
+        ExClient.ExConsole.GratingPara GetGrating(int index);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/SetPrimitive", ReplyAction="http://tempuri.org/IExService/SetPrimitiveResponse")]
-        string SetPrimitive(int index, ExClient.ExService.PrimitivePara primitivepara);
+        string SetPrimitive(int index, ExClient.ExConsole.PrimitivePara primitivepara);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IExService/GetPrimitive", ReplyAction="http://tempuri.org/IExService/GetPrimitiveResponse")]
-        ExClient.ExService.PrimitivePara GetPrimitive(int index);
+        ExClient.ExConsole.PrimitivePara GetPrimitive(int index);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -1688,12 +1688,12 @@ namespace ExClient.ExService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IExServiceChannel : ExClient.ExService.IExService, System.ServiceModel.IClientChannel {
+    public interface IExServiceChannel : ExClient.ExConsole.IExService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class ExServiceClient : System.ServiceModel.DuplexClientBase<ExClient.ExService.IExService>, ExClient.ExService.IExService {
+    public partial class ExServiceClient : System.ServiceModel.DuplexClientBase<ExClient.ExConsole.IExService>, ExClient.ExConsole.IExService {
         
         public ExServiceClient(System.ServiceModel.InstanceContext callbackInstance) : 
                 base(callbackInstance) {
@@ -1763,35 +1763,35 @@ namespace ExClient.ExService {
             return base.Channel.GetMany(target, properties);
         }
         
-        public string SetExDesign(int index, ExClient.ExService.ExDesign exdesign) {
+        public string SetExDesign(int index, ExClient.ExConsole.ExDesign exdesign) {
             return base.Channel.SetExDesign(index, exdesign);
         }
         
-        public ExClient.ExService.ExDesign GetExDesign(int index) {
+        public ExClient.ExConsole.ExDesign GetExDesign(int index) {
             return base.Channel.GetExDesign(index);
         }
         
-        public string SetBar(int index, ExClient.ExService.BarPara barpara) {
+        public string SetBar(int index, ExClient.ExConsole.BarPara barpara) {
             return base.Channel.SetBar(index, barpara);
         }
         
-        public ExClient.ExService.BarPara GetBar(int index) {
+        public ExClient.ExConsole.BarPara GetBar(int index) {
             return base.Channel.GetBar(index);
         }
         
-        public string SetGrating(int index, ExClient.ExService.GratingPara gratingpara) {
+        public string SetGrating(int index, ExClient.ExConsole.GratingPara gratingpara) {
             return base.Channel.SetGrating(index, gratingpara);
         }
         
-        public ExClient.ExService.GratingPara GetGrating(int index) {
+        public ExClient.ExConsole.GratingPara GetGrating(int index) {
             return base.Channel.GetGrating(index);
         }
         
-        public string SetPrimitive(int index, ExClient.ExService.PrimitivePara primitivepara) {
+        public string SetPrimitive(int index, ExClient.ExConsole.PrimitivePara primitivepara) {
             return base.Channel.SetPrimitive(index, primitivepara);
         }
         
-        public ExClient.ExService.PrimitivePara GetPrimitive(int index) {
+        public ExClient.ExConsole.PrimitivePara GetPrimitive(int index) {
             return base.Channel.GetPrimitive(index);
         }
     }

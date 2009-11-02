@@ -74,18 +74,19 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Service References\ExService\service.wsdl" />
-    <None Include="Service References\ExService\service.xsd" />
-    <None Include="Service References\ExService\service1.xsd" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Service References\ExConsole\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Service References\ExService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -97,7 +98,51 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Service References\ExConsole\Arrays.xsd" />
+    <None Include="Service References\ExConsole\Microsoft.Xna.Framework.Graphics.xsd" />
+    <None Include="Service References\ExConsole\Microsoft.Xna.Framework.xsd" />
+    <None Include="Service References\ExConsole\service.wsdl" />
+    <None Include="Service References\ExConsole\service.xsd" />
+    <None Include="Service References\ExConsole\service1.xsd" />
+    <None Include="Service References\ExConsole\StiLib.Core.xsd" />
+    <None Include="Service References\ExConsole\StiLib.Vision.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\ExConsole\" />
     <WCFMetadataStorage Include="Service References\ExService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ExConsole\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ExConsole\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ExConsole\ExClient.ExConsole.BarPara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExConsole\ExClient.ExConsole.ExDesign.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExConsole\ExClient.ExConsole.GratingPara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExConsole\ExClient.ExConsole.PrimitivePara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExConsole\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ExService\Arrays.xsd" />
+    <None Include="Service References\ExService\Microsoft.Xna.Framework.Graphics.xsd" />
+    <None Include="Service References\ExService\Microsoft.Xna.Framework.xsd" />
+    <None Include="Service References\ExService\service.wsdl" />
+    <None Include="Service References\ExService\service.xsd" />
+    <None Include="Service References\ExService\service1.xsd" />
+    <None Include="Service References\ExService\StiLib.Core.xsd" />
+    <None Include="Service References\ExService\StiLib.Vision.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\ExService\configuration91.svcinfo" />
@@ -106,7 +151,18 @@
     <None Include="Service References\ExService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\ExService\Arrays.xsd" />
+    <None Include="Service References\ExService\ExClient.ExService.BarPara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExService\ExClient.ExService.ExDesign.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExService\ExClient.ExService.GratingPara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ExService\ExClient.ExService.PrimitivePara.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\ExService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

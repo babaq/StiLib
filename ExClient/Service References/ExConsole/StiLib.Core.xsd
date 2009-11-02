@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/StiLib.Core" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/StiLib.Core" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ExDesign">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Microsoft.Xna.Framework.Graphics" minOccurs="0" name="bgcolor" type="q1:Color" />
+      <xs:element minOccurs="0" name="block" type="xs:int" />
+      <xs:element minOccurs="0" name="brestT" type="xs:float" />
+      <xs:element minOccurs="0" name="condition" nillable="true" type="tns:ArrayOfSLInterpolation" />
+      <xs:element minOccurs="0" name="durT" type="xs:float" />
+      <xs:element minOccurs="0" name="exPara" nillable="true" type="tns:ArrayOfExPara" />
+      <xs:element minOccurs="0" name="exType" nillable="true" type="tns:ArrayOfExType" />
+      <xs:element minOccurs="0" name="posT" type="xs:float" />
+      <xs:element minOccurs="0" name="preT" type="xs:float" />
+      <xs:element minOccurs="0" name="srestT" type="xs:float" />
+      <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="stimuli" nillable="true" type="q2:ArrayOfint" />
+      <xs:element minOccurs="0" name="trestT" type="xs:float" />
+      <xs:element minOccurs="0" name="trial" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ExDesign" nillable="true" type="tns:ExDesign" />
+  <xs:complexType name="ArrayOfSLInterpolation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SLInterpolation" type="tns:SLInterpolation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSLInterpolation" nillable="true" type="tns:ArrayOfSLInterpolation" />
+  <xs:complexType name="SLInterpolation">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="EndValue" type="xs:float" />
+      <xs:element minOccurs="0" name="Method" type="tns:Interpolation" />
+      <xs:element minOccurs="0" name="StartValue" type="xs:float" />
+      <xs:element minOccurs="0" name="ValueN" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SLInterpolation" nillable="true" type="tns:SLInterpolation" />
+  <xs:simpleType name="Interpolation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Linear" />
+      <xs:enumeration value="Log2" />
+      <xs:enumeration value="Log10" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Interpolation" nillable="true" type="tns:Interpolation" />
+  <xs:complexType name="ArrayOfExPara">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ExPara" type="tns:ExPara" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfExPara" nillable="true" type="tns:ArrayOfExPara" />
+  <xs:simpleType name="ExPara">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Orientation" />
+      <xs:enumeration value="Direction" />
+      <xs:enumeration value="Speed" />
+      <xs:enumeration value="Luminance" />
+      <xs:enumeration value="Contrast" />
+      <xs:enumeration value="SpatialFreq" />
+      <xs:enumeration value="SpatialPhase" />
+      <xs:enumeration value="TemporalFreq" />
+      <xs:enumeration value="TemporalPhase" />
+      <xs:enumeration value="Color" />
+      <xs:enumeration value="Disparity" />
+      <xs:enumeration value="Size" />
+      <xs:enumeration value="Location" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ExPara" nillable="true" type="tns:ExPara" />
+  <xs:complexType name="ArrayOfExType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ExType" type="tns:ExType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfExType" nillable="true" type="tns:ArrayOfExType" />
+  <xs:simpleType name="ExType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="dBar" />
+      <xs:enumeration value="RF_dBar" />
+      <xs:enumeration value="fBar" />
+      <xs:enumeration value="RF_fBar" />
+      <xs:enumeration value="dGrating" />
+      <xs:enumeration value="fGrating" />
+      <xs:enumeration value="Plaid" />
+      <xs:enumeration value="RandomLine" />
+      <xs:enumeration value="OpticFlow" />
+      <xs:enumeration value="Two_dBar" />
+      <xs:enumeration value="Two_dGrating" />
+      <xs:enumeration value="Two_fBar" />
+      <xs:enumeration value="Two_fGrating" />
+      <xs:enumeration value="Context" />
+      <xs:enumeration value="RF" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ExType" nillable="true" type="tns:ExType" />
+</xs:schema>

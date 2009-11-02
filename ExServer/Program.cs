@@ -11,7 +11,7 @@ namespace ExServer
         static void Main(string[] args)
         {
             var service = new Server();
-            
+
             ServiceHost host = new ServiceHost(service);
             host.Open();
 

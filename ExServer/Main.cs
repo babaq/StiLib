@@ -6,11 +6,11 @@ using System.ServiceModel;
 
 namespace ExServer
 {
-    [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single,ConcurrencyMode = ConcurrencyMode.Reentrant)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class Server : ExService
     {
         private Text text;
-        private string hr="";
+        private string hr = "";
 
 
         public Server()
@@ -21,7 +21,7 @@ namespace ExServer
         }
 
 
-        public override string  Invoke(string ex)
+        public override string Invoke(string ex)
         {
             var h = base.Invoke(ex);
             if (string.IsNullOrEmpty(h))

@@ -16,6 +16,7 @@ using System.ServiceModel;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Xna.Framework;
+using StiLib.Vision;
 #endregion
 
 namespace StiLib.Core
@@ -34,7 +35,7 @@ namespace StiLib.Core
         [OperationContract]
         string Invoke(string ex);
         /// <summary>
-        /// Invoke an Experiment Script 
+        /// Invoke an Custom Experiment Script 
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="script"></param>
@@ -42,7 +43,7 @@ namespace StiLib.Core
         [OperationContract]
         string InvokeScript(string ex, string script);
         /// <summary>
-        /// Get All Avalible Experiment Names
+        /// Get All Avalible Experiment Names in Server
         /// </summary>
         /// <returns></returns>
         [OperationContract]
@@ -71,6 +72,106 @@ namespace StiLib.Core
         /// <returns></returns>
         [OperationContract]
         string Subscribe(bool sub_unsub);
+
+        /// <summary>
+        /// Get current experiment type
+        /// </summary>
+        /// <returns></returns>
+        [OperationContract]
+        string GetExType();
+        /// <summary>
+        /// Set instance property value
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string Set(string target,string property,object value);
+        /// <summary>
+        /// Set instance property/value pairs
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="propertyvaluepairs"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string SetMany(string target, params object[] propertyvaluepairs);
+        /// <summary>
+        /// Get instance property value
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        [OperationContract]
+        object Get(string target, string property);
+        /// <summary>
+        /// Get instance property/value pairs
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
+        [OperationContract]
+        object[] GetMany(string target, params string[] properties);
+        /// <summary>
+        /// Set ExDesign instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="exdesign"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string SetExDesign(int index, ExDesign exdesign);
+        /// <summary>
+        /// Get ExDesign instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        [OperationContract]
+        ExDesign GetExDesign(int index);
+        /// <summary>
+        /// Set Bar instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="barpara"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string SetBar(int index, BarPara barpara);
+        /// <summary>
+        /// Get Bar instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        [OperationContract]
+        BarPara GetBar(int index);
+        /// <summary>
+        /// Set Grating instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="gratingpara"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string SetGrating(int index, GratingPara gratingpara);
+        /// <summary>
+        /// Get Grating instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        [OperationContract]
+        GratingPara GetGrating(int index);
+        /// <summary>
+        /// Set Primitive instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="primitivepara"></param>
+        /// <returns></returns>
+        [OperationContract]
+        string SetPrimitive(int index, PrimitivePara primitivepara);
+        /// <summary>
+        /// Get Primitive instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        [OperationContract]
+        PrimitivePara GetPrimitive(int index);
     }
 
     /// <summary>
@@ -85,6 +186,11 @@ namespace StiLib.Core
         /// <returns></returns>
         [OperationContract]
         string OnRunStop(bool runstop);
+        /// <summary>
+        /// Client Operation when service is disposing
+        /// </summary>
+        [OperationContract]
+        void OnServiceDispose();
     }
 
 
@@ -146,6 +252,16 @@ namespace StiLib.Core
         {
         }
 
+
+        /// <summary>
+        /// Notify all subscribed client when service is disposing
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            OnServiceDispose();
+            base.Dispose(disposing);
+        }
 
         /// <summary>
         /// Invoke an Experiment
@@ -296,6 +412,7 @@ namespace StiLib.Core
             }
         }
 
+
         /// <summary>
         /// Call all subscribed client back when server Run_Stop state changed
         /// </summary>
@@ -332,6 +449,166 @@ namespace StiLib.Core
             {
                 return "No Callback Client Subscribed !";
             }
+        }
+
+        /// <summary>
+        /// Call all subscribed client back when server is disposing
+        /// </summary>
+        public virtual void OnServiceDispose()
+        {
+            if (CallbackClients.Count > 0)
+            {
+                foreach (IExServiceCallback callback in CallbackClients)
+                {
+                    try
+                    {
+                        callback.OnServiceDispose();
+                    }
+                    catch (CommunicationException)
+                    {
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Get current experiment type
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetExType()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Set instance property value
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual string Set(string target,string property, object value)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Set instance property/value pairs
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="propertyvaluepairs"></param>
+        /// <returns></returns>
+        public virtual string SetMany(string target,params object[] propertyvaluepairs)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Get instance property value
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public virtual object Get(string target, string property)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Get instance property/value pairs
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
+        public virtual object[] GetMany(string target, params string[] properties)
+        {
+            return null;
+        }
+
+
+        /// <summary>
+        /// Set ExDesign instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="exdesign"></param>
+        /// <returns></returns>
+        public virtual string SetExDesign(int index, ExDesign exdesign)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Get ExDesign instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual ExDesign GetExDesign(int index)
+        {
+            return ExDesign.Default(1);
+        }
+
+        /// <summary>
+        /// Set Bar instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="barpara"></param>
+        /// <returns></returns>
+        public virtual string SetBar(int index, BarPara barpara)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Get Bar instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual BarPara GetBar(int index)
+        {
+            return BarPara.Default;
+        }
+
+        /// <summary>
+        /// Set Grating instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="gratingpara"></param>
+        /// <returns></returns>
+        public virtual string SetGrating(int index,GratingPara gratingpara)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Get Grating instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual GratingPara GetGrating(int index)
+        {
+            return GratingPara.Default;
+        }
+
+        /// <summary>
+        /// Set Primitive instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="primitivepara"></param>
+        /// <returns></returns>
+        public virtual string SetPrimitive(int index, PrimitivePara primitivepara)
+        {
+            return "To Be Implemented";
+        }
+
+        /// <summary>
+        /// Get Primitive instance parameters
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual PrimitivePara GetPrimitive(int index)
+        {
+            return PrimitivePara.Default;
         }
 
     }

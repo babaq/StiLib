@@ -19,17 +19,29 @@ namespace ExClient
             {
                 components.Dispose();
             }
-            if (proxy != null)
+            if (proxyExC != null)
             {
                 try
                 {
-                    proxy.Subscribe(false);
-                    proxy.Close();
+                    proxyExC.Subscribe(false);
+                    proxyExC.Close();
                 }
                 catch (Exception)
                 {
                 }
-                proxy = null;
+                proxyExC = null;
+            }
+            if (proxyExS != null)
+            {
+                try
+                {
+                    proxyExS.Subscribe(false);
+                    proxyExS.Close();
+                }
+                catch (Exception)
+                {
+                }
+                proxyExS = null;
             }
             base.Dispose(disposing);
         }
@@ -46,8 +58,13 @@ namespace ExClient
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maintab = new System.Windows.Forms.TabControl();
             this.extab = new System.Windows.Forms.TabPage();
+            this.exdataGrid = new System.Windows.Forms.DataGridView();
+            this.exsstate = new System.Windows.Forms.Label();
+            this.excstate = new System.Windows.Forms.Label();
             this.info = new System.Windows.Forms.Label();
             this.refresh = new System.Windows.Forms.Button();
             this.stop = new System.Windows.Forms.Button();
@@ -58,15 +75,17 @@ namespace ExClient
             this.mainmenu.SuspendLayout();
             this.maintab.SuspendLayout();
             this.extab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.exdataGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // mainmenu
             // 
             this.mainmenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.controlToolStripMenuItem});
             this.mainmenu.Location = new System.Drawing.Point(0, 0);
             this.mainmenu.Name = "mainmenu";
-            this.mainmenu.Size = new System.Drawing.Size(624, 25);
+            this.mainmenu.Size = new System.Drawing.Size(654, 25);
             this.mainmenu.TabIndex = 0;
             this.mainmenu.Text = "mainmenu";
             // 
@@ -93,6 +112,22 @@ namespace ExClient
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // controlToolStripMenuItem
+            // 
+            this.controlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.searchServerToolStripMenuItem});
+            this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
+            this.controlToolStripMenuItem.Size = new System.Drawing.Size(63, 21);
+            this.controlToolStripMenuItem.Text = "Control";
+            // 
+            // searchServerToolStripMenuItem
+            // 
+            this.searchServerToolStripMenuItem.Name = "searchServerToolStripMenuItem";
+            this.searchServerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.searchServerToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.searchServerToolStripMenuItem.Text = "Search Online Servers";
+            this.searchServerToolStripMenuItem.Click += new System.EventHandler(this.searchServerToolStripMenuItem_Click);
+            // 
             // maintab
             // 
             this.maintab.Controls.Add(this.extab);
@@ -100,12 +135,15 @@ namespace ExClient
             this.maintab.Location = new System.Drawing.Point(0, 25);
             this.maintab.Name = "maintab";
             this.maintab.SelectedIndex = 0;
-            this.maintab.Size = new System.Drawing.Size(624, 419);
+            this.maintab.Size = new System.Drawing.Size(654, 445);
             this.maintab.TabIndex = 1;
             // 
             // extab
             // 
             this.extab.BackColor = System.Drawing.Color.Gainsboro;
+            this.extab.Controls.Add(this.exdataGrid);
+            this.extab.Controls.Add(this.exsstate);
+            this.extab.Controls.Add(this.excstate);
             this.extab.Controls.Add(this.info);
             this.extab.Controls.Add(this.refresh);
             this.extab.Controls.Add(this.stop);
@@ -116,24 +154,65 @@ namespace ExClient
             this.extab.Location = new System.Drawing.Point(4, 22);
             this.extab.Name = "extab";
             this.extab.Padding = new System.Windows.Forms.Padding(3);
-            this.extab.Size = new System.Drawing.Size(616, 393);
+            this.extab.Size = new System.Drawing.Size(646, 419);
             this.extab.TabIndex = 0;
             this.extab.Text = "Experiment";
             // 
+            // exdataGrid
+            // 
+            this.exdataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.exdataGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.exdataGrid.BackgroundColor = System.Drawing.Color.Gainsboro;
+            this.exdataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.exdataGrid.Dock = System.Windows.Forms.DockStyle.Right;
+            this.exdataGrid.Location = new System.Drawing.Point(299, 3);
+            this.exdataGrid.Name = "exdataGrid";
+            this.exdataGrid.RowHeadersWidth = 18;
+            this.exdataGrid.RowTemplate.Height = 23;
+            this.exdataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.exdataGrid.Size = new System.Drawing.Size(344, 413);
+            this.exdataGrid.TabIndex = 11;
+            // 
+            // exsstate
+            // 
+            this.exsstate.AutoSize = true;
+            this.exsstate.BackColor = System.Drawing.Color.LightGoldenrodYellow;
+            this.exsstate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.exsstate.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.exsstate.ForeColor = System.Drawing.Color.Red;
+            this.exsstate.Location = new System.Drawing.Point(166, 15);
+            this.exsstate.Name = "exsstate";
+            this.exsstate.Size = new System.Drawing.Size(114, 19);
+            this.exsstate.TabIndex = 10;
+            this.exsstate.Text = "ExService Offline";
+            // 
+            // excstate
+            // 
+            this.excstate.AutoSize = true;
+            this.excstate.BackColor = System.Drawing.Color.LightGoldenrodYellow;
+            this.excstate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.excstate.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.excstate.ForeColor = System.Drawing.Color.Red;
+            this.excstate.Location = new System.Drawing.Point(16, 15);
+            this.excstate.Name = "excstate";
+            this.excstate.Size = new System.Drawing.Size(120, 19);
+            this.excstate.TabIndex = 9;
+            this.excstate.Text = "ExConsole Offline";
+            // 
             // info
             // 
-            this.info.AutoSize = true;
+            this.info.AutoEllipsis = true;
             this.info.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.info.ForeColor = System.Drawing.Color.Navy;
-            this.info.Location = new System.Drawing.Point(20, 246);
+            this.info.Location = new System.Drawing.Point(13, 234);
             this.info.Name = "info";
-            this.info.Size = new System.Drawing.Size(0, 19);
+            this.info.Size = new System.Drawing.Size(280, 180);
             this.info.TabIndex = 8;
             this.info.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // refresh
             // 
-            this.refresh.Location = new System.Drawing.Point(78, 173);
+            this.refresh.Location = new System.Drawing.Point(110, 188);
             this.refresh.Name = "refresh";
             this.refresh.Size = new System.Drawing.Size(81, 29);
             this.refresh.TabIndex = 7;
@@ -143,7 +222,7 @@ namespace ExClient
             // 
             // stop
             // 
-            this.stop.Location = new System.Drawing.Point(133, 123);
+            this.stop.Location = new System.Drawing.Point(165, 138);
             this.stop.Name = "stop";
             this.stop.Size = new System.Drawing.Size(81, 29);
             this.stop.TabIndex = 6;
@@ -153,7 +232,7 @@ namespace ExClient
             // 
             // run
             // 
-            this.run.Location = new System.Drawing.Point(22, 123);
+            this.run.Location = new System.Drawing.Point(54, 138);
             this.run.Name = "run";
             this.run.Size = new System.Drawing.Size(81, 29);
             this.run.TabIndex = 5;
@@ -163,7 +242,7 @@ namespace ExClient
             // 
             // terminate
             // 
-            this.terminate.Location = new System.Drawing.Point(133, 74);
+            this.terminate.Location = new System.Drawing.Point(165, 89);
             this.terminate.Name = "terminate";
             this.terminate.Size = new System.Drawing.Size(81, 29);
             this.terminate.TabIndex = 4;
@@ -173,7 +252,7 @@ namespace ExClient
             // 
             // invoke
             // 
-            this.invoke.Location = new System.Drawing.Point(22, 74);
+            this.invoke.Location = new System.Drawing.Point(54, 89);
             this.invoke.Name = "invoke";
             this.invoke.Size = new System.Drawing.Size(81, 29);
             this.invoke.TabIndex = 3;
@@ -186,7 +265,7 @@ namespace ExClient
             this.exlist.Font = new System.Drawing.Font("Microsoft YaHei", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.exlist.ForeColor = System.Drawing.Color.Red;
             this.exlist.FormattingEnabled = true;
-            this.exlist.Location = new System.Drawing.Point(37, 27);
+            this.exlist.Location = new System.Drawing.Point(69, 42);
             this.exlist.Name = "exlist";
             this.exlist.Size = new System.Drawing.Size(166, 28);
             this.exlist.TabIndex = 2;
@@ -196,7 +275,7 @@ namespace ExClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 444);
+            this.ClientSize = new System.Drawing.Size(654, 470);
             this.Controls.Add(this.maintab);
             this.Controls.Add(this.mainmenu);
             this.MainMenuStrip = this.mainmenu;
@@ -207,6 +286,7 @@ namespace ExClient
             this.maintab.ResumeLayout(false);
             this.extab.ResumeLayout(false);
             this.extab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.exdataGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -227,6 +307,11 @@ namespace ExClient
         private System.Windows.Forms.Button stop;
         private System.Windows.Forms.Button run;
         private System.Windows.Forms.Label info;
+        private System.Windows.Forms.Label excstate;
+        private System.Windows.Forms.ToolStripMenuItem controlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchServerToolStripMenuItem;
+        private System.Windows.Forms.Label exsstate;
+        private System.Windows.Forms.DataGridView exdataGrid;
     }
 }
 

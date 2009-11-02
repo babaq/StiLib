@@ -1,6 +1,6 @@
 // F# Script File : BasicServer.fsx
 //
-// StiLib Basic Server In F# Scripting
+// StiLib Basic Experiment Server In F# Scripting
 //
 // Copyright (c) 2009-10-17 Zhang Li
 
@@ -41,7 +41,7 @@ end
 let MyExperiment = new MyEx(Text = "BasicServer In F# Scripting")
 
 // Server Hosting
-let Host = new ServiceHost(MyExperiment, new Uri("net.tcp://zhangli:8080/ExServer"))
+let Host = new ServiceHost(MyExperiment, new Uri("net.tcp://" + MyExperiment.SLConfig.["localhost"] + ":8080/ExServer"))
 Host.AddServiceEndpoint(typeof<IExService>, new NetTcpBinding(SecurityMode.None), "")
 
 let mutable metabehavior = new ServiceMetadataBehavior()

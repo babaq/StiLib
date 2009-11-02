@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2a1b0469-fcf2-4e57-949b-100a4b23abfa" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="net.tcp://zhangli:8080/ExServer/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="57c6e70e-f180-4156-baf7-b7a8de9dd6fd" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="76a180b9-4013-4f22-a9f2-d6a11c4e16ed" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="2dd79082-3813-412b-9023-1b605973a6b7" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="dce3f769-9c71-4f40-8f4f-786a802612b6" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="StiLib.Core.xsd" MetadataType="Schema" ID="45b566b9-9a15-481f-b733-807861c3382b" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="Microsoft.Xna.Framework.Graphics.xsd" MetadataType="Schema" ID="0914d517-47b5-4099-9bc4-cdaae00c296c" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="StiLib.Vision.xsd" MetadataType="Schema" ID="93096049-6fa4-45fe-96c4-3a276918e085" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+    <MetadataFile FileName="Microsoft.Xna.Framework.xsd" MetadataType="Schema" ID="faf6dfc4-2e9c-470e-9554-d47ea1c9e259" SourceId="1" SourceUrl="net.tcp://zhangli:8080/ExServer/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

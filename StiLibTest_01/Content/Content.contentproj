@@ -18,39 +18,10 @@
     <XnaPlatform>Windows</XnaPlatform>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Arial.spritefont">
-      <Name>Arial</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
     <Compile Include="earth.x">
       <Name>earth</Name>
       <Importer>XImporter</Importer>
       <Processor>ModelProcessor</Processor>
-    </Compile>
-    <Compile Include="Grating.fx">
-      <Name>Grating</Name>
-      <Importer>EffectImporter</Importer>
-      <Processor>EffectProcessor</Processor>
-    </Compile>
-    <Compile Include="teapot.x">
-      <Name>teapot</Name>
-      <Importer>XImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="StiLib_Logo.png">
-      <Name>StiLib_Logo</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Turtle.jpg">
-      <Name>Turtle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -69,10 +40,47 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HardwareInstancing.fx">
+    <Compile Include="..\..\StiLib\Content\Arial.spritefont">
+      <Link>Arial.spritefont</Link>
+      <Name>Arial</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\StiLib\Content\Grating.fx">
+      <Link>Grating.fx</Link>
+      <Name>Grating</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
+    </Compile>
+    <Compile Include="..\..\StiLib\Content\HardwareInstancing.fx">
+      <Link>HardwareInstancing.fx</Link>
       <Name>HardwareInstancing</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\StiLib\Content\StiLib_Logo.png">
+      <Link>StiLib_Logo.png</Link>
+      <Name>StiLib_Logo</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="..\..\StiLib\Content\Turtle.jpg">
+      <Link>Turtle.jpg</Link>
+      <Name>Turtle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\StiLib\Content\teapot.x">
+      <Link>teapot.x</Link>
+      <Name>teapot</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
