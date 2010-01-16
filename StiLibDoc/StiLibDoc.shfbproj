@@ -18,7 +18,8 @@
     <HtmlHelpName>StiLib</HtmlHelpName>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\StiLib\bin\x86\Release\StiLib.dll" />
-<DocumentationSource sourceFile="..\StiLib\bin\x86\Release\StiLib.XML" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\StiLib\bin\x86\Release\StiLib.XML" />
+    </DocumentationSources>
     <FrameworkVersion>3.5</FrameworkVersion>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
@@ -28,7 +29,7 @@
       <NamespaceSummaryItem name="StiLib.Hearing" isDocumented="True">Basic Hearing Stimulus Service</NamespaceSummaryItem>
     </NamespaceSummaries>
     <ProjectSummary>The StiLib class library is a library of classes, interfaces, and value types that are supported in StiLib. This library provides access to StiLib functionality and is designed to be the foundation on which custom components, stimulus and experiments are built.</ProjectSummary>
-    <CopyrightText>Copyright &amp;#169%3b 2008-2009, Zhang Li, All rights reserved</CopyrightText>
+    <CopyrightText>Copyright &amp;#169%3b 2008-2010, Zhang Li, All rights reserved</CopyrightText>
     <FeedbackEMailAddress>fff008%40gmail.com</FeedbackEMailAddress>
     <FeedbackEMailLinkText>
     </FeedbackEMailLinkText>

@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("StiLib")]
 [assembly: AssemblyProduct("StiLib")]
-[assembly: AssemblyDescription("Stimulus Library")]
+[assembly: AssemblyDescription("Stimulus Library for Neuroscience")]
 [assembly: AssemblyCompany("Alex-Joyce")]
-[assembly: AssemblyCopyright("Copyright ©  2008-2009")]
+[assembly: AssemblyCopyright("Copyright ©  2008-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

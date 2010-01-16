@@ -38,7 +38,7 @@
           <steps class="ordered">
             <step>
               <content>
-                <para>Microsoft Windows® XP SP2, Windows Vista®</para>
+                <para>Microsoft Windows® XP+SP2, Windows® Vista, Windows® 7</para>
               </content>
             </step>
             <step>
@@ -48,7 +48,7 @@
             </step>
             <step>
               <content>
-                <para>Microsoft .NET Framework 3.5</para>
+                <para>Microsoft .NET® Framework 3.5</para>
               </content>
             </step>
           </steps>
@@ -66,7 +66,7 @@
               
               <step>
               <content>
-                <para><token>IronPython</token> (2.6 beta)</para>
+                <para><token>IronPython</token> (2.6)</para>
               </content>
             </step>
           </steps>

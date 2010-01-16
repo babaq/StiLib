@@ -1,8 +1,8 @@
-// F# Script File : RF_Size_2.fsx
+// F# Script File : RF_Size_2_Ext.fsx
 //
-// Varing Sizes of Grating to Measure RF Size in Center-Surround Modulation(two marker)
+// Varing Sizes of Grating to Measure RF Size in Center-Surround Modulation(two marker) Extension Version
 //
-// Copyright (c) 2009-05-16 Zhang Li
+// Copyright (c) 2010-01-11 Zhang Li
 
 #r @"StiLib.dll"
 #r @"Microsoft.Xna.Framework.dll"
@@ -28,13 +28,18 @@ type MyEx = class
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Thames")
         this.ex <- new SLExperiment()
         this.ex.AddExType(ExType.RF)
-        this.ex.AddCondition(ExPara.Size, new SLInterpolation(0.0f, 10.0f, 21, Interpolation.Linear))
+        this.ex.AddCondition(ExPara.Size, new SLInterpolation(0.0f, 12.0f, 25, Interpolation.Linear)) // 0 : 0.5 : 12
         this.ex.Exdesign.trial <- 2
         this.ex.Exdesign.srestT <- 0.4f
         this.ex.Exdesign.trestT <- 0.4f
         this.ex.Exdesign.durT <- 0.6f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.InitEx()
+        // Replace first condition level 22 : 25 from [10.5 11 11.5 12] to [12 15 20 30]
+        this.ex.CondTable.[0].[21]<-12.0f
+        this.ex.CondTable.[0].[22]<-15.0f
+        this.ex.CondTable.[0].[23]<-20.0f
+        this.ex.CondTable.[0].[24]<-30.0f
         
         let mutable gpara = GratingPara.Default
         gpara.tf <- 0.0f
@@ -130,5 +135,5 @@ type MyEx = class
         
 end
 
-let MyExperiment = new MyEx(Text = "F# Scripting RF_Size_2")
+let MyExperiment = new MyEx(Text = "F# Scripting RF_Size_2_Ext")
 Application.Run(MyExperiment)

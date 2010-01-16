@@ -35,7 +35,7 @@ type MyEx = class
         this.ex.Exdesign.trial <- 12
         this.ex.Exdesign.srestT <- 0.4f
         this.ex.Exdesign.trestT <- 0.4f
-        this.ex.Exdesign.durT <- 1.0f
+        this.ex.Exdesign.durT <- 0.6f
         this.ex.Exdesign.bgcolor <- Color.Gray
         
         let mutable gpara = GratingPara.Default

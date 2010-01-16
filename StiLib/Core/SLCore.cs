@@ -499,6 +499,27 @@ namespace StiLib.Core
         {
             get { return timer; }
         }
+        bool _outIn;
+        /// <summary>
+        /// Set/Get ParallelPort DataPort Output/Input Direction
+        /// </summary>
+        public bool IsDataOutput
+        {
+            get { return _outIn; }
+            set
+            {
+                int temp = value ? 0x0 : 0xFF;
+                if (SetPortVal(0x37A, temp, 1))
+                {
+                    _outIn = value;
+                }
+                else
+                {
+                    MessageBox.Show("Change ParallelPort DataPort Output/Input Direction Failed !","ParallelPort Error !");
+                    _outIn = false;
+                }
+            }
+        }
         /// <summary>
         /// Port Address
         /// </summary>
@@ -539,8 +560,49 @@ namespace StiLib.Core
             this.PulseTime = pulsetime;
             this.CodeTime = codetime;
             timer = new SLTimer();
+            IsDataOutput = true;
         }
 
+
+        /// <summary>
+        /// Read 1, 2, 4 bytes from the specified I/O port
+        /// </summary>
+        /// <param name="wPortAddr">port address</param>
+        /// <param name="bSize">number of bytes to read</param>
+        /// <returns>received value</returns>
+        public int GetPortVal(Int16 wPortAddr, Byte bSize)
+        {
+            int pdwPortVal;
+            SLIO.GetPortVal(wPortAddr, out pdwPortVal, bSize);
+            return pdwPortVal;
+        }
+
+        /// <summary>
+        /// Write 1, 2, 4 bytes to the specified I/O port
+        /// </summary>
+        /// <param name="wPortAddr">port address</param>
+        /// <param name="dwPortVal">value to be written</param>
+        /// <param name="bSize">number of bytes to write</param>
+        /// <returns>true -- succeed, false -- failed</returns>
+        public new bool SetPortVal(Int16 wPortAddr, Int32 dwPortVal, Byte bSize)
+        {
+            return SLIO.SetPortVal(wPortAddr, dwPortVal, bSize);
+        }
+
+        /// <summary>
+        /// Read low 1 byte(0 : 255) from DataPort
+        /// </summary>
+        /// <returns></returns>
+        public int GetData()
+        {
+            if (IsDataOutput)
+            {
+                IsDataOutput = false;
+            }
+            var temp = GetPortVal(0x378, 1);
+            var t = BitConverter.GetBytes(temp);
+            return t[0];
+        }
 
         /// <summary>
         /// Set Parallel Port Pin State using internal port address and pin number
@@ -794,6 +856,19 @@ namespace StiLib.Core
                 }
             }
             return bins;
+        }
+
+        /// <summary>
+        /// Set DataPort to Default Output Direction and Shutdown WinIO Library
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+            IsDataOutput = true;
+            base.Dispose(disposing);
         }
     }
 

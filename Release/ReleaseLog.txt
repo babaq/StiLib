@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------
-Version 1.0.8.0----2009_12_01
+Version 1.0.8.0----2010_02_01
     New:
         More Primitive Geometry
-        Real-Time Network Control
+        Real-Time Network Control with NeuSys( http://neusys.codeplex.com/ )
+        Integrate with Stimulus Protocal of VDAQ( Optic Imaging, Ltd. )
     Change:
     Fix:
 ---------------------------------------------------------------------

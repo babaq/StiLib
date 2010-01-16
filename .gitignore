@@ -4,4 +4,6 @@ obj
 cachefile*.txt
 *.ini
 *.user
+*.cd
+*.log
 _ReSharper.*
