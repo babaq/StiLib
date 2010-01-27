@@ -28,14 +28,15 @@ type MyEx = class
         then
         this.text <- new Text(this.GraphicsDevice, this.Services, this.SLConfig.["content"], "Arial")
         this.ex <- new SLExperiment()
-        this.ex.Exdesign.srestT <- 1.0f
-        this.ex.Exdesign.durT <- 4.0f
+        this.ex.Exdesign.preT <- 3.0f
+        this.ex.Exdesign.durT <- 6.0f
+        this.ex.Exdesign.posT <- 4.0f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.PPort.IsDataOutput <- false
         
         let mutable gpara = GratingPara.Default
         gpara.tf <- 3.0f
-        gpara.sf <- 0.4f
+        gpara.sf <- 0.2f
         gpara.sphase <- 0.0f
         gpara.BasePara.diameter <- 3.0f
         gpara.BasePara.space <- 9.0f
@@ -82,7 +83,7 @@ type MyEx = class
         if this.ex.Flow.IsBlanked = false then
             this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus Begin !")
             this.ex.Flow.IsBlanked <- true
-            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.srestT)
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.preT)
             this.ex.PPort.Timer.ReStart()
             
         if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT then
@@ -97,6 +98,8 @@ type MyEx = class
                 this.grating.WorldMatrix <- Matrix.CreateTranslation(Xgrid, Ygrid, 0.0f) * this.ex.Flow.TranslateCenter                
             this.grating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
         else
+            this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus End !")
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.posT)
             this.ex.Flow.IsPred <- false
             this.ex.Flow.IsBlanked <- false
             this.GO_OVER <- false

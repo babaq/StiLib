@@ -29,17 +29,19 @@ type MyEx = class
         this.ex <- new SLExperiment()
         this.ex.AddCondition(ExPara.Orientation, 2)
         this.ex.AddCondition(ExPara.SpatialFreq, 4)
-        this.ex.Exdesign.srestT <- 1.0f
-        this.ex.Exdesign.durT <- 4.0f
+        this.ex.Exdesign.preT <- 3.0f
+        this.ex.Exdesign.durT <- 6.0f
+        this.ex.Exdesign.posT <- 4.0f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.InitEx()
         // Prepare for ParallelPort DataPort Reading
         this.ex.PPort.IsDataOutput <- false
         
         let mutable gpara = GratingPara.Default
+        //gpara.shape <- Shape.Quadrate
         gpara.tf <- 3.0f
         gpara.sphase <- 0.0f
-        gpara.BasePara.diameter <- 15.0f 
+        gpara.BasePara.diameter <- 20.0f 
         gpara.BasePara.center <- new Vector3(0.0f, 0.0f, 0.0f)
         this.grating <- new Grating(this.GraphicsDevice, this.Services, this.SLConfig.["content"], gpara)
         
@@ -75,7 +77,7 @@ type MyEx = class
         if this.ex.Flow.IsBlanked = false then
             this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus Begin !")
             this.ex.Flow.IsBlanked <- true
-            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.srestT)
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.preT)
             this.ex.PPort.Timer.ReStart()
             
         if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT then
@@ -88,6 +90,8 @@ type MyEx = class
                 this.grating.WorldMatrix <- this.ex.Flow.TranslateCenter
             this.grating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
         else
+            this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus End !")
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.posT)
             this.ex.Flow.IsPred <- false
             this.ex.Flow.IsBlanked <- false
             this.GO_OVER <- false

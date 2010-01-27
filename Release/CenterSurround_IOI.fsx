@@ -31,14 +31,15 @@ type MyEx = class
         this.ex <- new SLExperiment()
         this.ex.AddCondition(ExPara.Orientation, 2)
         this.ex.AddCondition(ExPara.Orientation, 2)
-        this.ex.Exdesign.srestT <- 1.0f
-        this.ex.Exdesign.durT <- 4.0f
+        this.ex.Exdesign.preT <- 3.0f
+        this.ex.Exdesign.durT <- 6.0f
+        this.ex.Exdesign.posT <- 4.0f
         this.ex.Exdesign.bgcolor <- Color.Gray
         this.ex.PPort.IsDataOutput <- false
         
         let mutable gpara = GratingPara.Default
         gpara.tf <- 3.0f
-        gpara.sf <- 0.4f
+        gpara.sf <- 0.2f
         gpara.sphase <- 0.0f
         gpara.BasePara.direction <- 0.0f
         gpara.BasePara.diameter <- 3.0f // Center Size
@@ -84,7 +85,7 @@ type MyEx = class
         if this.ex.Flow.IsBlanked = false then
             this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus Begin !")
             this.ex.Flow.IsBlanked <- true
-            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.srestT)
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.preT)
             this.ex.PPort.Timer.ReStart()
             
         if this.ex.PPort.Timer.ElapsedSeconds < float this.ex.Exdesign.durT then
@@ -120,6 +121,8 @@ type MyEx = class
             this.cgrating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
             this.sgrating.SetTime(float32 this.ex.PPort.Timer.ElapsedSeconds)
         else
+            this.DrawTip(ref this.text, this.ex.Exdesign.bgcolor, "Stimulus End !")
+            this.ex.PPort.Timer.Rest(float this.ex.Exdesign.posT)
             this.ex.Flow.IsPred <- false
             this.ex.Flow.IsBlanked <- false
             this.cmask.Visible <- false
