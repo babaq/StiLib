@@ -7,3 +7,4 @@ cachefile*.txt
 *.cd
 *.log
 _ReSharper.*
+*.msi
