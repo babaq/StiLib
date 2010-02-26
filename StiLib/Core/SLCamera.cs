@@ -107,11 +107,11 @@ namespace StiLib.Core
         }
 
         /// <summary>
-        /// Get Camera Current Shooting Direction
+        /// Get Camera Current Shooting Direction Unit Vector
         /// </summary>
         public Vector3 Direction
         {
-            get { return Target - Position; }
+            get { return Vector3.Normalize(Target - Position); }
         }
 
         #endregion

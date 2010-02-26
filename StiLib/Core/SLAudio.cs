@@ -110,6 +110,22 @@ namespace StiLib.Core
             get { return listeners; }
         }
 
+        /// <summary>
+        /// A list of all active Cues
+        /// </summary>
+        public List<Cue> ActiveCues
+        {
+            get { return activeCues; }
+        }
+
+        /// <summary>
+        /// A list of all active 3D Cues
+        /// </summary>
+        public List<Cue3D> ActiveCue3Ds
+        {
+            get { return activeCue3Ds; }
+        }
+
         #endregion
 
 
