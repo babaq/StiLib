@@ -1,0 +1,201 @@
+Pre-Defined Experiment Types:
+
+        None               0
+
+        dBar               1
+
+        RF_dBar            2
+
+        fBar               3
+
+        RF_fBar            4
+
+        dGrating           5
+
+        fGrating           6
+
+        Plaid              7
+
+        RandomLine         8
+
+        OpticFlow          9
+
+        Two_dBar           10
+
+        Two_dGrating       11
+
+        Two_fBar           12
+
+        Two_fGrating       13
+
+        Context            14
+
+        RF                 15
+
+-------------------------------------------
+Pre-Defined Experiment Parameters:
+
+        None                0
+
+        Orientation         1
+
+        Direction           2
+
+        Speed               3
+
+        Luminance           4
+
+        Contrast            5
+
+        SpatialFreq         6
+
+        SpatialPhase        7
+
+        TemporalFreq        8
+
+        TemporalPhase       9
+
+        Color               10
+
+        Disparity           11
+
+        Size                12
+
+        Location            13
+
+-------------------------------------------
+Common MarkHead Keywords:
+
+ExperimentType --- ConditionPara --- ConditionNumber --- RandomSeed --- Trial --- [ 00__00__16__00 ] --- "CustomKeywords" --- [ 00__00__00__16 ] --------- Stimulus Marker ON  ... ... ... 
+
+-------------------------------------------
+Custom MarkHead Keywords:
+
+Common Bar:
+            Floor(height * 100.0)
+            Floor(width * 100.0)
+            Floor(orientation * 100.0)
+            Floor(direction * 100.0)
+            Floor(speed * 100.0)
+            Floor((center.X + 60.0f) * 100.0)
+            Floor((center.Y + 60.0f) * 100.0)
+-------------------------------------------
+Common Grating:
+            Floor(tf * 100.0)
+            Floor(sf * 100.0)
+            Floor(sphase * 100.0)
+            Floor(orientation * 100.0)
+            Floor(direction * 100.0)
+            Floor(luminance * 100.0)
+            Floor(contrast * 100.0)
+            Floor((center.X + 60.0f) * 100.0)
+            Floor((center.Y + 60.0f) * 100.0)
+            Floor(diameter * 100.0)
+-------------------------------------------
+Two_dBar:
+            Common Bar 1
+            Common Bar 2
+            Floor(barangle * 100.0)
+-------------------------------------------
+Two_dGrating:
+            Common Grating 1
+            Common Grating 2
+            Floor(gratingangle * 100.0)
+-------------------------------------------
+RF_fBar:
+            Common Bar
+            Floor(display_h_deg * 100.0)
+            Floor(display_w_deg * 100.0)
+            Rows
+            Columns
+            Floor(Rstep * 100.0)
+            Floor(Cstep * 100.0)
+--------------------------------------------
+RF_dBar:
+            Common Bar
+            Floor(display_h_deg * 100.0)
+            Floor(display_w_deg * 100.0)
+            Rows
+            Floor(Step * 100.0)
+--------------------------------------------
+fGrating:
+
+Common:
+        ExperimentType
+        ConditionPara0
+        ConditionNumber0
+        ConditionPara1
+        ConditionNumber1
+        ConditionPara2
+        ConditionNumber2
+        RandomSeed
+        Trial
+Custom:
+        Common Grating
+-----------------------------------------------
+fGrating_Surround:
+
+Common:
+        ExperimentType
+        ConditionPara0
+        ConditionNumber0
+        ConditionPara1
+        ConditionNumber1
+        ConditionPara2
+        ConditionNumber2
+        RandomSeed
+        Trial
+Custom:
+        Common Grating
+        Floor(cgrating.diameter * 100.0)
+-----------------------------------------------
+RF_Center:
+        Common Grating
+        Floor(display_h_deg * 100.0)
+        Floor(display_w_deg * 100.0)
+        Floor(step * 100.0)
+------------------------------------------------
+RF_Surround:
+        Common Grating
+        Floor(cgrating.diameter * 100.0)
+        Floor(display_h_deg * 100.0)
+        Floor(display_w_deg * 100.0)
+        Floor(step * 100.0)
+------------------------------------------------
+RF_fBar_Surround:
+        Common Bar
+        Floor(cgrating.diameter * 100.0)
+        Floor(display_h_deg * 100.0)
+        Floor(display_w_deg * 100.0)
+        Rows
+        Columns
+        Floor(Rstep * 100.0)
+        Floor(Cstep * 100.0)
+------------------------------------------------
+RF_Size:
+
+Common:
+        ExperimentType
+        ConditionPara
+        ConditionNumber
+        ConditionStart
+        ConditionEnd
+        RandomSeed
+        Trial
+Custom:
+        Common Grating
+-------------------------------------------------
+CenterSurround:
+
+Common:
+        ExperimentType
+        ConditionPara0
+        ConditionNumber0
+        ConditionPara1
+        ConditionNumber1
+        RandomSeed
+        Trial
+Custom:
+        Common Grating(Center)
+        Common Grating(Surround)
+---------------------------------------------------
