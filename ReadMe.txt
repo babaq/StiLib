@@ -1,5 +1,4 @@
-﻿	
-	# StiLib is currently not actively developed, effort has been shifted to VLAB which supersedes StiLib.
+# StiLib is currently not actively developed, effort has been shifted to VLAB which supersedes StiLib.
 	___
 	
 			StiLib		
