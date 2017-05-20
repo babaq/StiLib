@@ -1,5 +1,6 @@
-# StiLib is currently not actively developed, effort has been shifted to VLAB which supersedes StiLib.
-	___
+  StiLib is currently not actively developed, effort has been shifted to VLAB(http://vlabsys.github.io) which supersedes StiLib.
+
+
 	
 			StiLib		
 			
